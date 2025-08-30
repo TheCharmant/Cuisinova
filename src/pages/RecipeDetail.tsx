@@ -17,9 +17,9 @@ const getThumbsup = ({ liked, owns }: { liked: boolean, owns: boolean }) => {
         return <HandThumbUpSolid className={`${baseClass} text-gray-500`} />;
     }
     if (liked) {
-        return <HandThumbUpSolid className={`${baseClass} text-brand-500`} />;
+        return <HandThumbUpSolid className={`${baseClass} text-violet-500`} />;
     }
-    return <HandThumbUpIcon className={`${baseClass} text-brand-500`} />;
+    return <HandThumbUpIcon className={`${baseClass} text-violet-500`} />;
 };
 
 export default function RecipeDetail() {
@@ -83,9 +83,9 @@ export default function RecipeDetail() {
     if (!recipeData) return <ErrorPage message="No Recipe Data" />;
 
     return (
-        <div className="min-h-screen bg-gray-100 p-4">
+        <div className="min-h-screen bg-gradient-to-r from-brand-50 to-violet-50 p-6 animate-fadeInUp">
             {/* Recipe Card */}
-            <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+            <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden border border-violet-100 hover:shadow-2xl transition-all duration-300">
                 <RecipeHeader recipeData={recipeData} /> {/* Recipe header with image and title */}
                 <div className="p-6">
                     <ActionPopover

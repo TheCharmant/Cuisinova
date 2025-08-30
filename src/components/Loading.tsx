@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 
 const generationMessages = [
     '🔪 Chopping up some fresh ingredients...',
@@ -85,10 +86,18 @@ const Loading = ({
     // 🚀 Responsive Progress Bar
     if (isProgressBar) {
         return (
-            <div className="flex flex-col items-center justify-center mt-5 px-4 w-full">
-                <div className="w-full max-w-lg sm:max-w-md bg-gray-300 rounded-full h-6 shadow-lg relative overflow-hidden">
-                    <div
-                        className="h-6 rounded-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 shadow-md animate-pulse"
+            <motion.div 
+                className="flex flex-col items-center justify-center mt-8 px-4 w-full"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+            >
+                <motion.div 
+                    className="w-full max-w-lg sm:max-w-md bg-violet-100 rounded-full h-8 shadow-xl relative overflow-hidden backdrop-blur-sm border border-violet-200"
+                    whileHover={{ boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' }}
+                >
+                    <motion.div
+                        className="h-8 rounded-full bg-gradient-to-r from-brand-400 via-brand-500 to-violet-500 shadow-md"
                         role="progressbar"
                         aria-valuenow={progress}
                         aria-valuemin={0}
@@ -97,24 +106,68 @@ const Loading = ({
                             width: `${progress}%`,
                             transition: 'width 0.5s ease-in-out',
                         }}
+                        initial={{ width: '0%' }}
+                        animate={{ width: `${progress}%` }}
+                        transition={{ type: "spring", stiffness: 50, damping: 20 }}
                     />
-                </div>
-                <p className="mt-4 text-lg font-semibold text-gray-800 animate-pulse text-center px-2">
+                </motion.div>
+                <motion.p 
+                    className="mt-6 text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-violet-600 text-center px-2 font-display"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    key={currentMessage} // Force animation to restart when message changes
+                >
                     {currentMessage}
-                </p>
-                <p className="mt-1 text-sm text-gray-500">{progress}% completed</p>
-            </div>
+                </motion.p>
+                <motion.div 
+                    className="mt-2 px-4 py-1 bg-white/80 rounded-full shadow-md backdrop-blur-sm border border-violet-100"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 15, delay: 0.3 }}
+                >
+                    <p className="text-sm text-violet-600 font-medium">{progress}% completed</p>
+                </motion.div>
+            </motion.div>
         );
     }
 
     // Default Spinner for Other Scenarios
     return (
-        <div className="flex items-center justify-center mt-5">
-            <div className="relative">
-                <div className="h-24 w-24 rounded-full border-t-8 border-b-8 border-gray-200"></div>
-                <div className="absolute top-0 left-0 h-24 w-24 rounded-full border-t-8 border-b-8 border-blue-500 animate-spin"></div>
-            </div>
-        </div>
+        <motion.div 
+            className="flex flex-col items-center justify-center mt-8 py-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+        >
+            <motion.div 
+                className="relative"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            >
+                <div className="h-28 w-28 rounded-full border-t-8 border-b-8 border-violet-100 shadow-lg"></div>
+                <motion.div 
+                    className="absolute top-0 left-0 h-28 w-28 rounded-full border-t-8 border-b-8 border-brand-500"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                ></motion.div>
+                <motion.div 
+                    className="absolute top-0 left-0 h-28 w-28 rounded-full border-l-8 border-r-8 border-violet-400"
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                ></motion.div>
+            </motion.div>
+            
+            <motion.p 
+                className="mt-8 text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-violet-600 text-center px-4 max-w-md font-display"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                key={currentMessage} // Force animation to restart when message changes
+            >
+                {currentMessage}
+            </motion.p>
+        </motion.div>
     );
 };
 

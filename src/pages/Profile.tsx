@@ -33,7 +33,7 @@ function Profile({ profileData }: ProfileProps) {
         return view;
     }
     return (
-        <div className="flex flex-col min-h-screen items-center">
+        <div className="flex flex-col min-h-screen items-center bg-gradient-to-br from-brand-50 to-violet-50 px-4 py-8">
             {/* Show banner only if user has no recipes */}
             <ProfileStickyBanner userHasRecipes={latestRecipes.filter(r => r.owns).length !== 0} />
             <ProfileInformation

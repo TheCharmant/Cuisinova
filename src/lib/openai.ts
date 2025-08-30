@@ -49,8 +49,17 @@ type ResponseType = {
 // Generate recipes by sending a chat completion request to OpenAI using ingredients and dietary preferences
 export const generateRecipe = async (ingredients: Ingredient[], dietaryPreferences: DietaryPreference[], userId: string): Promise<ResponseType> => {
     try {
+        // API request limit check removed
+        await connectDB();
+        // const totalGeneratedCount = await aiGenerated.countDocuments({ userId }).exec();
+        // const apiRequestLimit = Number(process.env.API_REQUEST_LIMIT || 50);
+        
+        // if (totalGeneratedCount >= apiRequestLimit) {
+        //     throw new Error(`You have reached your limit of ${apiRequestLimit} AI-generated recipes.`);
+        // }
+        
         const prompt = getRecipeGenerationPrompt(ingredients, dietaryPreferences);
-        const model = 'gpt-4o';
+        const model = 'gpt-3.5-turbo';
         const response = await openai.chat.completions.create({
             model,
             messages: [{
@@ -63,7 +72,7 @@ export const generateRecipe = async (ingredients: Ingredient[], dietaryPreferenc
         return { recipes: response.choices[0].message?.content, openaiPromptId: _id || 'null-prompt-id' };
     } catch (error) {
         console.error('Failed to generate recipe:', error);
-        throw new Error('Failed to generate recipe');
+        throw new Error(error instanceof Error ? error.message : 'Failed to generate recipe');
     }
 };
 
@@ -85,7 +94,16 @@ const generateImage = (prompt: string, model: string): Promise<ImagesResponse> =
 // Generate images for an array of recipes and return image links paired with recipe names
 export const generateImages = async (recipes: Recipe[], userId: string) => {
     try {
-        const model = 'dall-e-3';
+        // API request limit check removed
+        await connectDB();
+        // const totalGeneratedCount = await aiGenerated.countDocuments({ userId }).exec();
+        // const apiRequestLimit = Number(process.env.API_REQUEST_LIMIT || 50);
+        
+        // if (totalGeneratedCount >= apiRequestLimit) {
+        //     throw new Error(`You have reached your limit of ${apiRequestLimit} AI-generated recipes.`);
+        // }
+        
+        const model = 'dall-e-2';
         const imagePromises: Promise<ImagesResponse>[] = recipes.map(recipe =>
             generateImage(getImageGenerationPrompt(recipe.name, recipe.ingredients), model)
         );
@@ -102,7 +120,11 @@ export const generateImages = async (recipes: Recipe[], userId: string) => {
             const url = imageResponse?.data?.[0]?.url;
 
             if (!url) {
-                throw new Error(`Image generation failed for recipe: ${recipeName}`);
+                console.error(`Image generation failed for recipe: ${recipeName}, using fallback image`);
+                return {
+                    imgLink: '/logo.svg', // Fallback image if generation fails
+                    name: recipeName,
+                };
             }
 
             return {
@@ -113,7 +135,11 @@ export const generateImages = async (recipes: Recipe[], userId: string) => {
         return imagesWithNames;
     } catch (error) {
         console.error('Error generating image:', error);
-        throw new Error('Failed to generate image');
+        // Return fallback images instead of throwing an error
+        return recipes.map(recipe => ({
+            imgLink: '/logo.svg',
+            name: recipe.name,
+        }));
     }
 };
 
@@ -121,7 +147,7 @@ export const generateImages = async (recipes: Recipe[], userId: string) => {
 export const validateIngredient = async (ingredientName: string, userId: string): Promise<string | null> => {
     try {
         const prompt = getIngredientValidationPrompt(ingredientName);
-        const model = 'gpt-4o';
+        const model = 'gpt-3.5-turbo';
         const response = await openai.chat.completions.create({
             model,
             messages: [{
@@ -143,7 +169,7 @@ const getRecipeNarration = async (recipe: ExtendedRecipe, userId: string): Promi
     try {
         const prompt = getRecipeNarrationPrompt(recipe);
         console.info('Getting recipe narration text from OpenAI...');
-        const model = 'gpt-4o';
+        const model = 'gpt-3.5-turbo';
         const response = await openai.chat.completions.create({
             model,
             messages: [{
@@ -163,6 +189,15 @@ const getRecipeNarration = async (recipe: ExtendedRecipe, userId: string): Promi
 // Convert narrated text to speech (TTS) using OpenAI audio API and return an audio buffer
 export const getTTS = async (recipe: ExtendedRecipe, userId: string): Promise<Buffer> => {
     try {
+        // API request limit check removed
+        await connectDB();
+        // const totalGeneratedCount = await aiGenerated.countDocuments({ userId }).exec();
+        // const apiRequestLimit = Number(process.env.API_REQUEST_LIMIT || 100);
+        
+        // if (totalGeneratedCount >= apiRequestLimit) {
+        //     throw new Error(`You have reached your limit of ${apiRequestLimit} AI-generated content.`);
+        // }
+        
         const text = await getRecipeNarration(recipe, userId);
         if (!text) throw new Error('Unable to get text for recipe narration');
         // Randomly select a voice type from available options
@@ -181,15 +216,25 @@ export const getTTS = async (recipe: ExtendedRecipe, userId: string): Promise<Bu
         return buffer;
     } catch (error) {
         console.error('Failed to generate tts:', error);
-        throw new Error('Failed to generate tts');
+        throw new Error(error instanceof Error ? error.message : 'Failed to generate audio narration');
     }
 };
 
 // Generate tags for a recipe by sending a tagging prompt to OpenAI and updating the recipe document in the database
 export const generateRecipeTags = async (recipe: ExtendedRecipe, userId: string): Promise<undefined> => {
     try {
+        // API request limit check removed
+        await connectDB();
+        // const totalGeneratedCount = await aiGenerated.countDocuments({ userId }).exec();
+        // const apiRequestLimit = Number(process.env.API_REQUEST_LIMIT || 50);
+        
+        // if (totalGeneratedCount >= apiRequestLimit) {
+        //     console.warn(`User ${userId} has reached their limit of ${apiRequestLimit} AI-generated content.`);
+        //     return; // Silently return without generating tags
+        // }
+        
         const prompt = getRecipeTaggingPrompt(recipe);
-        const model = 'gpt-4o';
+        const model = 'gpt-3.5-turbo';
         const response = await openai.chat.completions.create({
             model,
             messages: [{
@@ -206,12 +251,15 @@ export const generateRecipeTags = async (recipe: ExtendedRecipe, userId: string)
             try {
                 tagsArray = JSON.parse(rawTags);
                 if (!Array.isArray(tagsArray) || tagsArray.some(tag => typeof tag !== 'string')) {
-                    throw new Error('Invalid JSON structure: Expected an array of strings.');
+                    console.error('Invalid JSON structure: Expected an array of strings.');
+                    // Set default tags instead of throwing an error
+                    tagsArray = ['recipe', recipe.name.toLowerCase(), ...recipe.ingredients.map(i => i.name.toLowerCase())];
                 }
             } catch (jsonError) {
                 console.error('JSON parsing error:', jsonError);
                 console.error('Received malformed JSON:', rawTags);
-                throw new Error(`Failed to parse tags from OpenAI response. --> ${jsonError}`);
+                // Set default tags instead of throwing an error
+                tagsArray = ['recipe', recipe.name.toLowerCase(), ...recipe.ingredients.map(i => i.name.toLowerCase())];
             }
         }
         if (tagsArray.length) {
@@ -223,7 +271,8 @@ export const generateRecipeTags = async (recipe: ExtendedRecipe, userId: string)
         return;
     } catch (error) {
         console.error('Failed to generate tags for the recipe:', error);
-        throw new Error(`Failed to generate tags for the recipe --> ${error}`);
+        // Don't throw an error, just log it and continue
+        return;
     }
 };
 
@@ -233,9 +282,22 @@ export const generateChatResponse = async (
     recipe: ExtendedRecipe,
     history: any[],
     userId: string
-): Promise<{ reply: string; totalTokens: number }> => {
+): Promise<{ reply: string; totalTokens: number; reachedLimit?: boolean }> => {
     try {
-        const model = 'gpt-4o';
+        // API request limit check removed
+        await connectDB();
+        // const totalGeneratedCount = await aiGenerated.countDocuments({ userId }).exec();
+        // const apiRequestLimit = Number(process.env.API_REQUEST_LIMIT || 50);
+        
+        // if (totalGeneratedCount >= apiRequestLimit) {
+        //     return { 
+        //         reply: `You have reached your limit of ${apiRequestLimit} AI-generated content. Please try again later.`, 
+        //         totalTokens: 0,
+        //         reachedLimit: true
+        //     };
+        // }
+        
+        const model = 'gpt-3.5-turbo';
         const messages = [
             { role: 'system', content: getChatAssistantSystemPrompt(recipe) },
             ...history,

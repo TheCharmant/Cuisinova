@@ -1,16 +1,45 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import Header from './Header';
 import Hero from '../pages/Hero';
 import Loading from './Loading'
 import ErrorPage from '../pages/auth/error';
+import { motion, AnimatePresence } from 'framer-motion';
 
 /* Note all components will be wrapped in this component which in turn is rendered by _app.tsx */
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const { error: signinError } = router.query;
+  
+  // Page transition variants
+  const pageVariants = {
+    initial: {
+      opacity: 0,
+      y: 20
+    },
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: [0.22, 1, 0.36, 1]
+      }
+    },
+    exit: {
+      opacity: 0,
+      y: -20,
+      transition: {
+        duration: 0.3
+      }
+    }
+  };
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [router.pathname]);
 
   if (signinError) {
     return <ErrorPage />
@@ -34,9 +63,20 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   if (session) {
     return (
-      <div>
+      <div className="flex flex-col min-h-screen bg-gradient-to-br from-brand-50 to-violet-50">
         <Header user={session.user} />
-        <main className="min-h-screen bg-brand-50">{children}</main>
+        <AnimatePresence mode="wait">
+          <motion.main 
+            key={router.pathname}
+            className="flex-grow w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-6"
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            variants={pageVariants}
+          >
+            {children}
+          </motion.main>
+        </AnimatePresence>
       </div>
     );
   }

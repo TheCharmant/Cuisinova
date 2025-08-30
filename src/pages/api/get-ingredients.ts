@@ -18,18 +18,16 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Data>, session:
         // Establish a connection to the MongoDB database
         await connectDB();
 
-        // Count the number of AI-generated entries associated with the user's ID
-        const totalGeneratedCount = await aigenerated.countDocuments({ userId: session.user.id }).exec();
+        // API request limit check removed
+        // const totalGeneratedCount = await aigenerated.countDocuments({ userId: session.user.id }).exec();
 
-        // Check if the user has exceeded the API request limit
-        if (totalGeneratedCount >= Number(process.env.API_REQUEST_LIMIT)) {
-            // If limit is reached, respond with reachedLimit flag and an empty ingredient list
-            res.status(200).json({
-                reachedLimit: true,
-                ingredientList: []
-            });
-            return;
-        }
+        // if (totalGeneratedCount >= Number(process.env.API_REQUEST_LIMIT)) {
+        //     res.status(200).json({
+        //         reachedLimit: true,
+        //         ingredientList: []
+        //     });
+        //     return;
+        // }
 
         // Retrieve all ingredients from the database, sorted alphabetically by name
         const allIngredients = await Ingredient.find().sort({ name: 1 }).exec() as unknown as IngredientDocumentType[];

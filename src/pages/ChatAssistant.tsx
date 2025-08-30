@@ -16,11 +16,11 @@ export default function ChatAssistantPage() {
     if (!recipeData) return <ErrorPage message="No recipe data found." />;
 
     return (
-        <div className="min-h-screen bg-gray-100 p-4">
-            <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+        <div className="min-h-screen bg-gradient-to-br from-brand-50 to-violet-50 p-4 animate-fadeInUp">
+            <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden border border-violet-100">
                 <RecipeHeader recipeData={recipeData} />
                 <div className="p-6">
-                    <h3 className="mb-4">Ask the AI Assistant</h3>
+                    <h3 className="mb-4 text-xl font-semibold bg-gradient-to-r from-brand-500 to-violet-600 bg-clip-text text-transparent">Ask the AI Assistant</h3>
                     <ChatBox recipeId={recipeId} />
                 </div>
             </div>

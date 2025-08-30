@@ -1,7 +1,7 @@
-# Smart Recipe Generator Project Summary
+# Cuisionava: AI Recipe Generator Project Summary
 
 ## Project Overview
-The Smart Recipe Generator app is designed to help users create AI-generated recipes based on selected ingredients and dietary preferences. The app uses a Node.js-based stack with MongoDB for data storage and Next.js for the frontend. It incorporates user authentication, recipe generation, and a user-friendly interface for managing recipes.
+The Cuisionava: AI Recipe Generator is designed to help users create AI-generated recipes based on selected ingredients and dietary preferences. The app uses a Node.js-based stack with MongoDB for data storage and Next.js for the frontend. It incorporates user authentication, recipe generation, and a user-friendly interface for managing recipes.
 
 ## Development Milestones
 

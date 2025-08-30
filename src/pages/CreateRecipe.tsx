@@ -119,22 +119,23 @@ function Navigation({
       fullHeight
     />
   ) : (
-    <div className="min-h-screen bg-gradient-to-r from-brand-50 to-white p-4 md:p-8 flex justify-center">
-      <div className={`w-full space-y-4 ${generatedRecipes.length ? 'max-w-7xl' : 'max-w-2xl'}`}> 
+    <div className="min-h-screen bg-gradient-to-br from-brand-50 to-violet-50 p-4 md:p-8 flex justify-center">
+      <div className={`w-full space-y-4 animate-fadeInUp ${generatedRecipes.length ? 'max-w-7xl' : 'max-w-2xl'}`}> 
+        <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-violet-600 text-center">Create Recipe</h1>
         {generatedRecipes.length === 0 ? (
           steps.slice(0, 3).map((title, idx) => (
-            <div key={title} className="bg-white shadow rounded-xl">
+            <div key={title} className="bg-white shadow rounded-xl border border-violet-100">
               <button
-                className={`w-full flex items-center justify-between p-4 font-medium text-left`}
+                className={`w-full flex items-center justify-between p-4 font-medium text-left ${step === idx ? 'text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-violet-600' : 'text-gray-700'}`}
                 onClick={() => setStep(step === idx ? -1 : idx)}
               >
                 <span>{`Step ${idx + 1}: ${title}`}</span>
                 <ChevronDownIcon
-                  className={`w-5 h-5 transform transition-transform ${step === idx ? 'rotate-180' : ''}`}
+                  className={`w-5 h-5 transform transition-transform ${step === idx ? 'rotate-180 text-violet-500' : 'text-brand-400'}`}
                 />
               </button>
               {step === idx && (
-                <div className="p-4">
+                <div className="p-4 border-t border-violet-100">
                   {isLoading ? (
                     <Loading isProgressBar isComplete={isComplete} loadingType={loadingType} />
                   ) : (
@@ -156,7 +157,7 @@ function Navigation({
           ))
         ) : (
           <>
-            <div className="bg-white shadow rounded-xl">
+            <div className="bg-white shadow rounded-xl border border-violet-100">
               <div className="p-4">
                 <ReviewComponent
                   ingredients={ingredients}
@@ -167,7 +168,7 @@ function Navigation({
                 />
               </div>
             </div>
-            <div className="bg-white shadow rounded-xl p-4">
+            <div className="bg-white shadow rounded-xl p-4 border border-violet-100">
               {isLoading ? (
                 <Loading isProgressBar isComplete={isComplete} loadingType={loadingType} />
               ) : (
@@ -182,7 +183,6 @@ function Navigation({
           </>
         )}
       </div>
-
     </div>
   );
 }

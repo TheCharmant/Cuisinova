@@ -3,6 +3,7 @@ import { useState } from 'react';
 import FrontDisplay from './FrontDisplay'
 import Dialog from './Dialog'
 import { ExtendedRecipe } from '../../types';
+import { motion } from 'framer-motion';
 
 interface ViewRecipesProps {
     recipes: ExtendedRecipe[]
@@ -32,22 +33,52 @@ function ViewRecipes({ recipes, handleRecipeListUpdate, lastRecipeRef }: ViewRec
         }
     }
 
+    // Animation variants for container and items
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1
+            }
+        }
+    };
+    
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+    };
+
     if (!recipes.length) return null;
     return (
         <>
-            <div className="flex justify-center items-center min-h-screen p-5 mb-3">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <motion.div 
+                className="flex justify-center items-center w-full p-5 mb-3"
+                initial="hidden"
+                animate="visible"
+                variants={containerVariants}
+            >
+                <motion.div 
+                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8"
+                    variants={containerVariants}
+                >
                     {recipes.map((recipe, index) => (
-                        <FrontDisplay
+                        <motion.div 
                             key={recipe._id}
-                            recipe={recipe}
-                            showRecipe={handleShowRecipe}
-                            updateRecipeList={handleRecipeListUpdate}
-                            ref={index === recipes.length - 1 ? lastRecipeRef : undefined}
-                        />
+                            variants={itemVariants}
+                            whileHover={{ y: -5 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                        >
+                            <FrontDisplay
+                                recipe={recipe}
+                                showRecipe={handleShowRecipe}
+                                updateRecipeList={handleRecipeListUpdate}
+                                ref={index === recipes.length - 1 ? lastRecipeRef : undefined}
+                            />
+                        </motion.div>
                     ))}
-                </div>
-            </div>
+                </motion.div>
+            </motion.div>
             <Dialog
                 isOpen={Boolean(openDialog)}
                 close={() => setOpenDialog(null)}

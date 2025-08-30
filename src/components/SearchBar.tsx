@@ -1,63 +1,82 @@
-// SearchBar Component
-import React from 'react';
-import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/16/solid';
-import useWindowSize from './Hooks/useWindowSize';
+import React, { useState, useRef, useEffect } from 'react';
+import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface SearchBarProps {
-    searchVal: string
-    setSearchVal: (val: string) => void
-    handleSearch: () => void
-    totalRecipes: number
+  onSearch: (query: string) => void;
+  placeholder?: string;
+  className?: string;
 }
 
-const SearchBar = ({ searchVal, setSearchVal, handleSearch, totalRecipes }: SearchBarProps) => {
-    const { width } = useWindowSize(); // Get window width
-    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            handleSearch();
-        }
-    };
+const SearchBar: React.FC<SearchBarProps> = ({
+  onSearch,
+  placeholder = 'Search...',
+  className = '',
+}) => {
+  const [query, setQuery] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-    return (
-        <div className="w-full max-w-screen-lg flex items-center justify-between p-4 mt-4 rounded-full shadow-md bg-brand-50 border border-brand-300">
-            <div className="relative w-full flex items-center">
-                {/* Magnifying Glass Icon */}
-                <MagnifyingGlassIcon className="absolute left-3 h-5 w-5 text-brand-700" />
+  const handleSearch = () => {
+    if (query.trim()) {
+      onSearch(query.trim());
+    }
+  };
 
-                {/* Input Field */}
-                <input
-                    className="w-full pl-10 pr-10 py-2 text-sm text-gray-700 placeholder-gray-600 bg-transparent border-none rounded-full focus:outline-none focus:ring-2 focus:ring-brand-200"
-                    placeholder={width < 565 ? 'Search recipes...' : 'Search recipes by name, ingredient, or type...'}
-                    value={searchVal}
-                    onChange={(e) => setSearchVal(e.target.value)}
-                    onKeyDown={handleKeyPress}
-                />
+  const handleClear = () => {
+    setQuery('');
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
 
-                {/* Clear Button (X Icon) */}
-                {searchVal.trim() && (
-                    <div className="absolute right-3 flex items-center space-x-1">
-                        <button
-                            className="text-gray-500 hover:text-brand-700 focus:outline-none"
-                            onClick={() => setSearchVal('')}
-                        >
-                            <XMarkIcon className="h-6 w-6 text-brand-700" />
-                        </button>
-                        {
-                            totalRecipes > 0 && <span className="text-sm text-gray-500 font-bold">{`(${totalRecipes})`}</span>
-                        }
-                    </div>
-                )}
-            </div>
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
-            {/* Search Button */}
-            <button
-                className="ml-4 px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-full focus:ring-4 focus:outline-none focus:ring-brand-200 transition-all duration-200"
-                onClick={handleSearch}
-            >
-                Search
-            </button>
-        </div>
-    );
+  return (
+    <div 
+      className={`relative flex items-center w-full max-w-md mx-auto bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-300 ${isFocused ? 'ring-2 ring-brand-500' : ''} ${className}`}
+    >
+      <div 
+        className="flex items-center justify-center p-2 text-gray-400 hover:text-brand-500 hover:scale-110 transition-all duration-200"
+      >
+        <MagnifyingGlassIcon className="h-5 w-5" />
+      </div>
+      <input
+        ref={inputRef}
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={handleKeyDown}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        placeholder={placeholder}
+        className="w-full py-2 px-1 text-gray-700 bg-transparent outline-none placeholder:text-gray-400 placeholder:transition-all placeholder:duration-300 focus:placeholder:text-gray-300"
+      />
+      {query && (
+        <span 
+          className="animate-scaleIn"
+        >
+          <button
+            onClick={handleClear}
+            className="p-1 mr-1 text-gray-400 hover:text-gray-600 hover:scale-110 active:scale-90 transition-all duration-200"
+            aria-label="Clear search"
+          >
+            <XMarkIcon className="h-5 w-5" />
+          </button>
+        </span>
+      )}
+      <button
+        onClick={handleSearch}
+        className="py-2 px-4 bg-gradient-to-r from-brand-500 to-violet-500 text-white rounded-r-full hover:from-brand-600 hover:to-violet-600 hover:scale-105 active:scale-95 hover:shadow-xl transition-all duration-300"
+        aria-label="Search"
+      >
+        Search
+      </button>
+    </div>
+  );
 };
 
 export default SearchBar;

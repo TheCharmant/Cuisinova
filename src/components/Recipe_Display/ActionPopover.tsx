@@ -66,14 +66,14 @@ export function ActionPopover({ handlers, states, data }: ActionPopoverProps) {
         }
         return (
             <button
-                className="group flex w-full items-center gap-2 rounded-lg py-2 px-4 text-gray-700 hover:bg-gray-100 focus:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed" onClick={() => {
+                className="group flex w-full items-center gap-2 rounded-lg py-2 px-4 text-violet-700 hover:bg-violet-50 focus:bg-violet-50 disabled:text-gray-400 disabled:cursor-not-allowed transition-all duration-200" onClick={() => {
                     handlers.handlePlayRecipe()
                 }}
             >
                 {
                     states.isPlayingAudio ?
                         <StopCircleIcon className="h-5 w-5 text-red-500" /> :
-                        <PlayCircleIcon className={`h-5 w-5 ${states.hasAudio ? 'text-brand-600' : 'text-brand-400'}`} />
+                        <PlayCircleIcon className={`h-5 w-5 ${states.hasAudio ? 'text-violet-600' : 'text-violet-400'}`} />
                 }
 
                 {states.isPlayingAudio ? 'Stop Playing' : `${states.hasAudio ? 'Play Recipe' : 'Generate Audio'}`}
@@ -84,18 +84,18 @@ export function ActionPopover({ handlers, states, data }: ActionPopoverProps) {
     return (
         <>
             <Popover className="relative">
-                <PopoverButton className={`flex items-center justify-center w-12 h-12 ${handlers.closeDialog ? "mt-3 mr-3" : "ml-auto"} bg-gray-100 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 active:bg-gray-300 transition-all duration-200`}>
+                <PopoverButton className={`flex items-center justify-center w-12 h-12 ${handlers.closeDialog ? "mt-3 mr-3" : "ml-auto"} bg-violet-100 rounded-full hover:bg-violet-200 focus:outline-none focus:ring-2 focus:ring-violet-300 active:bg-violet-300 transition-all duration-200 shadow-md`}>
                     {data.buttonType}
                 </PopoverButton>
-                <PopoverPanel className="absolute right-0 z-header mt-2 w-56 rounded-lg bg-white shadow-lg ring-1 ring-black/10">
+                <PopoverPanel className="absolute right-0 z-header mt-2 w-56 rounded-xl bg-white shadow-xl ring-1 ring-violet-200 border border-violet-100">
                     {({ close }) => (
                         <>
-                            <button className="group flex w-full items-center gap-2 rounded-lg py-2 px-4 text-gray-700 hover:bg-gray-100 focus:bg-gray-100" onClick={handlers.handleClone}>
-                                <ClipboardDocumentIcon className="h-5 w-5 text-gray-500" />
+                            <button className="group flex w-full items-center gap-2 rounded-lg py-2 px-4 text-violet-700 hover:bg-violet-50 focus:bg-violet-50 transition-all duration-200" onClick={handlers.handleClone}>
+                                <ClipboardDocumentIcon className="h-5 w-5 text-violet-500" />
                                 Clone Ingredients
                             </button>
-                            {handlers.closeDialog && <button className="group flex w-full items-center gap-2 rounded-lg py-2 px-4 text-gray-700 hover:bg-gray-100 focus:bg-gray-100" onClick={handleOpenRecipe}>
-                                <ArrowTopRightOnSquareIcon className="h-5 w-5 text-gray-500" />
+                            {handlers.closeDialog && <button className="group flex w-full items-center gap-2 rounded-lg py-2 px-4 text-violet-700 hover:bg-violet-50 focus:bg-violet-50 transition-all duration-200" onClick={handleOpenRecipe}>
+                                <ArrowTopRightOnSquareIcon className="h-5 w-5 text-violet-500" />
                                 Open Recipe
                             </button>}
                             <button

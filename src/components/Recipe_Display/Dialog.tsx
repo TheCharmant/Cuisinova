@@ -9,6 +9,7 @@ import { ActionPopover } from './ActionPopover';
 import UserLink from '../UserLink';
 import { formatDate } from '../../utils/utils';
 import { ExtendedRecipe } from '../../types';
+import { motion } from 'framer-motion';
 
 interface RecipeDialogProps {
     isOpen: boolean;
@@ -65,38 +66,70 @@ export default function RecipeDisplayModal({ isOpen, close, recipe, removeRecipe
     return (
         <>
             <Dialog open={isOpen} as="div" className="relative z-modal focus:outline-none" onClose={close}>
-                <DialogBackdrop className="fixed inset-0 bg-black/50" />
+                <DialogBackdrop className="fixed inset-0 bg-black/70 backdrop-blur-md" />
                 <div className="fixed inset-0 z-overlay w-screen overflow-y-auto">
-                    <div className="flex min-h-full items-center justify-center p-4">
-                        <DialogPanel
-                            className="w-full max-w-md rounded-xl bg-white p-1 backdrop-blur-2xl duration-300 ease-out"
+                    <div className="flex min-h-full items-center justify-center p-4 sm:p-6">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                            className="w-full max-w-lg"
                         >
-                            <div className="flex flex-col items-center">
-                                {
-                                    <div className="flex justify-between items-start w-full">
-                                        <div className="flex items-center mb-2 mt-2 ml-2 bg-gray-100 p-2 rounded-lg">
-                                            <Image
-                                                className="h-10 w-10 rounded-full"
-                                                src={
-                                                    recipe.owner.image ||
-                                                    "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
-                                                }
-                                                alt={`Profile-Picture-${recipe.owner.name}`}
-                                                width={25}
-                                                height={25}
-                                            />
-                                            <div className="ml-4">
-                                                <p className="text-lg font-semibold text-gray-900">
-                                                    <UserLink
-                                                        userId={recipe.owner._id}
-                                                        name={recipe.owner.name}
+                            <DialogPanel
+                                className="w-full rounded-3xl bg-white/95 p-2 shadow-2xl border border-violet-100 backdrop-blur-xl overflow-hidden"
+                            >
+                                <div className="flex flex-col items-center">
+                                    {
+                                        <div className="flex justify-between items-start w-full">
+                                            <motion.div 
+                                                className="flex items-center mb-3 mt-3 ml-3 bg-gradient-to-r from-brand-50 to-violet-50 p-4 rounded-2xl shadow-md border border-violet-100"
+                                                initial={{ x: -20, opacity: 0 }}
+                                                animate={{ x: 0, opacity: 1 }}
+                                                transition={{ delay: 0.2 }}
+                                            >
+                                                <div className="relative h-12 w-12 overflow-hidden rounded-full ring-2 ring-brand-100 shadow-inner">
+                                                    <Image
+                                                        className="h-full w-full object-cover"
+                                                        src={
+                                                            recipe.owner.image ||
+                                                            "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
+                                                        }
+                                                        alt={`Profile-Picture-${recipe.owner.name}`}
+                                                        width={48}
+                                                        height={48}
                                                     />
-                                                </p>
-                                                <p className="text-sm text-gray-500">{formatDate(recipe.createdAt)}</p>
-                                            </div>
-                                        </div>
-                                        <ActionPopover
-                                            handlers={{
+                                                </div>
+                                                <div className="ml-4">
+                                                    <motion.p 
+                                                        className="text-lg font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-violet-600"
+                                                        initial={{ y: -10, opacity: 0 }}
+                                                        animate={{ y: 0, opacity: 1 }}
+                                                        transition={{ delay: 0.3 }}
+                                                    >
+                                                        <UserLink
+                                                            userId={recipe.owner._id}
+                                                            name={recipe.owner.name}
+                                                        />
+                                                    </motion.p>
+                                                    <motion.p 
+                                                        className="text-sm text-gray-500"
+                                                        initial={{ y: 10, opacity: 0 }}
+                                                        animate={{ y: 0, opacity: 1 }}
+                                                        transition={{ delay: 0.4 }}
+                                                    >
+                                                        {formatDate(recipe.createdAt)}
+                                                    </motion.p>
+                                                </div>
+                                            </motion.div>
+                                            <motion.div
+                                                initial={{ x: 20, opacity: 0 }}
+                                                animate={{ x: 0, opacity: 1 }}
+                                                transition={{ delay: 0.2 }}
+                                                className="mt-3 mr-3"
+                                            >
+                                                <ActionPopover
+                                                    handlers={{
                                                 handleClone,
                                                 handleCopy,
                                                 closeDialog: close,
@@ -113,20 +146,28 @@ export default function RecipeDisplayModal({ isOpen, close, recipe, removeRecipe
                                             }}
                                             data={{
                                                 recipe,
-                                                buttonType: <EllipsisVerticalIcon className="h-6 w-6 text-gray-700" />,
+                                                buttonType: <EllipsisVerticalIcon className="h-6 w-6 text-violet-500" />,
                                             }}
-
                                         />
-                                    </div>
-                                }
-                                {
-                                    isLoading ?
-                                        <Loading />
-                                        :
-                                        <RecipeCard recipe={recipe} selectedRecipes={[]} removeMargin />
-                                }
-                            </div>
-                        </DialogPanel>
+                                            </motion.div>
+                                        </div>
+                                    }
+                                    {
+                                        isLoading ?
+                                            <Loading />
+                                            :
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: 0.5, type: "spring", stiffness: 100 }}
+                                                className="w-full p-2"
+                                            >
+                                                <RecipeCard recipe={recipe} selectedRecipes={[]} removeMargin />
+                                            </motion.div>
+                                    }
+                                </div>
+                            </DialogPanel>
+                        </motion.div>
                     </div>
                 </div>
             </Dialog>

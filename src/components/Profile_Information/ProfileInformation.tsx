@@ -23,13 +23,13 @@ function ProfileInformation({ recipes, updateSelection, selectedDisplay, AIusage
 
     // Determine progress bar color based on AI usage percentage
     const getUsageColor = (usage: number) => {
-        if (usage <= 50) return 'bg-brand-500'; // Low usage: Green
+        if (usage <= 50) return 'bg-gradient-to-r from-brand-500 to-violet-500'; // Low usage: Pink-Violet
         if (usage <= 75) return 'bg-yellow-500'; // Medium usage: Yellow
         return 'bg-red-500'; // High usage: Red
     };
 
     return (
-        <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow mt-5">
+        <div className="w-full max-w-sm bg-white border border-violet-200 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 mt-5 animate-fadeInUp">
             <div className="flex justify-end"></div>
             <div className="flex flex-col items-center pb-10 px-4 pt-4">
                 <Image
@@ -39,15 +39,15 @@ function ProfileInformation({ recipes, updateSelection, selectedDisplay, AIusage
                     className="w-24 h-24 mb-3 rounded-full shadow-lg"
                     alt={`profile-${user.name}`}
                 />
-                <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">{user.name}</h5>
+                <h5 className="mb-1 text-xl font-medium bg-gradient-to-r from-brand-500 to-violet-600 bg-clip-text text-transparent">{user.name}</h5>
                 <span className="text-sm text-gray-500 dark:text-gray-400">{user.email}</span>
-                <div className="grid grid-cols-3 gap-4 text-center mt-2">
+                <div className="grid grid-cols-3 gap-4 text-center mt-4">
                     <div>
                         <div className="text-lg font-medium text-black">{ownedRecipes.length}</div>
                         <Button
                             onClick={() => updateSelection('created')}
-                            className={`bg-white rounded-md ${
-                                selectedDisplay === 'created' ? 'text-rose-700 font-bold' : 'text-black hover:text-brand-500 hover:underline'
+                            className={`bg-white rounded-full px-2 py-1 transition-all duration-300 ${
+                                selectedDisplay === 'created' ? 'bg-gradient-to-r from-brand-500 to-violet-500 text-white font-bold shadow-md' : 'text-gray-700 hover:text-violet-600 border border-violet-200 hover:border-violet-400'
                             }`}
                         >
                             Recipes Created
@@ -57,8 +57,8 @@ function ProfileInformation({ recipes, updateSelection, selectedDisplay, AIusage
                         <div className="text-lg font-medium text-black">{votesReceived}</div>
                         <Button
                             onClick={() => updateSelection('votes received')}
-                            className={`bg-white rounded-md ${
-                                selectedDisplay === 'votes received' ? 'text-rose-700 font-bold' : 'text-black hover:text-brand-500 hover:underline'
+                            className={`bg-white rounded-full px-2 py-1 transition-all duration-300 ${
+                                selectedDisplay === 'votes received' ? 'bg-gradient-to-r from-brand-500 to-violet-500 text-white font-bold shadow-md' : 'text-gray-700 hover:text-violet-600 border border-violet-200 hover:border-violet-400'
                             }`}
                         >
                             Votes Received
@@ -68,8 +68,8 @@ function ProfileInformation({ recipes, updateSelection, selectedDisplay, AIusage
                         <div className="text-lg font-medium text-black">{favoriteRecipes.length}</div>
                         <Button
                             onClick={() => updateSelection('favorites')}
-                            className={`bg-white rounded-md ${
-                                selectedDisplay === 'favorites' ? 'text-rose-700 font-bold' : 'text-black hover:text-brand-500 hover:underline'
+                            className={`bg-white rounded-full px-2 py-1 transition-all duration-300 ${
+                                selectedDisplay === 'favorites' ? 'bg-gradient-to-r from-brand-500 to-violet-500 text-white font-bold shadow-md' : 'text-gray-700 hover:text-violet-600 border border-violet-200 hover:border-violet-400'
                             }`}
                         >
                             Favorites
@@ -78,11 +78,11 @@ function ProfileInformation({ recipes, updateSelection, selectedDisplay, AIusage
                 </div>
 
                 {/* AI Usage Progress Bar */}
-                <div className="w-full mt-4">
-                    <div className="text-sm text-gray-600 dark:text-gray-400 text-center">AI Usage: {AIusage}%</div>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                <div className="w-full mt-6">
+                    <div className="text-sm text-violet-600 font-medium text-center mb-1">AI Usage: {AIusage}%</div>
+                    <div className="w-full bg-violet-100 rounded-full h-3 shadow-inner">
                         <div
-                            className={`${getUsageColor(AIusage)} h-2.5 rounded-full`}
+                            className={`${getUsageColor(AIusage)} h-3 rounded-full shadow-md transition-all duration-500`}
                             style={{ width: `${AIusage}%` }}
                         ></div>
                     </div>

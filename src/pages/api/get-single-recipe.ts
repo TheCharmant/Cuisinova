@@ -5,7 +5,6 @@ import { connectDB } from '../../lib/mongodb';
 import Recipe from '../../models/recipe';
 import { filterResults } from '../../utils/utils';
 import { ExtendedRecipe } from '../../types';
-
 /**
  * API handler for fetching all recipes.
  * @param req - The Next.js API request object.

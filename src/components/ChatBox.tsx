@@ -81,16 +81,16 @@ export default function ChatBox({ recipeId }: Props) {
     return (
         <div className="mt-6 flex flex-col gap-4">
             {messages.length > 0 && (
-                <div className="border rounded-lg p-4 bg-gray-50 max-h-[400px] overflow-y-auto space-y-4">
+                <div className="border border-violet-100 rounded-xl p-4 bg-white max-h-[400px] overflow-y-auto space-y-4 shadow-inner">
                     {messages.map((msg, idx) => (
                         <div
                             key={idx}
                             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                         >
                             <div
-                                className={`px-4 py-2 rounded-lg text-sm max-w-[75%] ${msg.role === 'user'
-                                    ? 'bg-brand-100 text-brand-800'
-                                    : 'bg-gray-200 text-gray-800'
+                                className={`px-4 py-2 rounded-xl text-sm max-w-[75%] shadow-sm ${msg.role === 'user'
+                                    ? 'bg-gradient-to-r from-brand-100 to-violet-100 text-violet-800 border border-violet-200'
+                                    : 'bg-white text-gray-800 border border-gray-200'
                                     }`}
                             >
                                 <ReactMarkdown>{msg.content}</ReactMarkdown>
@@ -98,7 +98,7 @@ export default function ChatBox({ recipeId }: Props) {
                         </div>
                     ))}
                     {isLoading && (
-                        <div className="text-sm text-gray-500 italic">Assistant is typing...</div>
+                        <div className="text-sm text-violet-500 italic animate-pulse">Assistant is typing...</div>
                     )}
                     {tokenTotal >= MAX_TOKENS && (
                         <div className="text-sm text-red-500 italic">
@@ -111,7 +111,7 @@ export default function ChatBox({ recipeId }: Props) {
 
             <div className="flex items-center gap-2">
                 <textarea
-                    className="flex-grow border rounded-lg px-4 py-2 text-sm h-[80px] resize-none overflow-y-auto"
+                    className="flex-grow border border-violet-200 rounded-xl px-4 py-2 text-sm h-[80px] resize-none overflow-y-auto focus:ring-2 focus:ring-violet-300 focus:border-violet-300 focus:outline-none transition-all duration-300"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Ask a question about this recipe..."
@@ -126,7 +126,7 @@ export default function ChatBox({ recipeId }: Props) {
                 <button
                     onClick={handleSend}
                     disabled={isLoading || !input.trim() || tokenTotal >= MAX_TOKENS}
-                    className="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-brand-700 disabled:opacity-50"
+                    className="bg-gradient-to-r from-brand-500 to-violet-500 text-white px-4 py-2 rounded-xl text-sm hover:shadow-lg hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none"
                     aria-label="Send"
                 >
                     <PaperAirplaneIcon className="h-14 w-8" />

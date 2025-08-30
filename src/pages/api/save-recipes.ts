@@ -18,7 +18,7 @@ const getS3Link = (uploadResults: UploadReturnType[] | null, location: string) =
     if (!uploadResults) return fallbackImg;
     const filteredResult = uploadResults.filter(result => result.location === location);
     if (filteredResult[0]?.uploaded) {
-        return `https://smart-recipe-generator.s3.amazonaws.com/${location}`;
+        return `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${location}`;
     }
     return fallbackImg;
 };
@@ -54,7 +54,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
             ...r,
             owner: new mongoose.Types.ObjectId(session.user.id),
             imgLink: getS3Link(uploadResults, r.openaiPromptId),
-            openaiPromptId: r.openaiPromptId.split('-')[0] // Remove client key iteration
+            openaiPromptId: r.openaiPromptId.split('-')[0], // Remove client key iteration
+            // Ensure image is properly displayed by setting a default if not available
+            displayImage: getS3Link(uploadResults, r.openaiPromptId) || '/logo.svg'
         }));
 
         // Connect to MongoDB and save recipes

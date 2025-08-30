@@ -9,10 +9,10 @@ export default function ErrorPage({ message }: { message?: string }) {
     let errorMessage = `An unexpected error: "${error}" occurred. Please try again later.`;
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
-            <h1 className="text-3xl font-bold mb-4">{message || 'Sign In Error'}</h1>
+        <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-brand-50 to-violet-50 p-8 animate-fadeInUp">
+            <h1 className="text-3xl font-bold mb-4 bg-gradient-to-r from-brand-500 to-violet-600 bg-clip-text text-transparent">{message || 'Sign In Error'}</h1>
             <p className="text-red-500 mb-4">{message ? '' : errorMessage}</p>
-            <Link href="/" className="mt-4 px-4 py-2 bg-brand-500 text-white rounded hover:bg-brand-600">
+            <Link href="/" className="mt-4 px-6 py-2 bg-gradient-to-r from-brand-500 to-violet-500 text-white rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300">
                 Go to Home
             </Link>
         </div>

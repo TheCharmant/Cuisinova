@@ -6,8 +6,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Import modern font for headings */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+/* Import modern fonts for headings and body */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap');
 
 /* 
    Root variables for theme colors 
@@ -15,8 +18,15 @@
 */
 :root {
   --foreground-rgb: 0, 0, 0; /* Default text color */
-  --background-start-rgb: 214, 219, 220; /* Light grayish background */
-  --background-end-rgb: 255, 255, 255; /* White background */
+  --background-start-rgb: 253, 242, 248; /* Light pink background */
+  --background-end-rgb: 245, 243, 255; /* Light violet background */
+  --primary-color: #ec4899; /* Pink */
+  --secondary-color: #8b5cf6; /* Violet */
+  --accent-color: #f472b6; /* Light pink */
+  --accent-secondary: #a78bfa; /* Light violet */
+  --card-shadow: 0 10px 30px -5px rgba(139, 92, 246, 0.1);
+  --hover-shadow: 0 20px 40px -5px rgba(236, 72, 153, 0.2);
+  --button-shadow: 0 4px 10px rgba(236, 72, 153, 0.3);
 }
 
 /* 
@@ -39,6 +49,35 @@
 */
 body {
   color: rgb(var(--foreground-rgb));
+  font-family: 'Quicksand', sans-serif;
+  background: linear-gradient(135deg, rgb(var(--background-start-rgb)), rgb(var(--background-end-rgb)));
+  background-attachment: fixed;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+  }
+  
+  h1 {
+    @apply text-3xl md:text-4xl lg:text-5xl;
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  h2 {
+    @apply text-2xl md:text-3xl lg:text-4xl font-bold;
+  }
+  
+  h3 {
+    @apply text-xl md:text-2xl font-semibold;
+  }
+  min-height: 100vh;
 }
 
 /* 
@@ -79,14 +118,33 @@ html {
 @layer base {
   h1 {
     @apply text-3xl md:text-4xl font-bold mt-6 mb-4;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
   h2 {
     @apply text-2xl md:text-3xl font-semibold mt-6 mb-4;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Poppins', sans-serif;
+    color: var(--primary-color);
   }
   h3 {
     @apply text-xl md:text-2xl font-semibold mt-4 mb-2;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Poppins', sans-serif;
+    color: var(--secondary-color);
+  }
+  
+  /* Add cute aesthetic elements */
+  button {
+    @apply transition-all duration-300;
+  }
+  
+  input, textarea, select {
+    @apply rounded-lg border-violet-200 focus:border-violet-400 focus:ring focus:ring-violet-200 focus:ring-opacity-50 transition-all duration-300;
+  }
+  
+  /* Card styling */
+  .card {
+    @apply bg-white rounded-xl shadow-md overflow-hidden border border-violet-100 hover:shadow-lg transition-all duration-300;
   }
 }

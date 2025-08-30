@@ -19,19 +19,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
         }
 
         await connectDB();
-        // Check if the user has exceeded the API request limit on first entry
-        if (history.length === 1) {
-            // Count the number of AI-generated entries associated with the user's ID
-            const totalGeneratedCount = await aigenerated.countDocuments({ userId: session.user.id }).exec();
+        // API request limit check removed
+        // if (history.length === 1) {
+        //     const totalGeneratedCount = await aigenerated.countDocuments({ userId: session.user.id }).exec();
             
-            if (totalGeneratedCount >= Number(process.env.API_REQUEST_LIMIT)) {
-                // If limit is reached, respond with reachedLimit flag and an empty ingredient list
-                res.status(200).json({
-                    reachedLimit: true,
-                });
-                return;
-            }
-        }
+        //     if (totalGeneratedCount >= Number(process.env.API_REQUEST_LIMIT)) {
+        //         res.status(200).json({
+        //             reachedLimit: true,
+        //         });
+        //         return;
+        //     }
+        // }
 
         const recipe = await Recipe.findById(recipeId).lean() as unknown as ExtendedRecipe;
         if (!recipe) {
