@@ -16,9 +16,9 @@ import { Recipe, UploadReturnType, ExtendedRecipe } from '../../types';
 const getS3Link = (uploadResults: UploadReturnType[] | null, location: string) => {
     const fallbackImg = '/logo.svg';
     if (!uploadResults) return fallbackImg;
-    const filteredResult = uploadResults.filter(result => result.location === location);
+    const filteredResult = uploadResults.filter(result => result.location && result.location.endsWith(`/${location}`));
     if (filteredResult[0]?.uploaded) {
-        return `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${location}`;
+        return filteredResult[0].location;
     }
     return fallbackImg;
 };
@@ -37,27 +37,29 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
         // Generate images using OpenAI
         console.info('Getting images from OpenAI...');
         const imageResults = await generateImages(recipeNames, session.user.id);
-        
+        console.info('OpenAI imageResults:', JSON.stringify(imageResults, null, 2));
+
         // Prepare images for uploading to S3
         const openaiImagesArray = imageResults.map((result, idx) => ({
             originalImgLink: result.imgLink,
             userId: session.user.id,
             location: recipes[idx].openaiPromptId
         }));
+        console.info('openaiImagesArray:', JSON.stringify(openaiImagesArray, null, 2));
 
         // Upload images to S3
         console.info('Uploading OpenAI images to S3...');
         const uploadResults = await uploadImagesToS3(openaiImagesArray);
+        console.info('S3 uploadResults:', JSON.stringify(uploadResults, null, 2));
 
         // Update recipe data with image links and owner information
         const updatedRecipes = recipes.map((r: Recipe) => ({
             ...r,
             owner: new mongoose.Types.ObjectId(session.user.id),
             imgLink: getS3Link(uploadResults, r.openaiPromptId),
-            openaiPromptId: r.openaiPromptId.split('-')[0], // Remove client key iteration
-            // Ensure image is properly displayed by setting a default if not available
-            displayImage: getS3Link(uploadResults, r.openaiPromptId) || '/logo.svg'
+            openaiPromptId: r.openaiPromptId.split('-')[0] // Remove client key iteration
         }));
+        console.info('updatedRecipes:', JSON.stringify(updatedRecipes, null, 2));
 
         // Connect to MongoDB and save recipes
         await connectDB();
@@ -75,7 +77,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
     } catch (error) {
         // Handle any errors that occur during the process
         console.error('Failed to send response:', error);
-        res.status(500).json({ error: 'Failed to save recipes' });
+        if (error instanceof Error) {
+            res.status(500).json({ error: error.message, stack: error.stack });
+        } else {
+            res.status(500).json({ error: 'Failed to save recipes', detail: error });
+        }
     }
 };
 

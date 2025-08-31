@@ -1,29 +1,29 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface SearchBarProps {
-  onSearch: (query: string) => void;
+  searchVal: string;
+  setSearchVal: (val: string) => void;
+  handleSearch: () => void;
+  totalRecipes: number;
   placeholder?: string;
   className?: string;
 }
 
+
 const SearchBar: React.FC<SearchBarProps> = ({
-  onSearch,
+  searchVal,
+  setSearchVal,
+  handleSearch,
+  totalRecipes,
   placeholder = 'Search...',
   className = '',
 }) => {
-  const [query, setQuery] = useState('');
-  const [isFocused, setIsFocused] = useState(false);
+  const [isFocused, setIsFocused] = React.useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleSearch = () => {
-    if (query.trim()) {
-      onSearch(query.trim());
-    }
-  };
-
   const handleClear = () => {
-    setQuery('');
+    setSearchVal('');
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -47,15 +47,15 @@ const SearchBar: React.FC<SearchBarProps> = ({
       <input
         ref={inputRef}
         type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        value={searchVal}
+        onChange={(e) => setSearchVal(e.target.value)}
         onKeyDown={handleKeyDown}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         placeholder={placeholder}
         className="w-full py-2 px-1 text-gray-700 bg-transparent outline-none placeholder:text-gray-400 placeholder:transition-all placeholder:duration-300 focus:placeholder:text-gray-300"
       />
-      {query && (
+      {searchVal && (
         <span 
           className="animate-scaleIn"
         >

@@ -11,16 +11,15 @@ interface UploadToS3Type {
     location: string;
 }
 
-// Process an image from URL and return as stream
-export const processImage = (url: string): Promise<StreamingBlobPayloadInputTypes> =>
+// Process an image from URL and return as a Buffer
+export const processImage = (url: string): Promise<Buffer> =>
     new Promise((resolve, reject) => {
-        const request = https.request(url, (response) => {
-            const data = new Stream();
-            response.on('data', (chunk: Buffer) => data.push(chunk));
-            response.on('end', () => resolve(data.read()));
-        });
-        request.on('error', (err: string) => reject(err));
-        request.end();
+        https.get(url, (response) => {
+            const data: Uint8Array[] = [];
+            response.on('data', (chunk) => data.push(chunk));
+            response.on('end', () => resolve(Buffer.concat(data)));
+            response.on('error', reject);
+        }).on('error', reject);
     });
 
 // Configure S3 client

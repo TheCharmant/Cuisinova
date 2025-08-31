@@ -24,12 +24,6 @@ const navigation = [
         icon: PlusCircleIcon,
         style: 'bg-white/90 text-brand-600 px-4 py-2 rounded-full shadow-lg hover:bg-white hover:shadow-xl transition-all' 
     },
-    { 
-        name: 'About', 
-        route: '/', 
-        icon: InformationCircleIcon,
-        style: 'text-white hover:bg-white/10 hover:text-white' 
-    },
 ]
 
 function classNames(...classes: string[]) {
@@ -52,9 +46,6 @@ function Header({ user }: HeaderProps) {
         if (menu.name === 'Sign out') {
             signOut()
             return
-        }
-        if (menu.name === 'About') {
-            window.open('https://github.com/Dereje1/smart-recipe-generator', '_blank');
         }
         router.push(menu.route)
     }
@@ -106,18 +97,6 @@ function Header({ user }: HeaderProps) {
                             </div>
                             <div className="hidden md:block">
                                 <div className="ml-4 flex items-center md:ml-6 space-x-4">
-                                    <Notifications />
-                                    {/* Buy Me a Coffee Button */}
-                                    <motion.a
-                                        href="https://www.buymeacoffee.com/dereje"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="bg-amber-400 text-amber-900 font-bold px-5 py-2.5 rounded-full shadow-lg hover:bg-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-300 transition-all duration-300 flex items-center gap-2"
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                    >
-                                        <span className="text-lg">☕</span> Buy Me a Coffee
-                                    </motion.a>
                                     {/* Profile dropdown */}
                                     <Menu as="div" className="relative">
                                         <div>
@@ -195,19 +174,6 @@ function Header({ user }: HeaderProps) {
                                 </motion.div>
                             ))}
                         </div>
-                        {/* ☕ Buy Me a Coffee – mobile */}
-                        <div className="px-4 pb-4 pt-2">
-                            <motion.a
-                                href="https://www.buymeacoffee.com/dereje"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center justify-center gap-2 w-full bg-amber-400 text-amber-900 font-bold px-4 py-3 rounded-xl shadow-md hover:bg-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-300 transition-all duration-300"
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                            >
-                                <span className="text-lg">☕</span> Buy Me a Coffee
-                            </motion.a>
-                        </div>
                         <div className="border-t border-white/10 mx-2 mt-2 pb-3 pt-4">
                             <div className="flex items-center px-5 bg-white/5 backdrop-blur-sm rounded-xl p-4 shadow-md">
                                 <div className="flex-shrink-0">
@@ -222,10 +188,6 @@ function Header({ user }: HeaderProps) {
                                 <div className="ml-4">
                                     <div className="text-base font-bold leading-none text-white">{user?.name}</div>
                                     <div className="text-sm font-medium leading-none text-gray-200 mt-1.5">{user?.email}</div>
-                                </div>
-                                {/* Push Notifications button to the right */}
-                                <div className="ml-auto">
-                                    <Notifications screen="mobile" />
                                 </div>
                             </div>
                             <div className="mt-4 space-y-2 px-2 bg-white/5 backdrop-blur-sm rounded-xl p-2 mx-2 shadow-md">

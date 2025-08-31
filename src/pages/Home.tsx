@@ -23,7 +23,6 @@ const Home = () => {
     const {
         data: latestRecipes,
         loading,
-        popularTags,
         loadMore,
         handleRecipeListUpdate,
         totalRecipes,
@@ -36,6 +35,20 @@ const Home = () => {
         searchTrigger,
         resetSearchTrigger: () => setSearchTrigger(false),
     });
+
+    // Extract popular ingredients from recipes
+    const ingredientCount: Record<string, number> = {};
+    latestRecipes.forEach(recipe => {
+        recipe.ingredients?.forEach(ingredient => {
+            if (ingredient.name) {
+                ingredientCount[ingredient.name] = (ingredientCount[ingredient.name] || 0) + 1;
+            }
+        });
+    });
+    const popularIngredients = Object.entries(ingredientCount)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 20)
+        .map(([name, count]) => ({ _id: name, count }));
     useEffect(() => {
         if (!latestRecipes.length) return;
 
@@ -85,10 +98,10 @@ const Home = () => {
 
     const handleTagSearch = async (tag: string) => {
         if (searchVal === tag) {
-            setSearchVal(""); // Reset search if clicking the same tag
+            setSearchVal("");
+            setSearchTrigger(true);
             return;
         }
-
         setSearchVal(tag);
         setSearchTrigger(true);
     };
@@ -130,11 +143,16 @@ const Home = () => {
             </motion.div>
             
             <motion.div variants={itemVariants} className="w-full max-w-4xl">
-                <SearchBar searchVal={searchVal} setSearchVal={setSearchVal} handleSearch={handleSearch} totalRecipes={totalRecipes} />
+                <SearchBar 
+                    searchVal={searchVal}
+                    setSearchVal={setSearchVal}
+                    handleSearch={handleSearch}
+                    totalRecipes={totalRecipes}
+                />
             </motion.div>
             
             <motion.div variants={itemVariants} className="w-full max-w-4xl">
-                <PopularTags tags={popularTags} onTagToggle={handleTagSearch} searchVal={searchVal} />
+                <PopularTags tags={popularIngredients} onTagToggle={handleTagSearch} searchVal={searchVal} />
             </motion.div>
 
             {/* Sorting Buttons */}
@@ -186,7 +204,7 @@ const Home = () => {
             {/* Show loading indicator when fetching */}
             {loading && <Loading />}
             
-            {/* Empty state when no recipes */}
+            {/* Empty state or tag search results */}
             {!loading && latestRecipes.length === 0 && (
                 <motion.div 
                     className="flex flex-col items-center justify-center p-10 bg-white/80 rounded-2xl shadow-lg border border-violet-100 max-w-md w-full"
@@ -195,9 +213,15 @@ const Home = () => {
                     transition={{ delay: 0.2 }}
                 >
                     <SparklesIcon className="h-16 w-16 text-violet-400 mb-4" />
-                    <h3 className="text-xl font-bold text-violet-700 mb-2">No recipes found</h3>
+                    <h3 className="text-xl font-bold text-violet-700 mb-2">
+                        {searchVal
+                            ? `No recipes found for "${searchVal}"`
+                            : "No recipes found"}
+                    </h3>
                     <p className="text-violet-600 text-center">
-                        Try adjusting your search or create a new recipe to get started!
+                        {searchVal
+                            ? "Try another tag or ingredient, or create a new recipe to get started!"
+                            : "Try adjusting your search or create a new recipe to get started!"}
                     </p>
                 </motion.div>
             )}

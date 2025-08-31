@@ -15,7 +15,9 @@ interface PopularTagsProps {
     searchVal: string;
 }
 
-const PopularTags = ({ tags, onTagToggle, searchVal }: PopularTagsProps) => {
+const PopularTags = ({ tags: rawTags, onTagToggle, searchVal }: PopularTagsProps) => {
+    // Ensure tags is always an array
+    const tags = Array.isArray(rawTags) ? rawTags : [];
     const [activeTag, setActiveTag] = useState<string>('');
 
     const { width } = useWindowSize();
@@ -73,7 +75,7 @@ const PopularTags = ({ tags, onTagToggle, searchVal }: PopularTagsProps) => {
                 initial="hidden"
                 animate="visible"
             >
-                {tags.length === 0 ? (
+                {Array.isArray(tags) && tags.length === 0 ? (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}

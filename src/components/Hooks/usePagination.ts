@@ -75,7 +75,7 @@ function reducer(state: PaginationState, action: PaginationAction): PaginationSt
         data: [...state.data, ...action.payload.recipes],
         page: action.payload.currentPage,
         totalPages: action.payload.totalPages,
-        popularTags: state.popularTags.length ? state.popularTags : action.payload.popularTags,
+        popularTags: Array.isArray(state.popularTags) && state.popularTags.length ? state.popularTags : (Array.isArray(action.payload.popularTags) ? action.payload.popularTags : []),
         apiCurrentPage: action.payload.currentPage,
         totalRecipes: action.payload.totalRecipes
       };

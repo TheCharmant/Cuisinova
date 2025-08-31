@@ -19,7 +19,14 @@ const nextConfig = {
                 protocol: 'https',
                 hostname: 'smart-recipe-generator.s3.amazonaws.com',
                 pathname: '/**',
+            }, 
+
+            {
+                protocol: 'https',
+                hostname: 'cuisinova-recipes.s3.amazonaws.com',
+                pathname: '/**',
             },
+            
             {
                 protocol: 'https',
                 hostname: 'www.gravatar.com',

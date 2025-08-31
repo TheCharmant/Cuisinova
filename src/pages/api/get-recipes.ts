@@ -1,83 +1,46 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { apiMiddleware } from '../../lib/apiMiddleware';
+import { generateRecipe } from '../../lib/openai';
+import recipeModel from '../../models/recipe';
 import { connectDB } from '../../lib/mongodb';
-import Recipe from '../../models/recipe';
-import { filterResults, paginationQueryHelper } from '../../utils/utils';
-import { ExtendedRecipe, PaginationQueryType } from '../../types';
-import { PipelineStage } from 'mongoose';
-
-const aggreagteHelper = (sortOption: string, skip: number, limit: number): PipelineStage[] => {
-  const base: PipelineStage[] = [
-    { $skip: skip }, // Apply pagination AFTER sorting
-    { $limit: limit },
-    { $lookup: { from: "users", localField: "owner", foreignField: "_id", as: "owner" } }, // Fetch owner details
-    { $lookup: { from: "users", localField: "likedBy", foreignField: "_id", as: "likedBy" } }, // Populate likedBy array
-    { $unwind: "$owner" }, // Convert `owner` from an array to a single object
-    { $lookup: { from: "comments", localField: "comments.user", foreignField: "_id", as: "comments.user" } } // Populate comments with user details
-  ];
-
-  if (sortOption === 'popular') {
-    return [
-      { $set: { likeCount: { $size: { $ifNull: ["$likedBy", []] } } } },  // Compute `likeCount` dynamically
-      { $sort: { likeCount: -1, _id: 1 } },
-      ...base
-    ];
-  }
-
-  return [
-    { $sort: { createdAt: -1, _id: -1 } }, // Sort by creation date, field already exists no need for $set
-    ...base
-  ];
-};
 
 /**
- * API handler for fetching paginated and sorted recipes.
+ * API handler for generating recipes based on provided ingredients and dietary preferences.
  * @param req - The Next.js API request object.
  * @param res - The Next.js API response object.
- * @param session - The user session from `apiMiddleware`.
  */
-
 const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) => {
-  try {
-    // Connect to the database
-    await connectDB();
+    try {
+        if (req.method === 'GET') {
+            // Fetch recipes from the database
+            await connectDB();
+            const { page = 1, limit = 12, sortOption = 'recent' } = req.query;
+            const pageNum = parseInt(page as string, 10) || 1;
+            const limitNum = parseInt(limit as string, 10) || 12;
+            let sort: any = { createdAt: -1 };
+            if (sortOption === 'popular') sort = { likedBy: -1 };
+            // You can add more sort options as needed
+            const recipes = await recipeModel.find({})
+                .sort(sort)
+                .skip((pageNum - 1) * limitNum)
+                .limit(limitNum)
+                .lean();
+            const total = await recipeModel.countDocuments({});
+            return res.status(200).json({ recipes, total });
+        }
 
-    const { page, limit, sortOption, skip } = paginationQueryHelper(req.query as unknown as PaginationQueryType)
-    // Execute all queries in parallel using Promise.all()
-    const [allRecipes, popularTags, totalRecipes] = await Promise.all([
-      // Query 1: Fetch sorted & paginated recipes
-      Recipe.aggregate(aggreagteHelper(sortOption, skip, limit)) as unknown as ExtendedRecipe[],
-
-      // Query 2: Compute the most common tags from `tags.tags`
-      Recipe.aggregate([
-        { $unwind: "$tags" }, // Unwind `tags` sub-document first
-        { $unwind: "$tags.tag" }, // Then unwind `tags.tags` array inside it
-        { $group: { _id: "$tags.tag", count: { $sum: 1 } } }, // Count occurrences of each tag
-        { $sort: { count: -1 } }, // Sort tags by frequency (descending)
-        { $limit: 20 } // Get the top 20 most popular tags
-      ]),
-
-      // Query 3: Get total number of recipes for pagination
-      Recipe.countDocuments()
-    ]);
-
-    // Filter results based on user session before responding
-    const filteredRecipes = filterResults(allRecipes, session.user.id);
-
-    res.status(200).json({
-      recipes: filteredRecipes,
-      totalRecipes,
-      totalPages: Math.ceil(totalRecipes / limit),
-      currentPage: page,
-      popularTags
-    });
-
-  } catch (error) {
-    // 🔴 Handle any errors that occur during fetching recipes
-    console.error(error);
-    res.status(500).json({ error: 'Failed to fetch recipes' });
-  }
+        // POST: Generate recipes using OpenAI API
+        const { ingredients, dietaryPreferences } = req.body;
+        if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
+            return res.status(400).json({ error: 'Ingredients are required' });
+        }
+        console.info('Generating recipes from OpenAI...');
+        const response = await generateRecipe(ingredients, dietaryPreferences, session.user.id);
+        res.status(200).json(response);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to process request' });
+    }
 };
 
-// Apply middleware for authentication & allowed methods
-export default apiMiddleware(['GET'], handler);
+export default apiMiddleware(['GET', 'POST'], handler);

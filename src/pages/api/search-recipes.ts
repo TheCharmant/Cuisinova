@@ -22,10 +22,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
         // Connect to the database
         await connectDB();
 
+        // Search by tag, ingredient name, or recipe name
+        const searchQuery = {
+            $or: [
+                { "tags.tag": { $regex: query, $options: "i" } },
+                { "ingredients.name": { $regex: query, $options: "i" } },
+                { name: { $regex: query, $options: "i" } }
+            ]
+        };
+
         // Execute both queries in parallel for efficiency
         const [recipes, popularTags, totalRecipes] = await Promise.all([
             // 🔹 Fetch paginated search results
-            Recipe.find({ "tags.tag": { $regex: `\\b${query}.*`, $options: "i" } })
+            Recipe.find(searchQuery)
                 .populate(['owner', 'likedBy', 'comments.user'])
                 .skip(skip)
                 .limit(limit)
@@ -33,15 +42,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
 
             // 🔹 Fetch `popularTags` from the ENTIRE collection (not just filtered results)
             Recipe.aggregate([
-                { $unwind: "$tags" },
-                { $unwind: "$tags.tag" },
-                { $group: { _id: "$tags.tag", count: { $sum: 1 } } },
+                { $unwind: "$ingredients" },
+                { $group: { _id: "$ingredients.name", count: { $sum: 1 } } },
                 { $sort: { count: -1 } },
                 { $limit: 20 }
             ]),
 
             // 🔹 Get total matching recipes (for pagination)
-            Recipe.countDocuments({ "tags.tag": { $regex: `\\b${query}.*`, $options: "i" } }),
+            Recipe.countDocuments(searchQuery),
         ]);
 
         return res.status(200).json({
