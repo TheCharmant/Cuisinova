@@ -112,17 +112,26 @@ function Navigation({
   };
 
 
-  return recipeCreationData.reachedLimit ? (
-    <LimitReached
-      message="You have reached the maximum number of interactions with our AI services. Please try again later."
-      actionText="Go to Home"
-      fullHeight
-    />
-  ) : (
+  // Defensive checks for undefined/null data
+  if (!recipeCreationData || typeof recipeCreationData !== 'object') {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+  if (recipeCreationData.reachedLimit) {
+    return (
+      <LimitReached
+        message="You have reached the maximum number of interactions with our AI services. Please try again later."
+        actionText="Go to Home"
+        fullHeight
+      />
+    );
+  }
+  const safeGeneratedRecipes = Array.isArray(generatedRecipes) ? generatedRecipes : [];
+  const safeIngredientList = Array.isArray(recipeCreationData.ingredientList) ? recipeCreationData.ingredientList : [];
+  return (
     <div className="min-h-screen bg-gradient-to-br from-brand-50 to-violet-50 p-4 md:p-8 flex justify-center">
-      <div className={`w-full space-y-4 animate-fadeInUp ${generatedRecipes.length ? 'max-w-7xl' : 'max-w-2xl'}`}> 
+      <div className={`w-full space-y-4 animate-fadeInUp ${safeGeneratedRecipes.length ? 'max-w-7xl' : 'max-w-2xl'}`}> 
         <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-violet-600 text-center">Create Recipe</h1>
-        {generatedRecipes.length === 0 ? (
+        {safeGeneratedRecipes.length === 0 ? (
           steps.slice(0, 3).map((title, idx) => (
             <div key={title} className="bg-white shadow rounded-xl border border-violet-100">
               <button
@@ -141,14 +150,14 @@ function Navigation({
                   ) : (
                     <StepComponent
                       step={idx}
-                      ingredientList={recipeCreationData.ingredientList}
+                      ingredientList={safeIngredientList}
                       ingredients={ingredients}
                       updateIngredients={setIngredients}
                       preferences={preferences}
                       updatePreferences={setPreferences}
                       editInputs={() => setStep(0)}
                       handleIngredientSubmit={handleIngredientSubmit}
-                      generatedRecipes={generatedRecipes}
+                      generatedRecipes={safeGeneratedRecipes}
                     />
                   )}
                 </div>
@@ -164,7 +173,7 @@ function Navigation({
                   dietaryPreference={preferences}
                   onSubmit={() => {}}
                   onEdit={() => {}}
-                  generatedRecipes={generatedRecipes}
+                  generatedRecipes={safeGeneratedRecipes}
                 />
               </div>
             </div>
@@ -173,7 +182,7 @@ function Navigation({
                 <Loading isProgressBar isComplete={isComplete} loadingType={loadingType} />
               ) : (
                 <SelectRecipesComponent
-                  generatedRecipes={generatedRecipes}
+                  generatedRecipes={safeGeneratedRecipes}
                   selectedRecipes={selectedRecipeIds}
                   updateSelectedRecipes={setSelectedRecipeIds}
                   handleRecipeSubmit={handleRecipeSubmit}
