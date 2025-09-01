@@ -84,7 +84,7 @@ export function ActionPopover({ handlers, states, data }: ActionPopoverProps) {
     return (
         <>
             <Popover className="relative">
-                <PopoverButton className={`flex items-center justify-center w-12 h-12 ${handlers.closeDialog ? "mt-3 mr-3" : "ml-auto"} bg-violet-100 rounded-full hover:bg-violet-200 focus:outline-none focus:ring-2 focus:ring-violet-300 active:bg-violet-300 transition-all duration-200 shadow-md`}>
+                <PopoverButton className={`flex items-center justify-center w-10 h-10 ${handlers.closeDialog ? "mt-3 mr-3" : "ml-auto"} bg-violet-100 rounded-full hover:bg-violet-200 focus:outline-none focus:ring-2 focus:ring-violet-300 active:bg-violet-300 transition-all duration-200 shadow-md`}>
                     {data.buttonType}
                 </PopoverButton>
                 <PopoverPanel className="absolute right-0 z-header mt-2 w-56 rounded-xl bg-white shadow-xl ring-1 ring-violet-200 border border-violet-100">

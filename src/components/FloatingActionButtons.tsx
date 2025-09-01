@@ -51,7 +51,7 @@ const FloatingActionButtons = () => {
         {isVisible && (
           <motion.button
             onClick={scrollToTop}
-            className="bg-cream-100 text-violet-500 w-16 h-16 rounded-full shadow-pastel flex items-center justify-center text-2xl hover:bg-peach-100 hover:text-violet-600 border-2 border-violet-200 backdrop-blur-md kawaii-fab transition-all duration-300"
+            className="bg-cream-100 text-violet-500 w-16 h-16 rounded-full shadow-pastel flex items-center justify-center hover:bg-peach-100 hover:text-violet-600 border-2 border-violet-200 backdrop-blur-md kawaii-fab transition-all duration-300"
             aria-label="Scroll to Top"
             initial={{ opacity: 0, scale: 0, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -61,7 +61,6 @@ const FloatingActionButtons = () => {
             whileTap={{ scale: 0.97 }}
             style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}
           >
-            <span className="mr-1">✨</span>
             <ArrowUpIcon className="h-8 w-8 opacity-80" />
           </motion.button>
         )}

@@ -12,7 +12,7 @@ import ErrorPage from "./auth/error";
 import { call_api } from "../utils/utils";
 
 const getThumbsup = ({ liked, owns }: { liked: boolean, owns: boolean }) => {
-    const baseClass = "size-8";
+    const baseClass = "size-6";
     if (owns) {
         return <HandThumbUpSolid className={`${baseClass} text-gray-500`} />;
     }
@@ -107,7 +107,7 @@ export default function RecipeDetail() {
                         }}
                         data={{
                             recipe: recipeData,
-                            buttonType: <EllipsisHorizontalIcon className="h-6 w-6 text-gray-700" />
+                            buttonType: <EllipsisHorizontalIcon className="h-5 w-5 text-gray-700" />
                         }}
 
                     />
@@ -167,7 +167,7 @@ export default function RecipeDetail() {
 
                     {/* Liked By Section */}
                     <button
-                        className="w-16 h-16 mb-3 hover:text-peach-500 hover:scale-110 hover:shadow-pastel rounded-full flex items-center justify-center bg-white border-2 border-peach-100 kawaii-fab transition-all duration-300"
+                        className="w-12 h-12 mb-3 ml-4 hover:text-peach-500 hover:scale-110 hover:shadow-pastel rounded-full flex items-center justify-center bg-white border-2 border-peach-100 kawaii-fab transition-all duration-300"
                         onClick={() => handleRecipeLike(recipeData._id)}
                         disabled={recipeData.owns}
                         data-testid="like_button"

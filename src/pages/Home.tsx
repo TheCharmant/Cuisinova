@@ -135,10 +135,10 @@ const Home = () => {
                 variants={itemVariants}
             >
                 <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-brand-500 to-violet-600 text-transparent bg-clip-text font-display">
-                    Discover Delicious Recipes
+                    CUISINOVA
                 </h1>
                 <p className="text-lg md:text-xl text-violet-700 max-w-2xl mx-auto">
-                    Find the perfect recipe for any occasion with our smart recipe generator
+                    Discover food ideas for every craving — meals, treats, and more, powered by AI
                 </p>
             </motion.div>
             
