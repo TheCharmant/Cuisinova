@@ -5,6 +5,7 @@ import Header from './Header';
 import Hero from '../pages/Hero';
 import Loading from './Loading'
 import ErrorPage from '../pages/auth/error';
+import AnimatedBackground from './AnimatedBackground';
 import { motion, AnimatePresence, cubicBezier } from 'framer-motion';
 
 /* Note all components will be wrapped in this component which in turn is rendered by _app.tsx */
@@ -63,12 +64,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   if (session) {
     return (
-      <div className="flex flex-col min-h-screen bg-gradient-to-br from-brand-50 to-violet-50">
+      <div className="flex flex-col min-h-screen relative">
+        <AnimatedBackground />
         <Header user={session.user} />
         <AnimatePresence mode="wait">
-          <motion.main 
+          <motion.main
             key={router.pathname}
-            className="flex-grow w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-6"
+            className="flex-grow w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative z-10"
             initial="initial"
             animate="animate"
             exit="exit"

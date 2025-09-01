@@ -34,7 +34,7 @@ const FloatingActionButtons = () => {
       {/* "Create Recipe" Button (Always Visible) */}
       <motion.button
         onClick={() => router.push('/CreateRecipe')}
-        className="bg-gradient-to-br from-peach-300 via-brand-300 to-violet-300 text-white w-20 h-20 rounded-full shadow-pastel flex items-center justify-center text-3xl border-4 border-peach-100 kawaii-fab transition-all duration-300 hover:shadow-xl"
+        className="bg-gradient-to-br from-peach-300 via-brand-300 to-violet-300 text-white w-20 h-20 rounded-full shadow-pastel flex items-center justify-center text-4xl border-4 border-peach-100 kawaii-fab transition-all duration-300 hover:shadow-xl"
         aria-label="Create Recipe"
         whileHover={{ scale: 1.13, rotate: 6 }}
         whileTap={{ scale: 0.97 }}
@@ -43,8 +43,7 @@ const FloatingActionButtons = () => {
         transition={{ type: "spring", stiffness: 400, damping: 15 }}
         style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}
       >
-        <span className="mr-1">🍳</span>
-        <PlusIcon className="h-9 w-9 opacity-80" />
+        🍳
       </motion.button>
 
       {/* Scroll to Top Button (Appears on Scroll) */}

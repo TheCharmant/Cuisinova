@@ -45,7 +45,7 @@ function Profile({ profileData }: ProfileProps) {
     return (
         <div className="flex flex-col min-h-screen items-center bg-gradient-to-br from-cream-100 via-peach-100 to-violet-100 px-4 py-12 relative overflow-x-hidden">
             {/* Kawaii sparkles accent */}
-            <span className="absolute left-10 top-10 text-4xl opacity-50 animate-bounceSparkle select-none pointer-events-none">2728</span>
+            <span className="absolute left-10 top-10 text-4xl opacity-50 animate-bounceSparkle select-none pointer-events-none">✨</span>
             {/* Show banner only if user has recipes */}
             <ProfileStickyBanner userHasRecipes={latestRecipes?.filter?.(r => r.owns)?.length !== 0} />
             <ProfileInformation

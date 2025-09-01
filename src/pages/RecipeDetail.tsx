@@ -173,7 +173,7 @@ export default function RecipeDetail() {
                         data-testid="like_button"
                         style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}
                     >
-                        <span className="mr-1 text-2xl">💖</span>{getThumbsup(recipeData)}
+                        {getThumbsup(recipeData)}
                     </button>
                     {/* Thumbs up icon */}
                     <div className="flex items-center mt-4">

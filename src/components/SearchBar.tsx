@@ -79,7 +79,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         aria-label="Search"
         style={{ fontFamily: 'Pacifico, cursive' }}
       >
-        <span className="mr-1">🍑</span>Search
+        Search
       </button>
     </div>
   );

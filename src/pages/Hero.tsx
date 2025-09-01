@@ -8,6 +8,7 @@ import Product from '../components/Hero_Sections/Product';
 import Features from '../components/Hero_Sections/Features';
 import Landing from '../components/Hero_Sections/Landing';
 import ErrorPage from './auth/error';
+import AnimatedBackground from '../components/AnimatedBackground';
 import React from 'react';
 
 // Navigation links for the header
@@ -84,12 +85,11 @@ export default function Hero() {
     if (session) return <ErrorPage message='Inaccessible Page' />;
 
     return (
-        <div className="bg-gradient-to-br from-cream-100 via-peach-100 to-violet-100 min-h-screen relative overflow-x-hidden">
-            {/* Kawaii sparkles accent */}
-            <span className="absolute left-10 top-10 text-4xl opacity-50 animate-bounceSparkle select-none pointer-events-none">✨</span>
+        <div className="min-h-screen relative overflow-x-hidden">
+            <AnimatedBackground />
             {/* Header section */}
             <header className="absolute inset-x-0 top-0 z-header">
-                <nav className="flex items-center justify-between p-6 lg:px-8 bg-cream-100/90 backdrop-blur-md shadow-pastel border-b-2 border-peach-100" aria-label="Global" style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}>
+                <nav className="flex items-center justify-between p-6 lg:px-8 bg-white/20 backdrop-blur-md shadow-pastel border-b-2 border-white/30" aria-label="Global" style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}>
                     <div className="flex lg:flex-1">
                         <a href="#" className="-m-1.5 p-1.5">
                             <span className="sr-only">Smart Recipe Generator</span>
@@ -139,7 +139,7 @@ export default function Hero() {
             {/* Mobile menu dialog */}
             <Dialog as="div" className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
                 <div className="fixed inset-0 z-modal" />
-                <DialogPanel className="fixed inset-y-0 right-0 z-modal-top w-full overflow-y-auto bg-cream-100/95 backdrop-blur-md px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-peach-100 shadow-pastel">
+                <DialogPanel className="fixed inset-y-0 right-0 z-modal-top w-full overflow-y-auto bg-white/20 backdrop-blur-md px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-white/30 shadow-pastel">
                     <div className="flex items-center justify-between">
                         <a href="#" className="-m-1.5 p-1.5">
                             <span className="sr-only">Smart Recipe Generator</span>
