@@ -86,9 +86,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
                     suggested: Array.isArray(parsedResponse.possibleVariations) ? parsedResponse.possibleVariations : []
                 });
             } else {
-                // Respond with error if ingredient already exists
+                // Return existing ingredient if it already exists
                 return res.status(200).json({
-                    message: 'Error: This ingredient already exists'
+                    message: 'Success',
+                    newIngredient: ingredientExists,
+                    suggested: Array.isArray(parsedResponse.possibleVariations) ? parsedResponse.possibleVariations : []
                 });
             }
         } else {

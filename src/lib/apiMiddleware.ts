@@ -17,8 +17,14 @@ export function apiMiddleware(allowedMethods: string[], handler: (req: NextApiRe
             }
 
             // Authenticate the user
+            console.log('Getting server session...');
             const session = await getServerSession(req, res, authOptions);
+            console.log('Session retrieved:', session ? 'Valid session' : 'No session');
+            if (session?.user) {
+                console.log('Session user ID:', session.user.id);
+            }
             if (!session) {
+                console.log('No session found, returning 401');
                 return res.status(401).json({ error: 'You must be logged in.' });
             }
 

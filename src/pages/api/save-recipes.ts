@@ -30,8 +30,20 @@ const getS3Link = (uploadResults: UploadReturnType[] | null, location: string) =
  */
 const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) => {
     try {
+        console.log('Save recipes API called');
+        console.log('Session:', session ? 'Session exists' : 'No session');
+        console.log('Session user:', session?.user ? 'User exists' : 'No user');
+        console.log('Session user ID:', session?.user?.id);
+
         // Extract recipes from the request body
         const { recipes } = req.body;
+        console.log('Recipes received:', recipes?.length || 0);
+
+        if (!session?.user?.id) {
+            console.error('No valid session or user ID found');
+            return res.status(401).json({ error: 'Invalid session or user ID' });
+        }
+
         const recipeNames = recipes.map(({ name, ingredients }: Recipe) => ({ name, ingredients }));
 
         // Generate images using OpenAI
@@ -62,9 +74,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
         console.info('updatedRecipes:', JSON.stringify(updatedRecipes, null, 2));
 
         // Connect to MongoDB and save recipes
+        console.log('Connecting to database...');
         await connectDB();
+        console.log('Database connected, saving recipes...');
         const savedRecipes = await recipe.insertMany(updatedRecipes);
         console.info(`Successfully saved ${recipes.length} recipes to MongoDB`);
+        console.log('Saved recipes IDs:', savedRecipes.map(r => r._id));
 
         // Run `generateRecipeTags` asynchronously in the background
         savedRecipes.forEach((r) => {
