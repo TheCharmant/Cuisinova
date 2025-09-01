@@ -12,7 +12,7 @@
 
 ![Cuisinova: AI Recipe Generator Demo](./public/demo.gif)
 
-🌐 **[Live Demo →](https://smart-recipe-generator.vercel.app/)**
+🌐 **[Live Demo →](https://cuisinova.vercel.app/)**
 
 ---
 

@@ -39,7 +39,7 @@ function useActionPopover(recipe: ExtendedRecipe | null, updateRecipe: (audioLin
     const handleCopy = async () => {
         try {
             await navigator.clipboard.writeText(
-                `${process.env.NEXT_PUBLIC_API_BASE_URL}/RecipeDetail?recipeId=${recipe?._id}`
+                `${window.location.origin}/RecipeDetail?recipeId=${recipe?._id}`
             );
             setLinkCopied(true);
             setTimeout(() => setLinkCopied(false), 2000);

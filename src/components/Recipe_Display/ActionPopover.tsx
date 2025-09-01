@@ -49,7 +49,7 @@ export function ActionPopover({ handlers, states, data }: ActionPopoverProps) {
         if (!handlers.closeDialog) return;
         handlers.closeDialog()
         window.open(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/RecipeDetail?recipeId=${data.recipe._id}`,
+            `${window.location.origin}/RecipeDetail?recipeId=${data.recipe._id}`,
             '_blank',
             'noopener,noreferrer'
         )
@@ -107,7 +107,7 @@ export function ActionPopover({ handlers, states, data }: ActionPopoverProps) {
                                 Copy Link
                             </button>
                             <button
-                                className="group flex w-full items-center gap-2 rounded-lg py-2 px-4 text-gray-700 hover:bg-gray-100 focus:bg-gray-100" onClick={() => router.push(`${process.env.NEXT_PUBLIC_API_BASE_URL}/ChatAssistant?recipeId=${data.recipe._id}`)}>
+                                className="group flex w-full items-center gap-2 rounded-lg py-2 px-4 text-gray-700 hover:bg-gray-100 focus:bg-gray-100" onClick={() => router.push(`/ChatAssistant?recipeId=${data.recipe._id}`)}>
                                 <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5 text-gray-500" />
                                 Chat with Assistant
                             </button>

@@ -75,7 +75,7 @@ export default function ChatBox({ recipeId }: Props) {
         <LimitReached
             message="You've reached your usage limit for AI-powered features, including the chat assistant. To continue exploring this recipe, return to the recipe page."
             actionText="Back to Recipe"
-            onAction={() => router.push(`${process.env.NEXT_PUBLIC_API_BASE_URL}/RecipeDetail?recipeId=${recipeId}`)}
+            onAction={() => router.push(`/RecipeDetail?recipeId=${recipeId}`)}
         />
     );
     return (
