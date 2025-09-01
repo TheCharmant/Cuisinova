@@ -5,7 +5,7 @@ import Header from './Header';
 import Hero from '../pages/Hero';
 import Loading from './Loading'
 import ErrorPage from '../pages/auth/error';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, cubicBezier } from 'framer-motion';
 
 /* Note all components will be wrapped in this component which in turn is rendered by _app.tsx */
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -24,7 +24,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       y: 0,
       transition: {
         duration: 0.5,
-        ease: [0.22, 1, 0.36, 1]
+        ease: cubicBezier(0.22, 1, 0.36, 1)
       }
     },
     exit: {

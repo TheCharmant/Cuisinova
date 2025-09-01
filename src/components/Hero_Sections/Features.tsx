@@ -96,13 +96,14 @@ export default function Features({ resetPage }: { resetPage: () => void }) {
               variants={itemVariants}
               whileHover={{ scale: 1.02 }}
             >
-              <img
+              <Image
                 src="/demo.gif"
                 alt="Smart Recipe Generator demo"
                 width={500}
                 height={350}
                 className="w-full h-auto"
                 style={{ display: 'block' }}
+                priority
               />
             </motion.div>
           </motion.div>

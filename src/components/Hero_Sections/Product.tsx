@@ -121,13 +121,14 @@ export default function Product({ resetPage }: { resetPage: () => void }) {
           variants={itemVariants}
           whileHover={{ scale: 1.02 }}
         >
-          <img
+          <Image
             src="/demo.gif"
             alt="Smart Recipe Generator demo"
             width={600}
             height={400}
             className="w-full h-auto"
             style={{ display: 'block', background: '#fff', borderRadius: '1.5rem' }}
+            priority
           />
           <motion.div 
             className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"
