@@ -138,7 +138,7 @@ const Home = () => {
                     CUISINOVA
                 </h1>
                 <p className="text-lg md:text-xl text-violet-700 max-w-2xl mx-auto">
-                    Discover food ideas for every craving — meals, treats, and more, powered by AI
+                    Discover flavors for every mood — cozy meals, sweet snacks, and tasty sips made easy with AI
                 </p>
             </motion.div>
             
