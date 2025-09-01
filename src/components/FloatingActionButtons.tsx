@@ -29,18 +29,22 @@ const FloatingActionButtons = () => {
 
   return (
     <div className="fixed bottom-8 right-8 flex flex-col items-end space-y-4 z-50">
+      {/* Kawaii sparkles accent */}
+      <span className="absolute -top-6 right-2 text-2xl opacity-60 animate-bounceSparkle select-none pointer-events-none">✨</span>
       {/* "Create Recipe" Button (Always Visible) */}
       <motion.button
         onClick={() => router.push('/CreateRecipe')}
-        className="bg-gradient-to-r from-brand-500 to-violet-500 text-white w-16 h-16 rounded-full shadow-xl flex items-center justify-center text-2xl transition-all duration-300"
+        className="bg-gradient-to-br from-peach-300 via-brand-300 to-violet-300 text-white w-20 h-20 rounded-full shadow-pastel flex items-center justify-center text-3xl border-4 border-peach-100 kawaii-fab transition-all duration-300 hover:shadow-xl"
         aria-label="Create Recipe"
-        whileHover={{ scale: 1.1, boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1)' }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.13, rotate: 6 }}
+        whileTap={{ scale: 0.97 }}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 400, damping: 15 }}
+        style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}
       >
-        <PlusIcon className="h-8 w-8" />
+        <span className="mr-1">🍳</span>
+        <PlusIcon className="h-9 w-9 opacity-80" />
       </motion.button>
 
       {/* Scroll to Top Button (Appears on Scroll) */}
@@ -48,16 +52,18 @@ const FloatingActionButtons = () => {
         {isVisible && (
           <motion.button
             onClick={scrollToTop}
-            className="bg-white text-violet-500 w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-xl hover:bg-violet-50 hover:text-violet-600 border border-violet-200 backdrop-blur-sm"
+            className="bg-cream-100 text-violet-500 w-16 h-16 rounded-full shadow-pastel flex items-center justify-center text-2xl hover:bg-peach-100 hover:text-violet-600 border-2 border-violet-200 backdrop-blur-md kawaii-fab transition-all duration-300"
             aria-label="Scroll to Top"
             initial={{ opacity: 0, scale: 0, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0 }}
             transition={{ type: "spring", stiffness: 500, damping: 15 }}
-            whileHover={{ scale: 1.1, boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.13, rotate: -6 }}
+            whileTap={{ scale: 0.97 }}
+            style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}
           >
-            <ArrowUpIcon className="h-7 w-7" />
+            <span className="mr-1">✨</span>
+            <ArrowUpIcon className="h-8 w-8 opacity-80" />
           </motion.button>
         )}
       </AnimatePresence>

@@ -16,13 +16,13 @@ const navigation = [
         name: 'Home', 
         route: '/Home', 
         icon: HomeIcon,
-        style: 'text-white hover:bg-white/10 hover:text-white' 
+        style: 'bg-cream-100 text-brand-600 hover:bg-peach-100 hover:text-violet-600 shadow-pastel',
     },
     { 
         name: 'Create Recipes', 
         route: '/CreateRecipe', 
         icon: PlusCircleIcon,
-        style: 'bg-white/90 text-brand-600 px-4 py-2 rounded-full shadow-lg hover:bg-white hover:shadow-xl transition-all' 
+        style: 'bg-peach-100 text-violet-600 px-4 py-2 rounded-full shadow-pastel hover:bg-peach-200 hover:shadow-lg',
     },
 ]
 
@@ -52,7 +52,7 @@ function Header({ user }: HeaderProps) {
 
     if (!user) return null;
     return (
-        <Disclosure as="nav" className="sticky top-0 z-header bg-gradient-to-r from-brand-700 to-violet-700 shadow-xl backdrop-blur-sm bg-opacity-90" style={{ scrollbarGutter: 'stable' }}>
+    <Disclosure as="nav" className="sticky top-0 z-header bg-gradient-to-r from-cream-100 via-peach-100 to-violet-100 shadow-pastel backdrop-blur-md bg-opacity-95 border-b-2 border-peach-100" style={{ scrollbarGutter: 'stable', fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}>
             {({ open }) => (
                 <>
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -64,11 +64,11 @@ function Header({ user }: HeaderProps) {
                                     whileTap={{ scale: 0.95 }}
                                 >
                                     <Image
-                                        src="/favicon.ico"
-                                        alt="logo"
+                                        src="/cuisinova-logo.png"
+                                        alt="Cuisinova Logo"
                                         width={50}
                                         height={50}
-                                        className="rounded-full"
+                                        className="rounded-full border-4 border-peach-200 shadow-pastel"
                                         priority
                                     />
                                 </motion.div>
@@ -79,16 +79,17 @@ function Header({ user }: HeaderProps) {
                                                 key={item.name}
                                                 className={classNames(
                                                     item.route === router.pathname
-                                                        ? 'bg-white/90 text-brand-600 font-bold shadow-lg'
+                                                        ? 'bg-white/90 text-brand-600 font-bold shadow-lg ring-2 ring-peach-200'
                                                         : item.style,
-                                                    'rounded-full px-5 py-2.5 text-sm font-medium flex items-center gap-2 transition-all duration-300',
+                                                    'rounded-full px-5 py-2.5 text-base font-bold flex items-center gap-2 transition-all duration-300 kawaii-nav',
                                                 )}
                                                 aria-current={item.route === router.pathname ? 'page' : undefined}
                                                 onClick={() => handleNavigation(item)}
-                                                whileHover={{ scale: 1.05 }}
-                                                whileTap={{ scale: 0.95 }}
+                                                whileHover={{ scale: 1.08, rotate: 2 }}
+                                                whileTap={{ scale: 0.96 }}
+                                                style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}
                                             >
-                                                <item.icon className="h-5 w-5" />
+                                                <item.icon className="h-5 w-5 opacity-70" />
                                                 {item.name}
                                             </motion.button>
                                         ))}
@@ -161,14 +162,15 @@ function Header({ user }: HeaderProps) {
                                     <DisclosureButton
                                         className={classNames(
                                             item.route === router.pathname 
-                                                ? 'bg-white/90 text-brand-600 shadow-md' 
-                                                : 'text-white hover:bg-white/10',
-                                            'flex items-center gap-3 w-full rounded-xl px-4 py-3 text-base font-medium transition-all duration-300',
+                                                ? 'bg-white/90 text-brand-600 shadow-md ring-2 ring-peach-200' 
+                                                : 'bg-cream-100 text-violet-600 hover:bg-peach-100',
+                                            'flex items-center gap-3 w-full rounded-xl px-4 py-3 text-base font-bold transition-all duration-300 kawaii-nav',
                                         )}
                                         aria-current={item.route === router.pathname ? 'page' : undefined}
                                         onClick={() => handleNavigation(item)}
+                                        style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}
                                     >
-                                        <item.icon className="h-5 w-5" />
+                                        <item.icon className="h-5 w-5 opacity-70" />
                                         {item.name}
                                     </DisclosureButton>
                                 </motion.div>

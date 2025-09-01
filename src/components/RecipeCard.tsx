@@ -14,7 +14,7 @@ interface RecipeCardProps {
 
 const RecipeCard = ({ recipe, handleRecipeSelection, selectedRecipes, showSwitch, removeMargin }: RecipeCardProps) => {
     const [isExpanded, setIsExpanded] = useState(false);
-    const parentClassName = `max-w-md mx-auto bg-white/95 backdrop-blur-sm shadow-xl rounded-3xl overflow-hidden relative border border-violet-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ${removeMargin ? '' : 'mt-10 mb-5'}`;
+    const parentClassName = `max-w-md mx-auto bg-cream-50/90 backdrop-blur-md shadow-pastel rounded-[2.5rem] overflow-hidden relative border-2 border-peach-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 kawaii-card ${removeMargin ? '' : 'mt-10 mb-5'}`;
 
     return (
         <motion.div 
@@ -26,24 +26,27 @@ const RecipeCard = ({ recipe, handleRecipeSelection, selectedRecipes, showSwitch
             whileHover={{ boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" }}
         >
             <div className="px-8 py-6 relative">
+                {/* Kawaii doodle accent */}
+                <span className="absolute top-3 right-5 text-2xl opacity-40 select-none pointer-events-none">✨</span>
 
                 {/* === Recipe Title and Optional Switch === */}
                 <div className="flex justify-between items-stretch w-full mb-6">
                     {/* Recipe Name - Expandable Only If Switch Exists */}
                     <motion.div
                         className={`font-bold text-lg sm:text-xl lg:text-2xl 
-            ${showSwitch && !isExpanded ? 'truncate max-w-[65%] sm:max-w-[75%] lg:max-w-[85%]' : 'w-full'}
-            ${showSwitch ? 'cursor-pointer' : ''}
-            bg-gradient-to-r from-brand-500 to-violet-500 text-transparent bg-clip-text font-display
-        `}
+                ${showSwitch && !isExpanded ? 'truncate max-w-[65%] sm:max-w-[75%] lg:max-w-[85%]' : 'w-full'}
+                ${showSwitch ? 'cursor-pointer' : ''}
+                bg-gradient-to-r from-brand-500 via-peach-400 to-violet-500 text-transparent bg-clip-text font-display kawaii-heading
+            `}
                         onClick={() => showSwitch && setIsExpanded(!isExpanded)}
                         title={!showSwitch ? recipe.name : ''} // Tooltip for non-switch titles
                         whileHover={showSwitch ? { scale: 1.02 } : {}}
                         initial={{ x: -20, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ delay: 0.1, type: "spring" }}
+                        style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}
                     >
-                        {recipe.name}
+                        <span className="mr-2">🍰</span>{recipe.name}
                     </motion.div>
 
                     {/* Optional Switch to Select Recipe */}
@@ -78,7 +81,7 @@ const RecipeCard = ({ recipe, handleRecipeSelection, selectedRecipes, showSwitch
 
                 {/* === Ingredients Section === */}
                 <motion.h3 
-                    className="text-brand-600 font-semibold text-lg mb-3 font-display"
+                    className="text-brand-600 font-semibold text-lg mb-3 font-display accent-script"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.2 }}
@@ -99,11 +102,11 @@ const RecipeCard = ({ recipe, handleRecipeSelection, selectedRecipes, showSwitch
                             transition={{ delay: 0.1 + (index * 0.03) }}
                         >
                             <motion.span 
-                                className="bg-brand-50 text-brand-600 text-sm font-medium px-4 py-1.5 rounded-full border border-brand-200 shadow-sm"
-                                whileHover={{ scale: 1.05, backgroundColor: "#fef2f2", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)" }}
+                                className="bg-peach-100 text-brand-600 text-sm font-medium px-4 py-1.5 rounded-full border-2 border-peach-200 shadow-pastel flex items-center gap-1 kawaii-chip"
+                                whileHover={{ scale: 1.08, backgroundColor: "#fff7e6", boxShadow: "0 4px 12px 0 rgba(255,179,133,0.10)" }}
                                 whileTap={{ scale: 0.95 }}
                             >
-                                {`${ingredient.name}${ingredient.quantity ? ` (${ingredient.quantity})` : ''}`}
+                                <span className="text-lg">🥕</span>{`${ingredient.name}${ingredient.quantity ? ` (${ingredient.quantity})` : ''}`}
                             </motion.span>
                         </motion.li>
                     ))}
@@ -111,7 +114,7 @@ const RecipeCard = ({ recipe, handleRecipeSelection, selectedRecipes, showSwitch
 
                 {/* === Dietary Preferences === */}
                 <motion.h3 
-                    className="text-violet-600 font-semibold text-lg mb-3 font-display"
+                    className="text-violet-600 font-semibold text-lg mb-3 font-display accent-script"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.4 }}
@@ -127,14 +130,14 @@ const RecipeCard = ({ recipe, handleRecipeSelection, selectedRecipes, showSwitch
                     {recipe.dietaryPreference.map((preference, index) => (
                         <motion.span
                             key={preference}
-                            className="bg-violet-50 text-violet-600 text-sm font-medium px-4 py-1.5 rounded-full border border-violet-200 shadow-sm"
+                            className="bg-violet-100 text-violet-600 text-sm font-medium px-4 py-1.5 rounded-full border-2 border-violet-200 shadow-pastel flex items-center gap-1 kawaii-chip"
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 + (index * 0.03) }}
-                            whileHover={{ scale: 1.05, backgroundColor: "#ede9fe", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)" }}
+                            whileHover={{ scale: 1.08, backgroundColor: "#ede9fe", boxShadow: "0 4px 12px 0 rgba(167,139,250,0.10)" }}
                             whileTap={{ scale: 0.95 }}
                         >
-                            {preference}
+                            <span className="text-lg">💖</span>{preference}
                         </motion.span>
                     ))}
                 </motion.div>

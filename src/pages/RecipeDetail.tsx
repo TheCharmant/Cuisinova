@@ -83,9 +83,11 @@ export default function RecipeDetail() {
     if (!recipeData) return <ErrorPage message="No Recipe Data" />;
 
     return (
-        <div className="min-h-screen bg-gradient-to-r from-brand-50 to-violet-50 p-6 animate-fadeInUp">
+        <div className="min-h-screen bg-gradient-to-br from-cream-100 via-peach-100 to-violet-100 p-6 animate-fadeInUp relative overflow-x-hidden">
+            {/* Kawaii sparkles accent */}
+            <span className="absolute left-10 top-10 text-4xl opacity-50 animate-bounceSparkle select-none pointer-events-none">✨</span>
             {/* Recipe Card */}
-            <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden border border-violet-100 hover:shadow-2xl transition-all duration-300">
+            <div className="max-w-4xl mx-auto bg-gradient-to-br from-peach-100 via-white to-violet-50 shadow-pastel rounded-[2.5rem] overflow-hidden border-2 border-peach-100 hover:shadow-2xl transition-all duration-300 kawaii-card">
                 <RecipeHeader recipeData={recipeData} /> {/* Recipe header with image and title */}
                 <div className="p-6">
                     <ActionPopover
@@ -112,13 +114,13 @@ export default function RecipeDetail() {
                     {/* Ingredients */}
                     <div className="flex flex-col">
                         <div className="mb-4">
-                        <h3 className="mb-2">Ingredients</h3> {/* Section title */}
+                        <h3 className="mb-2 text-xl font-bold accent-script">🍑 Ingredients</h3> {/* Section title */}
                             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2"> {/* Responsive grid layout */}
                                 {recipeData.ingredients.map((ingredient) => (
-                                    <li key={ingredient.name} className="flex items-center"> {/* Ingredient item */}
-                                        <CheckCircleIcon className="w-5 h-5 text-brand-500 mr-2 flex-shrink-0" /> {/* Icon next to ingredient */}
-                                        <span className="text-gray-700">
-                                            {ingredient.name}{ingredient.quantity && ` (${ingredient.quantity})`} {/* Ingredient name and quantity */}
+                                    <li key={ingredient.name} className="flex items-center kawaii-chip"> {/* Ingredient item */}
+                                        <CheckCircleIcon className="w-5 h-5 text-peach-400 mr-2 flex-shrink-0" /> {/* Icon next to ingredient */}
+                                        <span className="text-brand-700 font-medium">
+                                            <span className="mr-1">🥕</span>{ingredient.name}{ingredient.quantity && ` (${ingredient.quantity})`} {/* Ingredient name and quantity */}
                                         </span>
                                     </li>
                                 ))}
@@ -129,12 +131,12 @@ export default function RecipeDetail() {
 
                     {/* Instructions */}
                     <div className="mb-4">
-                        <h3 className="mb-2">Instructions</h3> {/* Section title */}
-                        <ol className="list-decimal list-inside space-y-4"> {/* Ordered list with spacing */}
+                        <h3 className="mb-2 text-xl font-bold accent-script">📝 Instructions</h3> {/* Section title */}
+                        <ol className="list-decimal list-inside space-y-4">
                             {recipeData.instructions.map((step, index) => (
-                                <li key={index} className="flex items-start"> {/* Instruction step */}
-                                    <span className="font-bold text-gray-800 mr-3">{index + 1}.</span> {/* Step number */}
-                                    <p className="text-gray-700">{step}</p> {/* Instruction text */}
+                                <li key={index} className="flex items-start kawaii-bubble bg-peach-100/60 rounded-xl p-3 mb-2 shadow-pastel">
+                                    <span className="font-bold text-peach-500 mr-3 text-lg">{index + 1}.</span>
+                                    <p className="text-brand-700 font-medium"><span className="mr-1">✨</span>{step}</p>
                                 </li>
                             ))}
                         </ol>
@@ -142,51 +144,52 @@ export default function RecipeDetail() {
 
                     {/* Additional Information */}
                     <div className="mb-6">
-                        <h3 className="mb-4 text-gray-800">Additional Information</h3> {/* Section title */}
-                        <div className="space-y-4"> {/* Spacing between info items */}
-                            <div>
-                                <h4 className="font-bold text-gray-700">Tips:</h4> {/* Subsection title */}
-                                <p className="text-gray-600">{recipeData.additionalInformation.tips}</p> {/* Tips content */}
+                        <h3 className="mb-4 text-xl font-bold accent-script">💡 Additional Information</h3> {/* Section title */}
+                        <div className="space-y-4">
+                            <div className="bg-cream-100/80 rounded-xl p-4 shadow-pastel">
+                                <h4 className="font-bold text-peach-500">Tips:</h4>
+                                <p className="text-brand-700">{recipeData.additionalInformation.tips}</p>
                             </div>
-                            <div>
-                                <h4 className="font-bold text-gray-700">Variations:</h4> {/* Subsection title */}
-                                <p className="text-gray-600">{recipeData.additionalInformation.variations}</p> {/* Variations content */}
+                            <div className="bg-cream-100/80 rounded-xl p-4 shadow-pastel">
+                                <h4 className="font-bold text-peach-500">Variations:</h4>
+                                <p className="text-brand-700">{recipeData.additionalInformation.variations}</p>
                             </div>
-                            <div>
-                                <h4 className="font-bold text-gray-700">Serving Suggestions:</h4> {/* Subsection title */}
-                                <p className="text-gray-600">{recipeData.additionalInformation.servingSuggestions}</p> {/* Serving suggestions content */}
+                            <div className="bg-cream-100/80 rounded-xl p-4 shadow-pastel">
+                                <h4 className="font-bold text-peach-500">Serving Suggestions:</h4>
+                                <p className="text-brand-700">{recipeData.additionalInformation.servingSuggestions}</p>
                             </div>
-                            <div>
-                                <h4 className="font-bold text-gray-700">Nutritional Information:</h4> {/* Subsection title */}
-                                <p className="text-gray-600">{recipeData.additionalInformation.nutritionalInformation}</p> {/* Nutritional information content */}
+                            <div className="bg-cream-100/80 rounded-xl p-4 shadow-pastel">
+                                <h4 className="font-bold text-peach-500">Nutritional Information:</h4>
+                                <p className="text-brand-700">{recipeData.additionalInformation.nutritionalInformation}</p>
                             </div>
                         </div>
                     </div>
 
                     {/* Liked By Section */}
                     <button
-                        className="w-14 h-14 mb-3 hover:text-brand-600 hover:scale-105 hover:shadow rounded-full flex items-center justify-center"
+                        className="w-16 h-16 mb-3 hover:text-peach-500 hover:scale-110 hover:shadow-pastel rounded-full flex items-center justify-center bg-white border-2 border-peach-100 kawaii-fab transition-all duration-300"
                         onClick={() => handleRecipeLike(recipeData._id)}
                         disabled={recipeData.owns}
                         data-testid="like_button"
+                        style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}
                     >
-                        {getThumbsup(recipeData)}
+                        <span className="mr-1 text-2xl">💖</span>{getThumbsup(recipeData)}
                     </button>
                     {/* Thumbs up icon */}
-                    <div className="flex items-center">
-                        <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex items-center mt-4">
+                        <div className="flex flex-wrap items-center gap-3">
                             {recipeData.likedBy.map((user, idx) => (
-                                <div key={user._id} className="flex items-center space-x-2"> {/* User item */}
-                                    <div className="relative w-8 h-8 rounded-full overflow-hidden"> {/* User avatar container */}
+                                <div key={user._id} className="flex items-center space-x-2 kawaii-chip bg-peach-100/60 rounded-full px-3 py-1 shadow-pastel">
+                                    <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-peach-200 shadow-pastel">
                                         <Image
-                                            src={user.image} // User's image source
-                                            alt={user.name} // Alt text for accessibility
-                                            fill // Fill the parent container
-                                            style={{ objectFit: 'cover' }} // Ensure the image covers the container
-                                            className="rounded-full" // Make the image circular
+                                            src={user.image}
+                                            alt={user.name}
+                                            fill
+                                            style={{ objectFit: 'cover' }}
+                                            className="rounded-full"
                                         />
                                     </div>
-                                    <span className="text-gray-700"><UserLink name={user.name} userId={user._id}/></span>
+                                    <span className="text-brand-700 font-medium"><UserLink name={user.name} userId={user._id}/></span>
                                 </div>
                             ))}
                         </div>

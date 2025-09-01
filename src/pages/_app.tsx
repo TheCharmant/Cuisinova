@@ -1,3 +1,4 @@
+import '../styles/hide-scrollbar.css';
 import { AppProps } from 'next/app';
 import { SessionProvider } from 'next-auth/react';
 import { useEffect, useState } from 'react';

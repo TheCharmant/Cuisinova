@@ -33,15 +33,36 @@ export default function Hero() {
                 return (
                     <Product resetPage={() => setSelectedPage(null)} />
                 );
-            case 'features':
-                return (
-                    <Features resetPage={() => setSelectedPage(null)} />
-                );
             case 'about':
-                window.open('https://github.com/Dereje1/smart-recipe-generator', '_blank');
-                setSelectedPage(null);
                 return (
-                    <Landing />
+                    <div className="flex flex-col items-center justify-center py-16">
+                        <h1 className="text-4xl font-extrabold bg-gradient-to-r from-brand-500 to-violet-500 bg-clip-text text-transparent font-display mb-2">Meet the Team</h1>
+                        <h2 className="text-2xl font-bold text-peach-400 mb-8">Mocha &amp; Vanilla</h2>
+                        <div className="flex flex-col md:flex-row gap-8 items-center">
+                            {/* CHARYLL */}
+                            <div className="flex flex-col items-center bg-white/80 rounded-2xl shadow-pastel p-8 border-2 border-peach-100 w-80 max-w-xs text-center">
+                                <Image src="/mocha.png" alt="CHARYLL" width={96} height={96} className="w-24 h-24 rounded-full border-4 border-peach-200 shadow-lg mb-3 object-cover" />
+                                <h2 className="text-2xl font-extrabold text-peach-500 mb-1 tracking-wide">CHARYLL</h2>
+                                <div className="text-brand-600 font-semibold mb-2">Full Stack Developer</div>
+                                <ul className="text-xs text-gray-400 text-center space-y-1 px-2 list-disc list-inside font-normal">
+                                    <li>Computer Science student with a passion for AI, cloud systems, and full-stack development.</li>
+                                    <li>Driven to turn ideas into real applications that are both functional and intelligently designed.</li>
+                                    <li>Believes technology should not just work — it should also feel engaging, friendly, and inspiring.</li>
+                                </ul>
+                            </div>
+                            {/* GUI ANN */}
+                            <div className="flex flex-col items-center bg-white/80 rounded-2xl shadow-pastel p-8 border-2 border-peach-100 w-80 max-w-xs text-center">
+                                <Image src="/vanilla.png" alt="GUI ANN" width={96} height={96} className="w-24 h-24 rounded-full border-4 border-violet-200 shadow-lg mb-3 object-cover" />
+                                <h2 className="text-2xl font-extrabold text-violet-500 mb-1 tracking-wide">GUI ANN</h2>
+                                <div className="text-brand-600 font-semibold mb-2">Concept &amp; Design Contributor</div>
+                                <ul className="text-xs text-gray-400 text-center space-y-1 px-2 list-disc list-inside font-normal">
+                                    <li>Provides the creative spark behind CUISINOVA’s concept and aesthetic direction.</li>
+                                    <li>Focuses on shaping user-friendly designs that blend playfulness with usability.</li>
+                                    <li>Ensures the app feels warm, approachable, and aligned with the vision of making cooking fun.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 );
             default:
                 return (
@@ -50,36 +71,34 @@ export default function Hero() {
         }
     };
 
-    // Ensures the user does not navigate to the sign-in page if a valid session exists.
-    // If a session is already active, it updates the client state instead of prompting sign-in.
-    // Otherwise, it initiates the sign-in process.
-
+    // Async sign-in handler (must be top-level, not inside renderContent)
     const onAuthenticate = async () => {
-        const sessionIsValid = await getSession()
+        const sessionIsValid = await getSession();
         if (!sessionIsValid) {
-            signIn('google')
-            return
+            signIn('google');
+            return;
         }
-        update()
-    }
-
+        update();
+    };
     // If the user is logged in, show the error page
     if (session) return <ErrorPage message='Inaccessible Page' />;
 
     return (
-        <div className="bg-gradient-to-br from-brand-50 to-violet-50">
+        <div className="bg-gradient-to-br from-cream-100 via-peach-100 to-violet-100 min-h-screen relative overflow-x-hidden">
+            {/* Kawaii sparkles accent */}
+            <span className="absolute left-10 top-10 text-4xl opacity-50 animate-bounceSparkle select-none pointer-events-none">✨</span>
             {/* Header section */}
             <header className="absolute inset-x-0 top-0 z-header">
-                <nav className="flex items-center justify-between p-6 lg:px-8 bg-white/80 backdrop-blur-md shadow-lg border-b border-white/20" aria-label="Global">
+                <nav className="flex items-center justify-between p-6 lg:px-8 bg-cream-100/90 backdrop-blur-md shadow-pastel border-b-2 border-peach-100" aria-label="Global" style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}>
                     <div className="flex lg:flex-1">
                         <a href="#" className="-m-1.5 p-1.5">
                             <span className="sr-only">Smart Recipe Generator</span>
                             <Image 
-                                src="/logo.svg" 
-                                alt="Smart Recipe Generator Logo" 
+                                src="/cuisinova-logo.png" 
+                                alt="Cuisinova Logo" 
                                 width={75} 
                                 height={75} 
-                                className="drop-shadow-lg"
+                                className="drop-shadow-lg border-4 border-peach-200 rounded-full bg-white"
                             />
                         </a>
                     </div>
@@ -98,18 +117,20 @@ export default function Hero() {
                             <button
                                 key={item.key}
                                 onClick={() => setSelectedPage(item.key)}
-                                className={`text-base font-semibold leading-6 px-4 py-2 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 ${selectedPage === item.key ? 'text-white bg-gradient-to-r from-brand-500 to-violet-500 shadow-md' : 'text-gray-700 hover:text-brand-600'}`}
+                                className={`text-lg font-bold leading-6 px-6 py-2 rounded-full transition-all duration-300 kawaii-nav hover:scale-110 active:scale-95 ${selectedPage === item.key ? 'text-violet-700 bg-gradient-to-r from-peach-300 via-brand-300 to-violet-300 shadow-pastel ring-2 ring-peach-200' : 'text-brand-600 bg-white/80 border-2 border-peach-100 hover:bg-peach-100 hover:text-violet-600 hover:shadow-lg'}`}
+                                style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}
                             >
-                                {item.name}
+                                <span className="mr-1">{index === 0 ? '🍰' : index === 1 ? '✨' : '💖'}</span>{item.name}
                             </button>
                         ))}
                     </div>
                     <div className="hidden lg:flex lg:flex-1 lg:justify-end">
                         <button
                             onClick={onAuthenticate}
-                            className="text-base font-semibold leading-6 text-white bg-gradient-to-r from-brand-500 to-violet-500 hover:from-brand-600 hover:to-violet-600 px-6 py-2 rounded-full shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-300"
+                            className="text-xl font-bold leading-6 text-white bg-gradient-to-r from-peach-300 via-brand-400 to-violet-400 hover:from-peach-400 hover:to-violet-500 px-8 py-3 rounded-full shadow-pastel hover:shadow-xl hover:scale-110 active:scale-95 transition-all duration-300 accent-script"
+                            style={{ fontFamily: 'Pacifico, cursive' }}
                         >
-                            Log in <span aria-hidden="true">&rarr;</span>
+                            <span className="mr-2">💖</span>Get Cooking! <span aria-hidden="true">&rarr;</span>
                         </button>
                     </div>
                 </nav>
@@ -118,13 +139,13 @@ export default function Hero() {
             {/* Mobile menu dialog */}
             <Dialog as="div" className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
                 <div className="fixed inset-0 z-modal" />
-                <DialogPanel className="fixed inset-y-0 right-0 z-modal-top w-full overflow-y-auto bg-white/95 backdrop-blur-md px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 shadow-2xl">
+                <DialogPanel className="fixed inset-y-0 right-0 z-modal-top w-full overflow-y-auto bg-cream-100/95 backdrop-blur-md px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-peach-100 shadow-pastel">
                     <div className="flex items-center justify-between">
                         <a href="#" className="-m-1.5 p-1.5">
                             <span className="sr-only">Smart Recipe Generator</span>
                             <Image
-                                src="/logo.svg"
-                                alt="Smart Recipe Generator Logo"
+                                src="/cuisinova-logo.png"
+                                alt="Cuisinova Logo"
                                 width={50}
                                 height={50}
                                 className="drop-shadow-md"
@@ -149,7 +170,8 @@ export default function Hero() {
                                             setSelectedPage(item.key);
                                             setMobileMenuOpen(false);
                                         }}
-                                        className={`-mx-3 block w-full rounded-lg px-3 py-2 text-base font-semibold leading-7 hover:scale-105 active:scale-95 transition-all ${selectedPage === item.key ? 'text-white bg-gradient-to-r from-brand-500 to-violet-500' : 'text-gray-700 hover:bg-gray-50'}`}
+                                        className={`-mx-3 block w-full rounded-lg px-3 py-2 text-lg font-bold leading-7 hover:scale-110 active:scale-95 transition-all kawaii-nav ${selectedPage === item.key ? 'text-violet-700 bg-gradient-to-r from-peach-300 via-brand-300 to-violet-300 ring-2 ring-peach-200 shadow-pastel' : 'text-brand-600 bg-white/80 border-2 border-peach-100 hover:bg-peach-100 hover:text-violet-600 hover:shadow-lg'}`}
+                                        style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}
                                     >
                                         {item.name}
                                     </button>
@@ -161,9 +183,10 @@ export default function Hero() {
                                         onAuthenticate();
                                         setMobileMenuOpen(false);
                                     }}
-                                    className="-mx-3 block w-full rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white bg-gradient-to-r from-brand-500 to-violet-500 hover:from-brand-600 hover:to-violet-600 hover:scale-105 active:scale-95 transition-all"
+                                    className="-mx-3 block w-full rounded-lg px-3 py-2.5 text-xl font-bold leading-7 text-white bg-gradient-to-r from-peach-300 via-brand-400 to-violet-400 hover:from-peach-400 hover:to-violet-500 hover:scale-110 active:scale-95 transition-all accent-script"
+                                    style={{ fontFamily: 'Pacifico, cursive' }}
                                 >
-                                    Log in
+                                    <span className="mr-2">💖</span>Get Cooking!
                                 </button>
                             </div>
                         </div>
@@ -172,8 +195,9 @@ export default function Hero() {
             </Dialog>
 
             {/* Main content */}
-            <div className="relative isolate px-6 pt-14 lg:px-8">
-                <div className="mx-auto max-w-7xl py-32 sm:py-48 lg:py-56">
+            <div className="relative isolate px-4 pt-6 lg:px-6">
+                <div className="mx-auto max-w-7xl py-10 sm:py-16 lg:py-20 flex flex-col items-center justify-center">
+                    {/* No hero illustration, just content below */}
                     {renderContent()}
                 </div>
             </div>

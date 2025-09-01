@@ -33,7 +33,9 @@ function Profile({ profileData }: ProfileProps) {
         return view;
     }
     return (
-        <div className="flex flex-col min-h-screen items-center bg-gradient-to-br from-brand-50 to-violet-50 px-4 py-8">
+        <div className="flex flex-col min-h-screen items-center bg-gradient-to-br from-cream-100 via-peach-100 to-violet-100 px-4 py-12 relative overflow-x-hidden">
+            {/* Kawaii sparkles accent */}
+            <span className="absolute left-10 top-10 text-4xl opacity-50 animate-bounceSparkle select-none pointer-events-none">✨</span>
             {/* Show banner only if user has no recipes */}
             <ProfileStickyBanner userHasRecipes={latestRecipes.filter(r => r.owns).length !== 0} />
             <ProfileInformation
@@ -42,7 +44,13 @@ function Profile({ profileData }: ProfileProps) {
                 selectedDisplay={displaySetting}
                 AIusage={profileData.AIusage}
             />
-            <ViewRecipes recipes={handleDisplaySetting()} handleRecipeListUpdate={handleRecipeListUpdate} />
+            {/* Polaroid-style recipe cards with preview dialog */}
+            <div className="w-full max-w-5xl mt-8">
+                <ViewRecipes
+                    recipes={handleDisplaySetting()}
+                    handleRecipeListUpdate={handleRecipeListUpdate}
+                />
+            </div>
         </div>
     )
 }

@@ -87,25 +87,29 @@ export default function Features({ resetPage }: { resetPage: () => void }) {
           className="flex gap-4"
           variants={itemVariants}
         >
-          <motion.button
-            className="w-fit rounded-full bg-gradient-to-r from-brand-500 to-violet-500 px-6 py-3 text-base font-semibold text-white shadow-lg border border-white/20 backdrop-blur-sm font-display"
-            onClick={() => signIn('google')}
-            whileHover={{ 
-              scale: 1.05, 
-              boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" 
-            }}
-            whileTap={{ scale: 0.95 }}
+          <motion.div 
+            className="md:w-1/2 flex items-center justify-center"
+            variants={containerVariants}
           >
-            Get started
-          </motion.button>
+            <motion.div
+              className="relative overflow-hidden rounded-3xl shadow-2xl border-4 border-white/80"
+              variants={itemVariants}
+              whileHover={{ scale: 1.02 }}
+            >
+              <img
+                src="/demo.gif"
+                alt="Smart Recipe Generator demo"
+                width={500}
+                height={350}
+                className="w-full h-auto"
+                style={{ display: 'block' }}
+              />
+            </motion.div>
+          </motion.div>
           <motion.button
-            className="w-fit rounded-full bg-white/90 backdrop-blur-sm px-6 py-3 text-base font-semibold text-violet-600 border border-violet-200 shadow-md font-display"
+            className="rounded-full bg-gradient-to-r from-brand-500 to-violet-500 px-6 py-3 text-base font-semibold text-white shadow-lg border border-white/20 backdrop-blur-sm font-display"
             onClick={resetPage}
-            whileHover={{ 
-              scale: 1.05, 
-              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-              borderColor: "rgba(139, 92, 246, 0.5)" 
-            }}
+            variants={itemVariants}
             whileTap={{ scale: 0.95 }}
           >
             Back to Home
