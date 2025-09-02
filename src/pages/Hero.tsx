@@ -55,11 +55,12 @@ export default function Hero() {
                             <div className="flex flex-col items-center bg-white/80 rounded-2xl shadow-pastel p-8 border-2 border-peach-100 w-80 max-w-xs text-center">
                                 <Image src="/vanilla.png" alt="GUI ANN" width={96} height={96} className="w-24 h-24 rounded-full border-4 border-violet-200 shadow-lg mb-3 object-cover" />
                                 <h2 className="text-2xl font-extrabold text-violet-500 mb-1 tracking-wide">GUI ANN</h2>
-                                <div className="text-brand-600 font-semibold mb-2">Concept &amp; Design Contributor</div>
+                                <div className="text-brand-600 font-semibold mb-2">Concept &amp; Design Lead</div>
                                 <ul className="text-xs text-gray-400 text-center space-y-1 px-2 list-disc list-inside font-normal">
-                                    <li>Provides the creative spark behind CUISINOVA’s concept and aesthetic direction.</li>
-                                    <li>Focuses on shaping user-friendly designs that blend playfulness with usability.</li>
-                                    <li>Ensures the app feels warm, approachable, and aligned with the vision of making cooking fun.</li>
+                                    <li>Concept and design enthusiast with a talent for turning ideas into engaging user experiences.</li>
+                                    <li>Dedicated to crafting interfaces that blend creativity, playfulness, and everyday usability.</li>
+                                    <li>Believes design should not only look beautiful but also feel warm, intuitive, and inspiring.</li>
+
                                 </ul>
                             </div>
                         </div>
