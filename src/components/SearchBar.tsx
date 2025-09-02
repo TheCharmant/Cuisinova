@@ -24,6 +24,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   const handleClear = () => {
     setSearchVal('');
+    handleSearch();
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -52,7 +53,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
         ref={inputRef}
         type="text"
         value={searchVal}
-        onChange={(e) => setSearchVal(e.target.value)}
+        onChange={(e) => {
+          setSearchVal(e.target.value);
+          handleSearch();
+        }}
         onKeyDown={handleKeyDown}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
