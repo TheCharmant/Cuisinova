@@ -2,30 +2,31 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { call_api, playAudio } from '../../utils/utils';
 import { ExtendedRecipe } from '../../types';
+import { useAudio } from '../../contexts/AudioContext';
 
 function useActionPopover(recipe: ExtendedRecipe | null, updateRecipe: (audioLink: string) => void) {
     const [linkCopied, setLinkCopied] = useState(false);
-    const [isLoadingAudio, setIsLoadingAudio] = useState(false);
-    const [isPlayingAudio, setIsPlayingAudio] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
     const router = useRouter();
+    const {
+        playRecipe,
+        stopAudio,
+        isLoading: isLoadingAudio,
+        isPlaying: isPlayingAudio,
+        currentRecipe
+    } = useAudio();
 
     useEffect(() => {
         // Stop audio when navigating away
         const handleRouteChange = () => {
-            if (audioRef.current) {
-                audioRef.current.pause();
-                audioRef.current = null;
-                setIsPlayingAudio(false)
-            }
+            stopAudio();
         };
 
         router.events.on('routeChangeStart', handleRouteChange);
         return () => {
             router.events.off('routeChangeStart', handleRouteChange);
         };
-    }, [router.events]);
+    }, [router.events, stopAudio]);
 
     const handleClone = () => {
         router.push({
@@ -51,43 +52,36 @@ function useActionPopover(recipe: ExtendedRecipe | null, updateRecipe: (audioLin
     const handleDeleteDialog = () => setIsDeleteDialogOpen((prevState) => !prevState)
 
 
-    const killAudio = () => {
-        if (audioRef.current) {
-            audioRef.current.pause();
-            audioRef.current = null;
-            setIsPlayingAudio(false);
-            setIsLoadingAudio(false); // Ensure loading state is reset
-        }
-    }
-
     const handlePlayRecipe = async () => {
         try {
-            if (isPlayingAudio) {
-                killAudio()
-                return
-            }
-            setIsLoadingAudio(true);
-            setIsPlayingAudio(true);
-            if (recipe?.audio) {
-                await playAudio(recipe.audio, audioRef, () => {
-                    setIsPlayingAudio(false);
-                });
+            if (!recipe) return;
+
+            // If currently playing this recipe, stop it
+            if (isPlayingAudio && currentRecipe?._id === recipe._id) {
+                stopAudio();
                 return;
             }
 
+            // If recipe has audio, play it directly
+            if (recipe.audio) {
+                await playRecipe(recipe, recipe.audio);
+                return;
+            }
+
+            // Generate audio first
             const response = await call_api({
                 address: '/api/tts',
                 method: 'post',
-                payload: { recipeId: recipe?._id },
+                payload: { recipeId: recipe._id },
             });
-            // just update the recipe and pause playing for a newly generated audio
-            updateRecipe(response.audio)
-            setIsPlayingAudio(false)
+            
+            // Update the recipe with the new audio link
+            updateRecipe(response.audio);
+            
+            // Play the newly generated audio
+            await playRecipe(recipe, response.audio);
         } catch (error) {
             console.error('Error playing audio:', error);
-            killAudio()
-        } finally {
-            setIsLoadingAudio(false);
         }
     };
 
@@ -107,12 +101,11 @@ function useActionPopover(recipe: ExtendedRecipe | null, updateRecipe: (audioLin
         handleClone,
         handleCopy,
         handlePlayRecipe,
-        killAudio,
         handleDeleteDialog,
         handleDeleteRecipe,
         linkCopied,
         isLoadingAudio,
-        isPlayingAudio,
+        isPlayingAudio: isPlayingAudio && currentRecipe?._id === recipe?._id,
         isDeleteDialogOpen
     };
 }

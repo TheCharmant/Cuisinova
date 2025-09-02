@@ -10,6 +10,7 @@ import UserLink from '../UserLink';
 import { formatDate } from '../../utils/utils';
 import { ExtendedRecipe } from '../../types';
 import { motion } from 'framer-motion';
+import { useAudio } from '../../contexts/AudioContext';
 
 interface RecipeDialogProps {
     isOpen: boolean;
@@ -34,7 +35,6 @@ export default function RecipeDisplayModal({ isOpen, close, recipe, removeRecipe
         handleClone,
         handleCopy,
         handlePlayRecipe,
-        killAudio,
         handleDeleteDialog,
         handleDeleteRecipe,
         linkCopied,
@@ -43,12 +43,14 @@ export default function RecipeDisplayModal({ isOpen, close, recipe, removeRecipe
         isDeleteDialogOpen
     } = useActionPopover(recipe, updateRecipe);
 
+    const { stopAudio } = useAudio();
+
     useEffect(() => {
         // Stop audio playback when the modal is closed
         if (!isOpen) {
-            killAudio()
+            stopAudio();
         }
-    }, [isOpen, killAudio]);
+    }, [isOpen, stopAudio]);
 
     const deleteAndRemoveRecipe = async () => {
         try {

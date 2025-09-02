@@ -109,6 +109,9 @@ body {
   .z-modal-top {
     z-index: 150;
   }
+  .z-floating {
+    z-index: 75;
+  }
 }
 
 /* 

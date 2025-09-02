@@ -6,6 +6,8 @@ import { useRouter } from 'next/router';
 import Loading from '../components/Loading';
 import Head from 'next/head'
 import Layout from '../components/Layout';
+import { AudioProvider } from '../contexts/AudioContext';
+import FloatingAudioPlayer from '../components/FloatingAudioPlayer';
 import '../styles/globals.css';
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
@@ -33,13 +35,16 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 
     return loading ? <Loading /> : (
         <SessionProvider session={session} refetchInterval={5 * 60}>
-            <Layout>
-                <Head>
-                    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-                </Head>
-                <Component {...pageProps} />
-            </Layout>
-            <div id="alert-root"></div>
+            <AudioProvider>
+                <Layout>
+                    <Head>
+                        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+                    </Head>
+                    <Component {...pageProps} />
+                </Layout>
+                <FloatingAudioPlayer />
+                <div id="alert-root"></div>
+            </AudioProvider>
         </SessionProvider>
     );
 }
