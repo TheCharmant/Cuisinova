@@ -92,7 +92,7 @@ export default function Hero() {
                 <nav className="flex items-center justify-between p-6 lg:px-8 bg-white/20 backdrop-blur-md shadow-pastel border-b-2 border-white/30" aria-label="Global" style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}>
                     <div className="flex lg:flex-1">
                         <a href="#" className="-m-1.5 p-1.5">
-                            <span className="sr-only">Smart Recipe Generator</span>
+                            <span className="sr-only">CUISINOVA</span>
                             <Image 
                                 src="/cuisinova-logo.png" 
                                 alt="Cuisinova Logo" 
@@ -142,7 +142,7 @@ export default function Hero() {
                 <DialogPanel className="fixed inset-y-0 right-0 z-modal-top w-full overflow-y-auto bg-white/20 backdrop-blur-md px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-white/30 shadow-pastel">
                     <div className="flex items-center justify-between">
                         <a href="#" className="-m-1.5 p-1.5">
-                            <span className="sr-only">Smart Recipe Generator</span>
+                            <span className="sr-only">CUISINOVA</span>
                             <Image
                                 src="/cuisinova-logo.png"
                                 alt="Cuisinova Logo"

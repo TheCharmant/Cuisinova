@@ -38,13 +38,13 @@ export default function Landing() {
                     className="text-5xl font-extrabold tracking-tight bg-gradient-to-r from-brand-500 to-violet-500 bg-clip-text text-transparent font-display"
                     variants={itemVariants}
                 >
-                    Cook Smarter with AI
+                    Discover flavors with Cuisinova
                 </motion.h1>
                 <motion.p 
                     className="text-lg leading-8 text-gray-700"
                     variants={itemVariants}
                 >
-                    Drop in the ingredients you have on hand and let our AI whip up creative recipes tailored to your dietary needs.
+                    Drop in your ingredients and let our AI craft recipes for every mood and moment.
                 </motion.p>
                 <motion.button
                     className="w-fit rounded-full bg-gradient-to-r from-brand-500 to-violet-500 px-6 py-3 text-base font-semibold text-white shadow-lg border border-white/20 backdrop-blur-sm font-display"

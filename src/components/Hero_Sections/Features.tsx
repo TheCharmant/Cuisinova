@@ -55,7 +55,7 @@ export default function Features({ resetPage }: { resetPage: () => void }) {
           className="text-lg leading-8 text-gray-600"
           variants={itemVariants}
         >
-          Explore what makes Smart Recipe Generator unique.
+          Explore what makes Cuisinova unique.
         </motion.p>
         <motion.ul 
           className="space-y-4 text-gray-500 list-inside dark:text-gray-400 text-left"
