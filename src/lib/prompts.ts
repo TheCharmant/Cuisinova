@@ -1,7 +1,7 @@
 import { Ingredient, DietaryPreference, Recipe, ExtendedRecipe } from '../types/index'
 
 export const getRecipeGenerationPrompt = (ingredients: Ingredient[], dietaryPreferences: DietaryPreference[]) => `
-I have the following ingredients: ${JSON.stringify(ingredients)} ${dietaryPreferences.length ? `and dietary preferences: ${dietaryPreferences.join(',')}` : ''}. Please provide me with three different delicious and diverse recipes. The response should be in the following JSON format without any additional text, markdown, or code formatting (e.g., no backticks):
+I have the following ingredients: ${JSON.stringify(ingredients)}${dietaryPreferences.length ? ` and dietary preferences: ${dietaryPreferences.join(',')}` : ''}. Please provide me with three different delicious and diverse recipes. The response should be in the following JSON format without any additional text, markdown, or code formatting (e.g., no backticks):
 [
     {
         "name": "Recipe Name",
@@ -15,7 +15,7 @@ I have the following ingredients: ${JSON.stringify(ingredients)} ${dietaryPrefer
             "Then do this.",
             ...
         ],
-        "dietaryPreference": ["Preference 1", "Preference 2", ...],
+        "dietaryPreference": ${dietaryPreferences.length ? `["${dietaryPreferences.join('", "')}"]` : '[]'},
         "additionalInformation": {
             "tips": "Provide practical cooking tips, such as using the right cookware or ingredient substitutions.",
             "variations": "Suggest creative variations for the recipe, like adding more vegetables or using different proteins.",
@@ -25,7 +25,7 @@ I have the following ingredients: ${JSON.stringify(ingredients)} ${dietaryPrefer
     },
     ...
 ]
-Please ensure the recipes are diverse in type or cuisine (e.g., different meal categories or international flavors) and use all the ingredients listed unless dietary preferences or practicality dictate otherwise. Quantities must include appropriate units (e.g., grams, cups, teaspoons) for precision. Provide clear, detailed instructions suitable for someone with basic cooking skills. The instructions should be ordered but not include step numbers. Additionally, ensure the recipes respect the dietary preferences provided by suggesting suitable alternatives where necessary. The JSON must be valid and parsable without any additional text or formatting outside the JSON structure.
+Please ensure the recipes are diverse in type or cuisine (e.g., different meal categories or international flavors) and use all the ingredients listed unless dietary preferences or practicality dictate otherwise. Quantities must include appropriate units (e.g., grams, cups, teaspoons) for precision. Provide clear, detailed instructions suitable for someone with basic cooking skills. The instructions should be ordered but not include step numbers. Additionally, ensure the recipes respect the dietary preferences provided by suggesting suitable alternatives where necessary. The JSON must be valid and parsable without any additional text or formatting outside the JSON structure. If no dietary preferences are specified, the "dietaryPreference" array must be empty.
 `;
 
 export const getImageGenerationPrompt = (recipeName: string, ingredients: Recipe['ingredients']): string => {

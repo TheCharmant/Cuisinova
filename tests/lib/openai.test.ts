@@ -79,7 +79,7 @@ I have the following ingredients: [{\"name\":\"ingredient-1\",\"id\":\"1\"},{\"n
             "Then do this.",
             ...
         ],
-        "dietaryPreference": ["Preference 1", "Preference 2", ...],
+        "dietaryPreference": ["Keto", "Vegetarian"],
         "additionalInformation": {
             "tips": "Provide practical cooking tips, such as using the right cookware or ingredient substitutions.",
             "variations": "Suggest creative variations for the recipe, like adding more vegetables or using different proteins.",
@@ -89,7 +89,7 @@ I have the following ingredients: [{\"name\":\"ingredient-1\",\"id\":\"1\"},{\"n
     },
     ...
 ]
-Please ensure the recipes are diverse in type or cuisine (e.g., different meal categories or international flavors) and use all the ingredients listed unless dietary preferences or practicality dictate otherwise. Quantities must include appropriate units (e.g., grams, cups, teaspoons) for precision. Provide clear, detailed instructions suitable for someone with basic cooking skills. The instructions should be ordered but not include step numbers. Additionally, ensure the recipes respect the dietary preferences provided by suggesting suitable alternatives where necessary. The JSON must be valid and parsable without any additional text or formatting outside the JSON structure.
+Please ensure the recipes are diverse in type or cuisine (e.g., different meal categories or international flavors) and use all the ingredients listed unless dietary preferences or practicality dictate otherwise. Quantities must include appropriate units (e.g., grams, cups, teaspoons) for precision. Provide clear, detailed instructions suitable for someone with basic cooking skills. The instructions should be ordered but not include step numbers. Additionally, ensure the recipes respect the dietary preferences provided by suggesting suitable alternatives where necessary. The JSON must be valid and parsable without any additional text or formatting outside the JSON structure. If no dietary preferences are specified, the "dietaryPreference" array must be empty.
 `;
 
         const result = await generateRecipe(ingredients, ['Keto', 'Vegetarian'], 'mockUserId')
@@ -101,7 +101,7 @@ Please ensure the recipes are diverse in type or cuisine (e.g., different meal c
             {
                 "max_tokens": 1500,
                 "messages": [{ "content": expectedPrompt, "role": "user" }],
-                "model": "gpt-4o"
+                "model": "gpt-3.5-turbo"
             }
         )
     })
@@ -126,6 +126,69 @@ Please ensure the recipes are diverse in type or cuisine (e.g., different meal c
             recipes: '["TEST-RECIPE-A", "TEST-RECIPE-B"]',
             openaiPromptId: "null-prompt-id"
         })
+    })
+
+    it('shall generate recipes with empty dietary preferences when no preferences are provided', async () => {
+        // mock opena ai chat completion
+        openai.chat.completions.create = jest.fn().mockImplementation(() => Promise.resolve(
+            {
+                choices: [{ message: { content: '["TEST-RECIPE-A", "TEST-RECIPE-B"]' } }]
+            }
+        ))
+        // mock db create query
+        aigenerated.create = jest.fn().mockImplementation(
+            () => Promise.resolve({ _id: 1234 }),
+        );
+        const ingredients = [
+            {
+                name: 'ingredient-1',
+                id: '1'
+            },
+            {
+                name: 'ingredient-2',
+                id: '2'
+            }
+        ]
+        const expectedPrompt = `
+I have the following ingredients: [{\"name\":\"ingredient-1\",\"id\":\"1\"},{\"name\":\"ingredient-2\",\"id\":\"2\"}]. Please provide me with three different delicious and diverse recipes. The response should be in the following JSON format without any additional text, markdown, or code formatting (e.g., no backticks):
+[
+    {
+        "name": "Recipe Name",
+        "ingredients": [
+            {"name": "Ingredient 1", "quantity": "quantity and unit"},
+            {"name": "Ingredient 2", "quantity": "quantity and unit"},
+            ...
+        ],
+        "instructions": [
+            "Do this first.",
+            "Then do this.",
+            ...
+        ],
+        "dietaryPreference": [],
+        "additionalInformation": {
+            "tips": "Provide practical cooking tips, such as using the right cookware or ingredient substitutions.",
+            "variations": "Suggest creative variations for the recipe, like adding more vegetables or using different proteins.",
+            "servingSuggestions": "Include ideas for how to serve the dish (e.g., with toast, salad, or specific sauces).",
+            "nutritionalInformation": "Provide approximate nutritional details (e.g., calories, protein, fat, etc.)."
+        }
+    },
+    ...
+]
+Please ensure the recipes are diverse in type or cuisine (e.g., different meal categories or international flavors) and use all the ingredients listed unless dietary preferences or practicality dictate otherwise. Quantities must include appropriate units (e.g., grams, cups, teaspoons) for precision. Provide clear, detailed instructions suitable for someone with basic cooking skills. The instructions should be ordered but not include step numbers. Additionally, ensure the recipes respect the dietary preferences provided by suggesting suitable alternatives where necessary. The JSON must be valid and parsable without any additional text or formatting outside the JSON structure. If no dietary preferences are specified, the "dietaryPreference" array must be empty.
+`;
+
+        const result = await generateRecipe(ingredients, [], 'mockUserId')
+        expect(result).toEqual({
+            recipes: '["TEST-RECIPE-A", "TEST-RECIPE-B"]',
+            openaiPromptId: 1234
+        })
+        expect(openai.chat.completions.create).toHaveBeenCalledWith(
+            {
+                "max_tokens": 1500,
+                "messages": [{ "content": expectedPrompt, "role": "user" }],
+                "model": "gpt-3.5-turbo"
+            }
+        )
     })
 
     it('shall throw error if openai can not respond', async () => {
@@ -225,7 +288,7 @@ describe('validating ingredients from open ai', () => {
             {
                 "max_tokens": 800,
                 "messages": [{ "content": expectedPrompt, "role": "user" }],
-                "model": "gpt-4o"
+                "model": "gpt-3.5-turbo"
             }
         )
     })
@@ -287,7 +350,7 @@ describe('generating audio from open ai', () => {
             {
                 "max_tokens": 1500,
                 "messages": [{ "content": expectedPrompt, "role": "user" }],
-                "model": "gpt-4o"
+                "model": "gpt-3.5-turbo"
             }
         )
         expect(openai.audio.speech.create).toHaveBeenCalledWith(
@@ -344,7 +407,7 @@ describe('generating recipe tags from openAI', () => {
             {
                 "max_tokens": 1500,
                 "messages": [{ "content": expectedPrompt, "role": "user" }],
-                "model": "gpt-4o"
+                "model": "gpt-3.5-turbo"
             }
         )
     })
@@ -405,7 +468,7 @@ describe('generating chat responses', () => {
             {
                 "max_tokens": 1000,
                 "messages": [{ "content": expectedPrompt, "role": "system" }, 'chat history 1', { role: 'user', content: message }],
-                "model": "gpt-4o"
+                "model": "gpt-3.5-turbo"
             }
         )
     });
