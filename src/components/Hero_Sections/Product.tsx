@@ -55,7 +55,7 @@ export default function Product({ resetPage }: { resetPage: () => void }) {
           className="text-lg leading-8 text-gray-600"
           variants={itemVariants}
         >
-          Learn how Smart Recipe Generator makes meal planning effortless.
+          Find out how Cuisinova makes planning meals feel simple and cozy.
         </motion.p>
         <motion.ul 
           className="space-y-4 text-gray-500 list-inside dark:text-gray-400 text-left"
