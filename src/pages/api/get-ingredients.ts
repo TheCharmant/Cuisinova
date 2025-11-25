@@ -2,7 +2,8 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { apiMiddleware } from '../../lib/apiMiddleware';
 import { connectDB } from '../../lib/mongodb';
 import Ingredient from '../../models/ingredient';
-import aigenerated from '../../models/aigenerated';
+import Recipe from '../../models/recipe';
+import User from '../../models/user';
 import { IngredientDocumentType } from '../../types';
 
 // Define the possible shapes of the API response
@@ -18,16 +19,21 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Data>, session:
         // Establish a connection to the MongoDB database
         await connectDB();
 
-        // API request limit check removed
-        // const totalGeneratedCount = await aigenerated.countDocuments({ userId: session.user.id }).exec();
+        // Check if user has reached the free plan limit of 10 recipes
+        const userRecipeCount = await Recipe.countDocuments({ owner: session.user.id }).exec();
 
-        // if (totalGeneratedCount >= Number(process.env.API_REQUEST_LIMIT)) {
-        //     res.status(200).json({
-        //         reachedLimit: true,
-        //         ingredientList: []
-        //     });
-        //     return;
-        // }
+        // Check if user has an active subscription
+        const user = await User.findById(session.user.id).exec();
+        const hasActiveSubscription = user?.subscription?.status === 'active' &&
+            new Date(user.subscription.endDate) > new Date();
+
+        if (userRecipeCount >= 10 && !hasActiveSubscription) {
+            res.status(200).json({
+                reachedLimit: true,
+                ingredientList: []
+            });
+            return;
+        }
 
         // Retrieve all ingredients from the database, sorted alphabetically by name
         const allIngredients = await Ingredient.find().sort({ name: 1 }).exec() as unknown as IngredientDocumentType[];
@@ -40,7 +46,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Data>, session:
     } catch (error) {
         // Log any errors to the server console for debugging
         console.error(error);
-        
+
         // Respond with a 500 Internal Server Error and an error message
         res.status(500).json({ error: 'Failed to fetch ingredients' });
     }

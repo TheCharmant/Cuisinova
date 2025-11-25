@@ -16,13 +16,13 @@ const navigation = [
         name: 'Home', 
         route: '/Home', 
         icon: HomeIcon,
-        style: 'bg-cream-100 text-brand-600 hover:bg-peach-100 hover:text-violet-600 shadow-pastel',
+        style: 'bg-coquette-cream/80 text-coquette-rose hover:bg-coquette-softPink hover:text-coquette-lavender shadow-delicate backdrop-blur-sm',
     },
     { 
         name: 'Create Recipes', 
         route: '/CreateRecipe', 
         icon: PlusCircleIcon,
-        style: 'bg-peach-100 text-violet-600 px-4 py-2 rounded-full shadow-pastel hover:bg-peach-200 hover:shadow-lg',
+        style: 'bg-gradient-to-r from-coquette-blush to-coquette-lavender text-white px-4 py-2 rounded-full shadow-delicate hover:shadow-glow',
     },
 ]
 
@@ -52,7 +52,7 @@ function Header({ user }: HeaderProps) {
 
     if (!user) return null;
     return (
-    <Disclosure as="nav" className="sticky top-0 z-header bg-gradient-to-r from-cream-100 via-peach-100 to-violet-100 shadow-pastel backdrop-blur-md bg-opacity-95 border-b-2 border-peach-100" style={{ scrollbarGutter: 'stable', fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}>
+    <Disclosure as="nav" className="sticky top-0 z-header bg-gradient-to-r from-coquette-cream via-coquette-softPink to-coquette-lavender shadow-delicate backdrop-blur-md bg-opacity-95 border-b-2 border-coquette-blush/30" style={{ scrollbarGutter: 'stable', fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}>
             {({ open }) => (
                 <>
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -68,7 +68,7 @@ function Header({ user }: HeaderProps) {
                                         alt="Cuisinova Logo"
                                         width={50}
                                         height={50}
-                                        className="rounded-full border-4 border-peach-200 shadow-pastel"
+                                        className="rounded-full border-4 border-coquette-blush/50 shadow-delicate"
                                         priority
                                     />
                                 </motion.div>
@@ -79,7 +79,7 @@ function Header({ user }: HeaderProps) {
                                                 key={item.name}
                                                 className={classNames(
                                                     item.route === router.pathname
-                                                        ? 'bg-white/90 text-brand-600 font-bold shadow-lg ring-2 ring-peach-200'
+                                                        ? 'bg-white/95 text-coquette-rose font-bold shadow-delicate ring-2 ring-coquette-blush/50 backdrop-blur-sm'
                                                         : item.style,
                                                     'rounded-full px-5 py-2.5 text-base font-bold flex items-center gap-2 transition-all duration-300 kawaii-nav',
                                                 )}
@@ -102,7 +102,7 @@ function Header({ user }: HeaderProps) {
                                     <Menu as="div" className="relative">
                                         <div>
                                             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                                <MenuButton className="relative flex max-w-xs items-center rounded-full bg-white border-2 border-brand-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2 focus:ring-offset-violet-700 shadow-md hover:shadow-lg transition-all duration-300">
+                                                <MenuButton className="relative flex max-w-xs items-center rounded-full bg-white/95 border-2 border-coquette-blush/40 text-sm focus:outline-none focus:ring-2 focus:ring-coquette-lavender focus:ring-offset-2 focus:ring-offset-coquette-softPink shadow-delicate hover:shadow-glow transition-all duration-300 backdrop-blur-sm">
                                                     <span className="absolute -inset-1.5" />
                                                     <span className="sr-only">Open user menu</span>
                                                     <Image
@@ -116,15 +116,15 @@ function Header({ user }: HeaderProps) {
                                             </motion.div>
                                         </div>
                                         <MenuItems
-                                            className="absolute right-0 z-overlay mt-2 w-48 origin-top-right rounded-xl bg-white py-2 shadow-xl ring-1 ring-violet-100 border border-violet-100 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                                            className="absolute right-0 z-overlay mt-2 w-48 origin-top-right rounded-2xl bg-white/95 py-2 shadow-delicate ring-1 ring-coquette-blush/30 border border-coquette-blush/20 backdrop-blur-sm transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
                                         >
                                             {userNavigation.map((item) => (
                                                 <MenuItem key={item.name}>
                                                     {({ focus }) => (
                                                         <motion.button
                                                             className={classNames(
-                                                                focus ? 'bg-brand-50' : '',
-                                                                'block px-4 py-3 text-sm text-gray-700 w-full text-left hover:bg-gradient-to-r hover:from-brand-50 hover:to-violet-50 transition-all duration-300',
+                                                                focus ? 'bg-coquette-softPink/50' : '',
+                                                                'block px-4 py-3 text-sm text-coquette-lavender w-full text-left hover:bg-gradient-to-r hover:from-coquette-softPink/30 hover:to-coquette-lavender/30 transition-all duration-300 coquette-body',
                                                             )}
                                                             onClick={() => handleNavigation(item)}
                                                             whileHover={{ x: 5 }}
@@ -161,9 +161,9 @@ function Header({ user }: HeaderProps) {
                                 <motion.div key={item.name} whileHover={{ x: 5 }} whileTap={{ scale: 0.98 }}>
                                     <DisclosureButton
                                         className={classNames(
-                                            item.route === router.pathname 
-                                                ? 'bg-white/90 text-brand-600 shadow-md ring-2 ring-peach-200' 
-                                                : 'bg-cream-100 text-violet-600 hover:bg-peach-100',
+                                            item.route === router.pathname
+                                                ? 'bg-white/95 text-coquette-rose shadow-delicate ring-2 ring-coquette-blush/50 backdrop-blur-sm'
+                                                : 'bg-coquette-cream/80 text-coquette-lavender hover:bg-coquette-softPink',
                                             'flex items-center gap-3 w-full rounded-xl px-4 py-3 text-base font-bold transition-all duration-300 kawaii-nav',
                                         )}
                                         aria-current={item.route === router.pathname ? 'page' : undefined}

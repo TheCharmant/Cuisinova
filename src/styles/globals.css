@@ -7,7 +7,7 @@
 @tailwind utilities;
 
 /* Import modern fonts for headings and body */
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&family=Fredoka+One&family=Montserrat:wght@300;400;500;600;700;800&family=Quicksand:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Nunito:wght@300;400;600;700&family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&family=Fredoka+One&family=Montserrat:wght@300;400;500;600;700;800&family=Quicksand:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Nunito:wght@300;400;600;700&family=Pacifico&family=Playfair+Display:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap');
 
 /* 
    Root variables for theme colors 
@@ -47,13 +47,11 @@
 body {
   color: rgb(var(--foreground-rgb));
   font-family: 'Poppins', 'Nunito', 'Quicksand', sans-serif;
-  background: linear-gradient(120deg, rgb(var(--background-start-rgb)), rgb(var(--background-end-rgb)), #fff7e6 100%);
+  background: linear-gradient(135deg, #FFF9F8 0%, #FCE4EC 25%, #E1BEE7 50%, #F5F5F5 75%, #E8F5E8 100%);
   background-attachment: fixed;
   overflow-x: hidden;
   min-height: 100vh;
-  /* Optional: add kawaii doodle background */
-  /* background-image: url('/doodles/kawaii-bg.svg'); */
-  /* background-repeat: repeat; */
+  /* Soft, romantic background with gentle gradients */
 }
 
 @layer base {
@@ -64,27 +62,36 @@ body {
   }
   h1 {
     @apply text-4xl md:text-5xl lg:text-6xl;
-    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--accent-color));
-  -webkit-background-clip: text;
-  background-clip: text;
-  background-clip: text;
-    -webkit-text-fill-color: transparent;
+    background: linear-gradient(135deg, #F7C8D0 0%, #C8B8EA 50%, #F8D49D 100%);
+    -webkit-background-clip: text;
     background-clip: text;
+    -webkit-text-fill-color: transparent;
     margin-bottom: 0.5em;
+    text-shadow: 0 2px 4px rgba(247, 200, 208, 0.1);
   }
   h2 {
     @apply text-2xl md:text-3xl lg:text-4xl font-bold;
-    color: var(--primary-color);
+    color: #C06C84;
+    font-family: 'Playfair Display', 'Cormorant Garamond', serif;
   }
   h3 {
     @apply text-xl md:text-2xl font-semibold;
-    color: var(--secondary-color);
+    color: #C8B8EA;
+    font-family: 'Poppins', sans-serif;
   }
   .accent-script {
     font-family: 'Pacifico', cursive;
-    color: var(--accent-color);
+    color: #F8D49D;
     font-size: 1.2em;
     letter-spacing: 0.03em;
+  }
+  .coquette-text {
+    font-family: 'Playfair Display', 'Cormorant Garamond', serif;
+    color: #C06C84;
+  }
+  .coquette-body {
+    font-family: 'Poppins', sans-serif;
+    color: #6B5B95;
   }
 }
 
@@ -147,15 +154,35 @@ html {
   
   /* Add cute aesthetic elements */
   button {
-    @apply transition-all duration-300;
+    @apply transition-all duration-300 rounded-full;
+    box-shadow: 0 4px 12px rgba(247, 200, 208, 0.15);
   }
-  
+
+  button:hover {
+    box-shadow: 0 6px 20px rgba(247, 200, 208, 0.25);
+    transform: translateY(-1px);
+  }
+
   input, textarea, select {
-    @apply rounded-lg border-violet-200 focus:border-violet-400 focus:ring focus:ring-violet-200 focus:ring-opacity-50 transition-all duration-300;
+    @apply rounded-2xl border-coquette-blush/30 focus:border-coquette-lavender focus:ring focus:ring-coquette-blush/20 focus:ring-opacity-50 transition-all duration-300;
+    background: rgba(255, 249, 248, 0.8);
   }
-  
+
   /* Card styling */
   .card {
-    @apply bg-white rounded-xl shadow-md overflow-hidden border border-violet-100 hover:shadow-lg transition-all duration-300;
+    @apply bg-white/90 backdrop-blur-sm rounded-3xl shadow-delicate overflow-hidden border border-coquette-blush/20 hover:shadow-glow transition-all duration-300;
+  }
+
+  /* Coquette specific styles */
+  .coquette-button {
+    @apply bg-gradient-to-r from-coquette-blush to-coquette-lavender text-white rounded-full px-6 py-3 font-medium shadow-delicate hover:shadow-glow transition-all duration-300;
+  }
+
+  .coquette-card {
+    @apply bg-white/95 backdrop-blur-sm rounded-3xl border border-coquette-blush/30 shadow-delicate;
+  }
+
+  .coquette-input {
+    @apply rounded-2xl border-coquette-blush/40 bg-coquette-cream/50 focus:border-coquette-lavender focus:ring-coquette-blush/30;
   }
 }

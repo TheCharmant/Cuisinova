@@ -1,10 +1,10 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { ClockIcon, FireIcon, SparklesIcon } from '@heroicons/react/24/solid';
+import { Menu } from '@headlessui/react';
 import SearchBar from '../components/SearchBar';
 import ViewRecipes from '../components/Recipe_Display/ViewRecipes';
 import FloatingActionButtons from '../components/FloatingActionButtons';
 import Loading from '../components/Loading';
-import PopularTags from '../components/PopularTags';
 import { usePagination } from '../components/Hooks/usePagination';
 import { motion } from 'framer-motion';
 
@@ -12,6 +12,8 @@ const Home = () => {
     const [searchVal, setSearchVal] = useState('');
     const [sortOption, setSortOption] = useState<'recent' | 'popular'>('popular');
     const [searchTrigger, setSearchTrigger] = useState<true | false>(false);
+    const [showSortModal, setShowSortModal] = useState(false);
+    const [filterOption, setFilterOption] = useState<'all' | 'liked' | 'saved'>('all');
 
     const observerRef = useRef<IntersectionObserver | null>(null);
     const searchTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -31,24 +33,12 @@ const Home = () => {
     } = usePagination({
         endpoint,
         sortOption,
+        filterOption,
         searchQuery: searchVal.trim(),
         searchTrigger,
         resetSearchTrigger: () => setSearchTrigger(false),
     });
 
-    // Extract popular ingredients from recipes
-    const ingredientCount: Record<string, number> = {};
-    latestRecipes.forEach(recipe => {
-        recipe.ingredients?.forEach(ingredient => {
-            if (ingredient.name) {
-                ingredientCount[ingredient.name] = (ingredientCount[ingredient.name] || 0) + 1;
-            }
-        });
-    });
-    const popularIngredients = Object.entries(ingredientCount)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 20)
-        .map(([name, count]) => ({ _id: name, count }));
     useEffect(() => {
         if (!latestRecipes.length) return;
 
@@ -78,33 +68,23 @@ const Home = () => {
     }, [latestRecipes, loading]);
 
     const handleSearch = useCallback(() => {
-        if (!searchVal.trim()) return;
-
-        if (searchTimeout.current) {
-            clearTimeout(searchTimeout.current);
-            searchTimeout.current = null; // Explicitly reset the timeout reference
-        }
-
-        searchTimeout.current = setTimeout(() => {
-            setSearchTrigger(true);
-        }, 500);
-    }, [searchVal]);
+        setSearchTrigger(true);
+    }, []);
 
     const sortRecipes = (option: 'recent' | 'popular') => {
         if (sortOption === option || isSearching) return;
         setSortOption(option);
         setSearchTrigger(true);
+        setShowSortModal(false);
     };
 
-    const handleTagSearch = async (tag: string) => {
-        if (searchVal === tag) {
-            setSearchVal("");
-            setSearchTrigger(true);
-            return;
-        }
-        setSearchVal(tag);
+    const filterRecipes = (option: 'all' | 'liked' | 'saved') => {
+        if (filterOption === option || isSearching) return;
+        setFilterOption(option);
         setSearchTrigger(true);
+        setShowSortModal(false);
     };
+
 
     // Animation variants for staggered children
     const containerVariants = {
@@ -123,106 +103,243 @@ const Home = () => {
     };
 
     return (
-        <motion.div 
-            className="flex flex-col min-h-screen items-center px-4 sm:px-6 lg:px-8 py-12 space-y-10 bg-gradient-to-br from-brand-50 to-violet-50"
+        <motion.div
+            className="min-h-screen relative overflow-hidden"
             initial="hidden"
             animate="visible"
             variants={containerVariants}
         >
-            {/* Hero Section */}
-            <motion.div 
-                className="w-full max-w-4xl text-center mb-8"
+            {/* Pinterest-style background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white via-coquette-softPink/30 to-coquette-lavender/20"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(247,200,208,0.1),transparent_50%)]"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(200,184,234,0.1),transparent_50%)]"></div>
+            {/* Hero Section - Pinterest style */}
+            <motion.div
+                className="relative z-10 w-full py-16"
                 variants={itemVariants}
             >
-                <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-brand-500 to-violet-600 text-transparent bg-clip-text font-display">
-                    CUISINOVA
-                </h1>
-                <p className="text-lg md:text-xl text-violet-700 max-w-2xl mx-auto">
-                    Discover flavors for every mood — cozy meals, sweet snacks, and tasty sips made easy with AI
-                </p>
+                <div className="w-full">
+                    <div className="text-center mb-12">
+                        <motion.h1
+                            className="text-5xl md:text-7xl font-bold coquette-text mb-6"
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8 }}
+                        >
+                            CUISINOVA
+                        </motion.h1>
+                        <motion.p
+                            className="text-xl md:text-2xl text-coquette-rose max-w-3xl mx-auto coquette-body font-medium leading-relaxed px-4"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                        >
+                            Discover flavors for every mood — cozy meals, sweet snacks, and tasty sips made easy with AI
+                        </motion.p>
+                    </div>
+                </div>
             </motion.div>
             
-            <motion.div variants={itemVariants} className="w-full max-w-4xl">
-                <SearchBar 
-                    searchVal={searchVal}
-                    setSearchVal={setSearchVal}
-                    handleSearch={handleSearch}
-                    totalRecipes={totalRecipes}
-                />
+            {/* Search and Controls Section */}
+            <motion.div
+                className="relative z-10 w-full pb-8"
+                variants={itemVariants}
+            >
+                <div className="w-full">
+                    <div className="flex flex-col items-center space-y-6">
+                        <div className="w-full max-w-4xl flex items-center justify-center">
+                            <motion.div className="flex-1 max-w-2xl">
+                                <SearchBar
+                                    searchVal={searchVal}
+                                    setSearchVal={setSearchVal}
+                                    handleSearch={handleSearch}
+                                    totalRecipes={totalRecipes}
+                                />
+                            </motion.div>
+
+                            {/* Filter/Sort Icon Button */}
+                            <motion.button
+                                className="-ml-2 p-3 bg-white/90 backdrop-blur-sm rounded-2xl shadow-delicate border border-coquette-blush/30 hover:shadow-glow transition-all duration-300"
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => setShowSortModal(true)}
+                            >
+                                <svg className="w-6 h-6 text-coquette-rose" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+                                </svg>
+                            </motion.button>
+                        </div>
+
+                        {/* Results Counter */}
+                        {searchVal.trim() && (
+                            <motion.div
+                                className="text-center px-4"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.4 }}
+                            >
+                                <p className="text-coquette-lavender coquette-body">
+                                    {/* eslint-disable-next-line react/no-unescaped-entities */}
+                                    Found {totalRecipes} recipe{totalRecipes !== 1 ? 's' : ''} for "{searchVal}"
+                                    <span className="ml-1">✨</span>
+                                </p>
+                            </motion.div>
+                        )}
+                    </div>
+                </div>
             </motion.div>
             
-            <motion.div variants={itemVariants} className="w-full max-w-4xl">
-                <PopularTags tags={popularIngredients} onTagToggle={handleTagSearch} searchVal={searchVal} />
+
+
+            {/* Pinterest-style Recipe Grid */}
+            <motion.div
+                className="relative z-10 w-full pb-16"
+                variants={itemVariants}
+            >
+                <div className="w-full">
+                    <ViewRecipes
+                        recipes={latestRecipes}
+                        handleRecipeListUpdate={handleRecipeListUpdate}
+                        lastRecipeRef={lastRecipeRef}
+                    />
+                </div>
+            </motion.div>
+            
+            {/* Floating Action Button */}
+            <motion.div
+                className="fixed bottom-6 right-6 z-20"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 1, type: "spring", stiffness: 200 }}
+            >
+                <FloatingActionButtons />
             </motion.div>
 
-            {/* Sorting Buttons */}
-            <motion.div 
-                className="flex flex-wrap justify-center gap-4 w-full max-w-4xl my-2"
-                variants={itemVariants}
-            >
-                <motion.button
-                    onClick={() => sortRecipes('recent')}
-                    className={`disabled:bg-gray-200 disabled:cursor-not-allowed disabled:text-white flex items-center px-6 py-3 rounded-full shadow-lg transition-all duration-300 ${sortOption === 'recent' 
-                        ? 'bg-gradient-to-r from-brand-500 to-brand-600 text-white' 
-                        : 'bg-white text-violet-700 hover:bg-violet-50 hover:shadow-xl border border-violet-200'
-                    }`}
-                    disabled={Boolean(searchVal.trim())}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+            {/* Loading Overlay */}
+            {loading && !isSearching && (
+                <motion.div
+                    className="fixed inset-0 z-30 flex items-center justify-center bg-white/80 backdrop-blur-sm"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
                 >
-                    <ClockIcon className="h-5 w-5 mr-2" />
-                    Most Recent
-                </motion.button>
-                <motion.button
-                    onClick={() => sortRecipes('popular')}
-                    className={`disabled:bg-gray-200 disabled:cursor-not-allowed disabled:text-white flex items-center px-6 py-3 rounded-full shadow-lg transition-all duration-300 ${sortOption === 'popular' 
-                        ? 'bg-gradient-to-r from-brand-500 to-violet-600 text-white' 
-                        : 'bg-white text-violet-700 hover:bg-violet-50 hover:shadow-xl border border-violet-200'
-                    }`}
-                    disabled={Boolean(searchVal.trim())}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    <Loading />
+                </motion.div>
+            )}
+
+            {/* Sort/Filter Modal */}
+            {showSortModal && (
+                <motion.div
+                    className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setShowSortModal(false)}
                 >
-                    <FireIcon className="h-5 w-5 mr-2" />
-                    Most Popular
-                </motion.button>
-            </motion.div>
-
-            <motion.div 
-                className="w-full max-w-6xl"
-                variants={itemVariants}
-            >
-                <ViewRecipes
-                    recipes={latestRecipes}
-                    handleRecipeListUpdate={handleRecipeListUpdate}
-                    lastRecipeRef={lastRecipeRef}
-                />
-            </motion.div>
+                    <motion.div
+                        className="bg-white rounded-3xl p-6 m-4 max-w-sm w-full shadow-glow border border-coquette-blush/30"
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.8, opacity: 0 }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <h3 className="text-xl font-bold text-coquette-rose mb-4 text-center coquette-text">Sort & Filter Recipes</h3>
+                        <div className="space-y-3">
+                            <div className="text-sm font-medium text-coquette-lavender mb-2">Sort by:</div>
+                            <button
+                                onClick={() => sortRecipes('popular')}
+                                className={`w-full p-3 rounded-2xl font-medium transition-all duration-200 ${
+                                    sortOption === 'popular'
+                                        ? 'bg-coquette-blush text-white shadow-delicate'
+                                        : 'bg-coquette-softPink/50 text-coquette-rose hover:bg-coquette-blush/20'
+                                }`}
+                            >
+                                🔥 Most Popular
+                            </button>
+                            <button
+                                onClick={() => sortRecipes('recent')}
+                                className={`w-full p-3 rounded-2xl font-medium transition-all duration-200 ${
+                                    sortOption === 'recent'
+                                        ? 'bg-coquette-blush text-white shadow-delicate'
+                                        : 'bg-coquette-softPink/50 text-coquette-rose hover:bg-coquette-blush/20'
+                                }`}
+                            >
+                                🕒 Most Recent
+                            </button>
+                            <div className="text-sm font-medium text-coquette-lavender mb-2 mt-4">Filter by:</div>
+                            <button
+                                onClick={() => filterRecipes('all')}
+                                className={`w-full p-3 rounded-2xl font-medium transition-all duration-200 ${
+                                    filterOption === 'all'
+                                        ? 'bg-coquette-blush text-white shadow-delicate'
+                                        : 'bg-coquette-softPink/50 text-coquette-rose hover:bg-coquette-blush/20'
+                                }`}
+                            >
+                                📚 All Recipes
+                            </button>
+                            <button
+                                onClick={() => filterRecipes('liked')}
+                                className={`w-full p-3 rounded-2xl font-medium transition-all duration-200 ${
+                                    filterOption === 'liked'
+                                        ? 'bg-coquette-blush text-white shadow-delicate'
+                                        : 'bg-coquette-softPink/50 text-coquette-rose hover:bg-coquette-blush/20'
+                                }`}
+                            >
+                                ❤️ Liked Recipes
+                            </button>
+                            <button
+                                onClick={() => filterRecipes('saved')}
+                                className={`w-full p-3 rounded-2xl font-medium transition-all duration-200 ${
+                                    filterOption === 'saved'
+                                        ? 'bg-coquette-blush text-white shadow-delicate'
+                                        : 'bg-coquette-softPink/50 text-coquette-rose hover:bg-coquette-blush/20'
+                                }`}
+                            >
+                                💾 Saved Recipes
+                            </button>
+                        </div>
+                        <button
+                            onClick={() => setShowSortModal(false)}
+                            className="w-full mt-4 p-2 text-coquette-lavender hover:text-coquette-rose transition-colors"
+                        >
+                            Cancel
+                        </button>
+                    </motion.div>
+                </motion.div>
+            )}
             
-            <FloatingActionButtons />
-
-            {/* Show loading indicator when fetching */}
-            {loading && <Loading />}
-            
-            {/* Empty state or tag search results */}
+            {/* Empty State */}
             {!loading && latestRecipes.length === 0 && (
-                <motion.div 
-                    className="flex flex-col items-center justify-center p-10 bg-white/80 rounded-2xl shadow-lg border border-violet-100 max-w-md w-full"
+                <motion.div
+                    className="relative z-10 w-full"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
                 >
-                    <SparklesIcon className="h-16 w-16 text-violet-400 mb-4" />
-                    <h3 className="text-xl font-bold text-violet-700 mb-2">
-                        {searchVal
-                            ? `No recipes found for "${searchVal}"`
-                            : "No recipes found"}
-                    </h3>
-                    <p className="text-violet-600 text-center">
-                        {searchVal
-                            ? "Try another tag or ingredient, or create a new recipe to get started!"
-                            : "Try adjusting your search or create a new recipe to get started!"}
-                    </p>
+                    <div className="w-full">
+                        <motion.div
+                            className="flex flex-col items-center justify-center p-16 coquette-card shadow-delicate border border-coquette-blush/30 max-w-2xl mx-auto relative"
+                        >
+                            <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-4xl animate-float">🎀</div>
+                            <SparklesIcon className="h-20 w-20 text-coquette-lavender mb-6 animate-gentleGlow" />
+                            <h3 className="text-2xl font-bold text-coquette-rose mb-4 coquette-text text-center">
+                                {searchVal
+                                    ? `No recipes found for "${searchVal}"`
+                                    : "No recipes found yet"}
+                                <span className="ml-2">💔</span>
+                            </h3>
+                            <p className="text-coquette-lavender text-center coquette-body text-lg leading-relaxed mb-6 px-4">
+                                {searchVal
+                                    ? "Try searching for different ingredients or create your own magical recipe! ✨"
+                                    : "Be the first to create something delicious! Start by adding your favorite ingredients. 🌸"}
+                            </p>
+                            <div className="flex gap-3">
+                                <span className="text-lg text-coquette-gold animate-bounceSparkle">✨</span>
+                                <span className="text-lg text-coquette-gold animate-bounceSparkle" style={{animationDelay: '0.5s'}}>💕</span>
+                                <span className="text-lg text-coquette-gold animate-bounceSparkle" style={{animationDelay: '1s'}}>🌸</span>
+                            </div>
+                        </motion.div>
+                    </div>
                 </motion.div>
             )}
         </motion.div>

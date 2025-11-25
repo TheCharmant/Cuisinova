@@ -128,23 +128,37 @@ function Navigation({
   const safeGeneratedRecipes = Array.isArray(generatedRecipes) ? generatedRecipes : [];
   const safeIngredientList = Array.isArray(recipeCreationData.ingredientList) ? recipeCreationData.ingredientList : [];
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-50 to-violet-50 p-4 md:p-8 flex justify-center">
-      <div className={`w-full space-y-4 animate-fadeInUp ${safeGeneratedRecipes.length ? 'max-w-7xl' : 'max-w-2xl'}`}> 
-        <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-violet-600 text-center">Create Recipe</h1>
+  <div className="min-h-screen p-4 md:p-8 flex justify-center relative overflow-hidden">
+    {/* Decorative elements */}
+    <div className="absolute top-10 left-10 text-3xl opacity-60 animate-float">🌸</div>
+    <div className="absolute top-20 right-16 text-2xl opacity-50 animate-bounceSparkle">💖</div>
+    <div className="absolute bottom-20 left-20 text-2xl opacity-40 animate-float" style={{animationDelay: '1s'}}>✨</div>
+    <div className="absolute bottom-10 right-10 text-3xl opacity-30 animate-gentleGlow">🎀</div>
+
+    <div className={`w-full space-y-4 animate-fadeInUp ${safeGeneratedRecipes.length ? 'max-w-7xl' : 'max-w-2xl'}`}>
+      <div className="text-center mb-6 relative">
+        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 text-4xl opacity-70 animate-float">🎀</div>
+        <h1 className="text-3xl font-bold coquette-text text-center relative">
+           Create Recipe
+           <span className="absolute -right-8 top-0 text-2xl animate-bounceSparkle">✨</span>
+         </h1>
+         {/* eslint-disable-next-line react/no-unescaped-entities */}
+         <p className="text-coquette-lavender coquette-body mt-2">Let's whip up something magical together! 💕</p>
+      </div>
         {safeGeneratedRecipes.length === 0 ? (
           steps.slice(0, 3).map((title, idx) => (
-            <div key={title} className="bg-white shadow rounded-xl border border-violet-100">
+            <div key={title} className="coquette-card">
               <button
-                className={`w-full flex items-center justify-between p-4 font-medium text-left ${step === idx ? 'text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-violet-600' : 'text-gray-700'}`}
+                className={`w-full flex items-center justify-between p-4 font-medium text-left coquette-body ${step === idx ? 'text-coquette-rose' : 'text-coquette-lavender'}`}
                 onClick={() => setStep(step === idx ? -1 : idx)}
               >
                 <span>{`Step ${idx + 1}: ${title}`}</span>
                 <ChevronDownIcon
-                  className={`w-5 h-5 transform transition-transform ${step === idx ? 'rotate-180 text-violet-500' : 'text-brand-400'}`}
+                  className={`w-5 h-5 transform transition-transform ${step === idx ? 'rotate-180 text-coquette-lavender' : 'text-coquette-blush'}`}
                 />
               </button>
               {step === idx && (
-                <div className="p-4 border-t border-violet-100">
+                <div className="p-4 border-t border-coquette-blush/30">
                   {isLoading ? (
                     <Loading isProgressBar isComplete={isComplete} loadingType={loadingType} />
                   ) : (
@@ -166,7 +180,7 @@ function Navigation({
           ))
         ) : (
           <>
-            <div className="bg-white shadow rounded-xl border border-violet-100">
+            <div className="coquette-card">
               <div className="p-4">
                 <ReviewComponent
                   ingredients={ingredients}
@@ -177,7 +191,7 @@ function Navigation({
                 />
               </div>
             </div>
-            <div className="bg-white shadow rounded-xl p-4 border border-violet-100">
+            <div className="coquette-card p-4">
               {isLoading ? (
                 <Loading isProgressBar isComplete={isComplete} loadingType={loadingType} />
               ) : (

@@ -37,16 +37,13 @@ const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   return (
-    <div 
-      className={`relative flex items-center w-full max-w-md mx-auto bg-cream-100 rounded-full shadow-pastel hover:shadow-xl border-2 border-peach-100 transition-all duration-300 kawaii-searchbar ${className}`}
+    <div
+      className={`relative flex items-center w-full max-w-xl mx-auto bg-white/90 backdrop-blur-sm rounded-lg shadow-md hover:shadow-lg border border-gray-300 transition-all duration-300 ${className}`}
       style={{ fontFamily: 'Poppins, Nunito, Quicksand, sans-serif' }}
     >
-      {/* Kawaii sparkles accent */}
-      <span className="absolute -top-4 left-4 text-xl opacity-60 animate-bounceSparkle select-none pointer-events-none">✨</span>
-      <div 
-        className="flex items-center justify-center p-2 text-peach-500 hover:text-brand-500 hover:scale-110 transition-all duration-200"
+      <div
+        className="flex items-center justify-center p-2 text-gray-500 hover:text-gray-700 transition-all duration-200"
       >
-        <span className="text-lg mr-1">🔍</span>
         <MagnifyingGlassIcon className="h-5 w-5" />
       </div>
       <input
@@ -61,11 +58,12 @@ const SearchBar: React.FC<SearchBarProps> = ({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         placeholder={placeholder}
-  className="w-full py-2 px-2 text-brand-700 bg-transparent outline-none placeholder:text-peach-400 placeholder:transition-all placeholder:duration-300 focus:placeholder:text-peach-300 font-medium text-lg focus:outline-none focus:ring-0"
+        className="w-full py-2 px-2 text-coquette-rose bg-transparent outline-none placeholder:text-coquette-lavender/60 placeholder:transition-all placeholder:duration-300 focus:placeholder:text-coquette-lavender font-medium text-lg focus:outline-none focus:ring-0"
         style={{ fontFamily: 'Poppins, Nunito, Quicksand, sans-serif' }}
+        autoComplete="off"
       />
       {searchVal && (
-        <span 
+        <span
           className="animate-scaleIn"
         >
           <button
@@ -77,14 +75,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
           </button>
         </span>
       )}
-      <button
-        onClick={handleSearch}
-        className="py-2 px-5 bg-gradient-to-r from-peach-300 via-brand-400 to-violet-400 text-white rounded-r-full font-bold text-lg shadow-pastel hover:from-peach-400 hover:to-violet-500 hover:scale-110 active:scale-95 hover:shadow-xl transition-all duration-300 accent-script"
-        aria-label="Search"
-        style={{ fontFamily: 'Pacifico, cursive' }}
-      >
-        Search
-      </button>
     </div>
   );
 };

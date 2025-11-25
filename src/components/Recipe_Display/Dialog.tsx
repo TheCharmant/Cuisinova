@@ -79,81 +79,81 @@ export default function RecipeDisplayModal({ isOpen, close, recipe, removeRecipe
                             className="w-full max-w-lg"
                         >
                             <DialogPanel
-                                className="w-full rounded-3xl bg-white/95 p-2 shadow-2xl border border-violet-100 backdrop-blur-xl overflow-hidden"
+                                className="w-full rounded-3xl bg-coquette-cream p-6 shadow-lg border border-coquette-blush/20 overflow-hidden"
+                                style={{ boxShadow: '0 20px 40px rgba(255, 182, 193, 0.15)' }}
                             >
-                                <div className="flex flex-col items-center">
-                                    {
-                                        <div className="flex justify-between items-start w-full">
-                                            <motion.div 
-                                                className="flex items-center mb-3 mt-3 ml-3 bg-gradient-to-r from-brand-50 to-violet-50 p-4 rounded-2xl shadow-md border border-violet-100"
-                                                initial={{ x: -20, opacity: 0 }}
-                                                animate={{ x: 0, opacity: 1 }}
-                                                transition={{ delay: 0.2 }}
-                                            >
-                                                <div className="relative h-12 w-12 overflow-hidden rounded-full ring-2 ring-brand-100 shadow-inner">
-                                                    <Image
-                                                        className="h-full w-full object-cover"
-                                                        src={
-                                                            recipe.owner.image ||
-                                                            "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
-                                                        }
-                                                        alt={`Profile-Picture-${recipe.owner.name}`}
-                                                        width={48}
-                                                        height={48}
+                                <div className="flex flex-col">
+                                    <div className="flex justify-between items-start w-full mb-4">
+                                        <motion.div
+                                            className="flex items-center"
+                                            initial={{ x: -20, opacity: 0 }}
+                                            animate={{ x: 0, opacity: 1 }}
+                                            transition={{ delay: 0.2 }}
+                                        >
+                                            <div className="relative h-10 w-10 overflow-hidden rounded-full ring-2 ring-coquette-blush/30 shadow-sm">
+                                                <Image
+                                                    className="h-full w-full object-cover"
+                                                    src={
+                                                        recipe.owner.image ||
+                                                        "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
+                                                    }
+                                                    alt={`Profile-Picture-${recipe.owner.name}`}
+                                                    width={40}
+                                                    height={40}
+                                                />
+                                            </div>
+                                            <div className="ml-3">
+                                                <motion.p
+                                                    className="text-sm font-medium text-coquette-rose"
+                                                    initial={{ y: -10, opacity: 0 }}
+                                                    animate={{ y: 0, opacity: 1 }}
+                                                    transition={{ delay: 0.3 }}
+                                                    style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                                                >
+                                                    <UserLink
+                                                        userId={recipe.owner._id}
+                                                        name={recipe.owner.name}
                                                     />
-                                                </div>
-                                                <div className="ml-4">
-                                                    <motion.p 
-                                                        className="text-lg font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-violet-600"
-                                                        initial={{ y: -10, opacity: 0 }}
-                                                        animate={{ y: 0, opacity: 1 }}
-                                                        transition={{ delay: 0.3 }}
-                                                    >
-                                                        <UserLink
-                                                            userId={recipe.owner._id}
-                                                            name={recipe.owner.name}
-                                                        />
-                                                    </motion.p>
-                                                    <motion.p 
-                                                        className="text-sm text-gray-500"
-                                                        initial={{ y: 10, opacity: 0 }}
-                                                        animate={{ y: 0, opacity: 1 }}
-                                                        transition={{ delay: 0.4 }}
-                                                    >
-                                                        {formatDate(recipe.createdAt)}
-                                                    </motion.p>
-                                                </div>
-                                            </motion.div>
-                                            <motion.div
-                                                initial={{ x: 20, opacity: 0 }}
-                                                animate={{ x: 0, opacity: 1 }}
-                                                transition={{ delay: 0.2 }}
-                                                className="mt-3 mr-3"
-                                            >
-                                                <ActionPopover
-                                                    handlers={{
-                                                handleClone,
-                                                handleCopy,
-                                                closeDialog: close,
-                                                handlePlayRecipe,
-                                                deleteDialog: handleDeleteDialog,
-                                                deleteRecipe: deleteAndRemoveRecipe,
-                                            }}
-                                            states={{
-                                                hasAudio: Boolean(recipe.audio),
-                                                isLoadingAudio,
-                                                isPlayingAudio,
-                                                linkCopied,
-                                                isDeleteDialogOpen,
-                                            }}
-                                            data={{
-                                                recipe,
-                                                buttonType: <EllipsisVerticalIcon className="h-6 w-6 text-violet-500" />,
-                                            }}
-                                        />
-                                            </motion.div>
-                                        </div>
-                                    }
+                                                </motion.p>
+                                                <motion.p
+                                                    className="text-xs text-gray-500"
+                                                    initial={{ y: 10, opacity: 0 }}
+                                                    animate={{ y: 0, opacity: 1 }}
+                                                    transition={{ delay: 0.4 }}
+                                                    style={{ fontFamily: "'Poppins', sans-serif" }}
+                                                >
+                                                    {formatDate(recipe.createdAt)}
+                                                </motion.p>
+                                            </div>
+                                        </motion.div>
+                                        <motion.div
+                                            initial={{ x: 20, opacity: 0 }}
+                                            animate={{ x: 0, opacity: 1 }}
+                                            transition={{ delay: 0.2 }}
+                                        >
+                                            <ActionPopover
+                                                handlers={{
+                                            handleClone,
+                                            handleCopy,
+                                            closeDialog: close,
+                                            handlePlayRecipe,
+                                            deleteDialog: handleDeleteDialog,
+                                            deleteRecipe: deleteAndRemoveRecipe,
+                                        }}
+                                        states={{
+                                            hasAudio: Boolean(recipe.audio),
+                                            isLoadingAudio,
+                                            isPlayingAudio,
+                                            linkCopied,
+                                            isDeleteDialogOpen,
+                                        }}
+                                        data={{
+                                            recipe,
+                                            buttonType: <EllipsisVerticalIcon className="h-5 w-5 text-coquette-lavender" />,
+                                        }}
+                                    />
+                                        </motion.div>
+                                    </div>
                                     {
                                         isLoading ?
                                             <Loading />

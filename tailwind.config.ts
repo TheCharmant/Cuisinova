@@ -11,6 +11,7 @@ const config: Config = {
         heading: ["'Baloo 2'", "'Fredoka One'", 'Montserrat', 'cursive', 'sans-serif'],
         body: ["'Poppins'", "'Nunito'", 'Quicksand', 'sans-serif'],
         accent: ["'Pacifico'", 'cursive'],
+        serif: ["'Playfair Display'", "'Cormorant Garamond'", 'serif'],
       },
       keyframes: {
         fadeInUp: {
@@ -20,11 +21,21 @@ const config: Config = {
         bounceSparkle: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-8px) scale(1.1)' }
+        },
+        gentleGlow: {
+          '0%': { boxShadow: '0 0 5px rgba(247, 200, 208, 0.2)' },
+          '100%': { boxShadow: '0 0 20px rgba(247, 200, 208, 0.4)' }
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-10px)' }
         }
       },
       animation: {
         fadeInUp: 'fadeInUp 0.5s ease-out forwards',
         bounceSparkle: 'bounceSparkle 0.8s infinite',
+        gentleGlow: 'gentleGlow 2s ease-in-out infinite alternate',
+        float: 'float 3s ease-in-out infinite',
       },
       colors: {
         brand: {
@@ -65,6 +76,17 @@ const config: Config = {
           200: "#fff3d9",
           300: "#ffeccc",
         },
+        coquette: {
+          cream: "#FFF9F8",
+          blush: "#F7C8D0",
+          lavender: "#C8B8EA",
+          gold: "#F8D49D",
+          rose: "#C06C84",
+          pearl: "#F5F5F5",
+          softPink: "#FCE4EC",
+          lavenderLight: "#E1BEE7",
+          mint: "#E8F5E8",
+        },
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
@@ -75,6 +97,8 @@ const config: Config = {
       boxShadow: {
         soft: '0 8px 32px 0 rgba(236, 72, 153, 0.12)',
         pastel: '0 4px 24px 0 rgba(255, 179, 133, 0.10)',
+        delicate: '0 4px 16px rgba(247, 200, 208, 0.15)',
+        glow: '0 0 20px rgba(247, 200, 208, 0.3)',
       },
       zIndex: {
         100: "100",

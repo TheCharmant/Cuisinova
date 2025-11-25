@@ -10,6 +10,7 @@ interface Tag {
 interface UsePaginationProps {
   endpoint: string;
   sortOption: string;
+  filterOption?: string;
   searchQuery?: string; // Search query, if applicable
   searchTrigger?: boolean; // Ensures search only runs when explicitly triggered
   limit?: number;
@@ -100,6 +101,7 @@ function reducer(state: PaginationState, action: PaginationAction): PaginationSt
 export const usePagination = ({
   endpoint,
   sortOption,
+  filterOption = "",
   searchQuery = "",
   searchTrigger = false,
   limit = 12,
@@ -108,7 +110,7 @@ export const usePagination = ({
   const [state, dispatch] = useReducer(reducer, initialState(searchQuery, sortOption));
 
   // We'll use this ref to detect when the search or sort parameters change.
-  const prevParamsRef = useRef({ endpoint, sortOption, searchQuery });
+  const prevParamsRef = useRef({ endpoint, sortOption, filterOption, searchQuery });
 
   // A helper that lets us check conditions for aborting the fetch.
   // We pass in an explicit page (which may be 1 if parameters just changed)
@@ -138,13 +140,14 @@ export const usePagination = ({
     const paramsChanged =
       prevParamsRef.current.endpoint !== endpoint ||
       prevParamsRef.current.sortOption !== sortOption ||
+      prevParamsRef.current.filterOption !== filterOption ||
       prevParamsRef.current.searchQuery !== searchQuery;
 
     if (paramsChanged) {
       // If parameters have changed, reset the state and force page 1 for fetching.
       dispatch({ type: "RESET", payload: { searchQuery, sortOption } });
       pageToFetch = 1;
-      prevParamsRef.current = { endpoint, sortOption, searchQuery };
+      prevParamsRef.current = { endpoint, sortOption, filterOption, searchQuery };
     }
 
     if (shouldAbortFetch(pageToFetch)) return;
@@ -153,8 +156,8 @@ export const usePagination = ({
       dispatch({ type: "FETCH_START" });
       try {
         const apiEndpoint = searchQuery.trim()
-          ? `${endpoint}?query=${encodeURIComponent(searchQuery.trim())}&page=${pageToFetch}&limit=${limit}`
-          : `${endpoint}?page=${pageToFetch}&limit=${limit}&sortOption=${sortOption}`;
+          ? `${endpoint}?query=${encodeURIComponent(searchQuery.trim())}&page=${pageToFetch}&limit=${limit}&sortOption=${sortOption}&filterOption=${filterOption}`
+          : `${endpoint}?page=${pageToFetch}&limit=${limit}&sortOption=${sortOption}&filterOption=${filterOption}`;
 
         const { currentPage, popularTags, recipes, totalPages, totalRecipes } = await call_api({ address: apiEndpoint });
         dispatch({

@@ -14,7 +14,7 @@
 | **Backend**   | Next.js API routes, MongoDB 5 via Mongoose, AWS S3, OpenAI SDK | DB helpers in `src/lib`                                        |
 | **Auth**      | next‑auth v4 (Google OAuth)                                    | session helpers already wired                                  |
 | **Tests**     | Jest + React Testing Library; Cypress E2E                      | run locally & in CI                                            |
-| **CI / CD**   | GitHub Actions → Vercel                                        | workflow files live in `.github/workflows`                     |
+| **CI / CD**   | GitHub Actions → Hostinger                                     | workflow files live in `.github/workflows`                     |
 
 ---
 
@@ -120,11 +120,10 @@ If you touch those areas, **mention the migration step in your PR description** 
   1. PR description follows the template in Section 3.
   2. Include fenced diff blocks (\`\`\`diff) for key changes so reviewers can skim quickly.
   3. End with `Closes #<issue>` when applicable.
-* **Foot‑guns** – 
+* **Foot‑guns** –
 
   * Avoid modifying `.next/**` or `public/**` generated assets.
   * Never commit secrets; use env placeholders.
-  * Keep `vercel.json` function timeouts in mind (≤ 60 s).
 
 ---
 

@@ -65,6 +65,15 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   if (session) {
     return (
       <div className="flex flex-col min-h-screen relative">
+        {/* Decorative background elements */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden">
+            <div className="absolute top-20 left-10 text-4xl opacity-30 animate-float">✨</div>
+            <div className="absolute top-40 right-16 text-3xl opacity-20 animate-bounceSparkle">💖</div>
+            <div className="absolute bottom-32 left-20 text-2xl opacity-25 animate-float" style={{animationDelay: '2s'}}>🌸</div>
+            <div className="absolute bottom-20 right-10 text-3xl opacity-20 animate-gentleGlow">🎀</div>
+            <div className="absolute top-1/2 left-1/4 text-2xl opacity-15 animate-float" style={{animationDelay: '4s'}}>💕</div>
+            <div className="absolute top-1/3 right-1/4 text-2xl opacity-20 animate-bounceSparkle" style={{animationDelay: '1s'}}>🌷</div>
+        </div>
         <AnimatedBackground />
         <Header user={session.user} />
         <AnimatePresence mode="wait">
