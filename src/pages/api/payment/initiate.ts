@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { apiMiddleware } from '../../lib/apiMiddleware';
-import { connectDB } from '../../lib/mongodb';
-import User from '../../models/user';
+import { apiMiddleware } from '@/lib/apiMiddleware';
+import { connectDB } from '@/lib/mongodb';
+import User from '@/models/user';
 import paymongo from 'paymongo';
 
 interface PaymentData {

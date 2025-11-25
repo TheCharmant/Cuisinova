@@ -103,6 +103,7 @@ function useActionPopover(recipe: ExtendedRecipe | null, updateRecipe: (audioLin
         handlePlayRecipe,
         handleDeleteDialog,
         handleDeleteRecipe,
+        killAudio: stopAudio,
         linkCopied,
         isLoadingAudio,
         isPlayingAudio: isPlayingAudio && currentRecipe?._id === recipe?._id,

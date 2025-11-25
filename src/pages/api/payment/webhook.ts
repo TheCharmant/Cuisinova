@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { connectDB } from '../../../lib/mongodb';
-import User from '../../../models/user';
+import { connectDB } from '@/lib/mongodb';
+import User from '@/models/user';
 import paymongo from 'paymongo';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {

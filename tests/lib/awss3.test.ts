@@ -160,7 +160,7 @@ describe('Uploading audio to S3', () => {
 
     it('will upload the audio to S3 successfully', async () => {
         // Call the function to upload images
-        const ans = await uploadAudioToS3(audioMock);
+        const ans = await uploadAudioToS3(audioMock.audioBuffer, audioMock.fileName);
 
         // Extract call arguments from the mock
         const [params1] = mockS3Client.send.args;
@@ -187,7 +187,7 @@ describe('Uploading audio to S3', () => {
         };
         try {
             // Call the function to upload images
-           await uploadAudioToS3(audioMock);;
+           await uploadAudioToS3(audioMock.audioBuffer, audioMock.fileName);
         } catch (error) {
             expect(error).toEqual(new Error('Failed to upload audio to S3: Error: Unable to configure S3'))
         }
