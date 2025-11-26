@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Cuisinova</string>
+    <string name="title_activity_main">Cuisinova</string>
+    <string name="package_name">com.cuisinova.app</string>
+    <string name="custom_url_scheme">com.cuisinova.app</string>
+</resources>

@@ -34,9 +34,8 @@ export const authOptions: NextAuthOptions = {
             return session
         },
         async redirect({ url, baseUrl }) {
-            // Always redirect to the index page after sign-in, unless the recipe detail page is requested
-            if (url.includes('RecipeDetail')) return url
-            return baseUrl; // this is equivalent to '/'
+            // Always redirect to the server URL for mobile app
+            return "https://cuisinova.cloud";
         }
     },
 
