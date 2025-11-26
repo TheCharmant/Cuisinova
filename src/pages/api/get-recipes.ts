@@ -45,12 +45,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
         }
 
         // POST: Generate recipes using OpenAI API
-        const { ingredients, dietaryPreferences } = req.body;
+        const { ingredients, categories, dietaryPreferences } = req.body;
         if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
             return res.status(400).json({ error: 'Ingredients are required' });
         }
         console.info('Generating recipes from OpenAI...');
-        const response = await generateRecipe(ingredients, dietaryPreferences, session.user.id);
+        const response = await generateRecipe(ingredients, categories, dietaryPreferences, session.user.id);
         res.status(200).json(response);
     } catch (error) {
         console.error(error);

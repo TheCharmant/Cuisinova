@@ -63,6 +63,7 @@ export default function StepComponent({
         return (
           <ReviewComponent
             ingredients={ingredients}
+            categories={categories}
             dietaryPreference={preferences}
             onEdit={editInputs}
             onSubmit={handleIngredientSubmit}

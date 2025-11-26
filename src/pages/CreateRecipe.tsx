@@ -197,8 +197,9 @@ function Navigation({
         <div className="text-center mb-6 relative">
           <h1 className="text-3xl font-bold coquette-text text-center relative">
              Create Recipe
-           </h1>
-           <p className="text-coquette-lavender coquette-body mt-2">Let's whip up something magical together! 💕</p>
+            </h1>
+            {/* eslint-disable-next-line react/no-unescaped-entities */}
+            <p className="text-coquette-lavender coquette-body mt-2">Let's whip up something magical together! 💕</p>
         </div>
 
         {/* Progress Bar */}

@@ -125,7 +125,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
 
         // Run `generateRecipeTags` asynchronously in the background
         savedRecipes.forEach((r) => {
-            generateRecipeTags(r as ExtendedRecipe, session.user.id)
+            generateRecipeTags(r as unknown as ExtendedRecipe, session.user.id)
                 .catch((error) => console.error(`Failed to generate tags for recipe ${r.name}:`, error));
         });
 
