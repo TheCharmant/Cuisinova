@@ -48,6 +48,7 @@ function Navigation({
   const [isLoading, setIsLoading] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [loadingType, setLoadingType] = useState<'generation' | 'saving'>('generation')
+  const [userLimitReached, setUserLimitReached] = useState(false);
 
   const router = useRouter();
   const { oldIngredients } = router.query;
@@ -59,6 +60,23 @@ function Navigation({
       );
     }
   }, [oldIngredients]);
+
+  useEffect(() => {
+    const checkUserLimit = async () => {
+      try {
+        const data = await call_api({
+          address: '/api/profile',
+          method: 'get'
+        });
+        if (data.totalGeneratedCount >= data.apiRequestLimit) {
+          setUserLimitReached(true);
+        }
+      } catch (error) {
+        console.error('Failed to check user limit:', error);
+      }
+    };
+    checkUserLimit();
+  }, []);
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -137,11 +155,11 @@ function Navigation({
   if (!recipeCreationData || typeof recipeCreationData !== 'object') {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
-  if (recipeCreationData.reachedLimit) {
+  if (recipeCreationData.reachedLimit || userLimitReached) {
     return (
       <LimitReached
-        message="You have reached the maximum number of interactions with our AI services. Please try again later."
-        actionText="Go to Home"
+        message="You have reached the maximum number of AI recipe generations. Upgrade to premium for unlimited access!"
+        actionText="Go to Subscriptions"
         fullHeight
       />
     );
@@ -241,14 +259,15 @@ function Navigation({
         {/* Navigation Buttons */}
         {!isLoading && (
           <div className="flex justify-between items-center mt-8">
-            <button
-              onClick={handleBack}
-              disabled={currentStep === 0}
-              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-coquette-blush to-coquette-lavender text-white rounded-full font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-delicate hover:shadow-glow"
-            >
-              <ChevronLeftIcon className="w-5 h-5" />
-              Back
-            </button>
+            {currentStep > 0 && (
+              <button
+                onClick={handleBack}
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-coquette-blush to-coquette-lavender text-white rounded-full font-medium transition-all duration-300 shadow-delicate hover:shadow-glow"
+              >
+                <ChevronLeftIcon className="w-5 h-5" />
+                Back
+              </button>
+            )}
             <div className="text-sm text-coquette-lavender font-medium">
               Step {currentStep + 1} of {steps.length}
             </div>
