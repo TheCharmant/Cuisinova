@@ -111,7 +111,7 @@ export default function ProfileInformation({
         {/* AI Usage */}
         <div className="w-full mt-7">
           <div className="text-sm text-violet-600 font-medium text-center mb-1">
-            AI Generations: {totalGeneratedCount}/{apiRequestLimit}
+            AI Usage: {totalGeneratedCount}/{apiRequestLimit}
           </div>
           <div className="text-xs text-gray-500 text-center mb-2">
             {Math.max(0, apiRequestLimit - totalGeneratedCount)} generations left
