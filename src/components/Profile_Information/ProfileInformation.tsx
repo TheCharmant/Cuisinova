@@ -111,14 +111,17 @@ export default function ProfileInformation({
         {/* AI Usage */}
         <div className="w-full mt-7">
           <div className="text-sm text-violet-600 font-medium text-center mb-1">
-            AI Usage: {AIusage}% of 100%
+            AI Generations: {totalGeneratedCount}/{apiRequestLimit}
+          </div>
+          <div className="text-xs text-gray-500 text-center mb-2">
+            {Math.max(0, apiRequestLimit - totalGeneratedCount)} generations left
           </div>
 
           <div className="w-full bg-violet-100 rounded-full h-3 shadow-inner overflow-hidden">
             <motion.div
-              className={`${getUsageColor(AIusage)} h-3 rounded-full shadow-md`}
+              className={`${getUsageColor((totalGeneratedCount / apiRequestLimit) * 100)} h-3 rounded-full shadow-md`}
               initial={{ width: 0 }}
-              animate={{ width: `${AIusage}%` }}
+              animate={{ width: `${(totalGeneratedCount / apiRequestLimit) * 100}%` }}
               transition={{ duration: 0.55, ease: "easeOut" }}
             />
           </div>
