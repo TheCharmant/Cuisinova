@@ -1,11 +1,16 @@
 import { GetServerSideProps } from 'next';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { getSession } from 'next-auth/react';
+import mongoose from 'mongoose';
 import ProfileInformation from '../components/Profile_Information/ProfileInformation';
 import ProfileStickyBanner from '../components/Profile_Information/ProfileStickyBanner';
 import ViewRecipes from '../components/Recipe_Display/ViewRecipes';
-import { getServerSidePropsUtility, updateRecipeList } from '../utils/utils';
+import { updateRecipeList, filterResults } from '../utils/utils';
 import { ExtendedRecipe } from '../types';
+import { connectDB } from '../lib/mongodb';
+import Recipe from '../models/recipe';
+import aigenerated from '../models/aigenerated';
 
 interface ProfileProps {
     profileData: {
@@ -107,7 +112,61 @@ function Profile({ profileData }: ProfileProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    return await getServerSidePropsUtility(context, 'api/profile', 'profileData')
+    try {
+        const session = await getSession(context);
+        if (!session) {
+            return {
+                redirect: {
+                    destination: '/',
+                    permanent: false,
+                },
+            };
+        }
+
+        // Convert session user ID to a mongoose ObjectId
+        const mongooseUserId = new mongoose.Types.ObjectId(session.user.id);
+
+        // Connect to the database
+        await connectDB();
+
+        // Fetch recipes owned or liked by the user
+        const profilePins = await Recipe.find({
+            $or: [{ owner: mongooseUserId }, { likedBy: mongooseUserId }],
+        })
+            .populate(['owner', 'likedBy', 'comments.user'])
+            .lean()
+            .exec() as unknown as ExtendedRecipe[];
+
+        // Count the number of AI-generated entries associated with the user's ID to get overall usage
+        const totalGeneratedCount = await aigenerated.countDocuments({ userId: session.user.id }).exec();
+        const apiRequestLimit = 10;
+        const AIusage = Math.min(Math.round((totalGeneratedCount / apiRequestLimit) * 100), 100);
+        // Filter results based on user session and respond with the filtered recipes
+        const filteredRecipes = filterResults(profilePins, session.user.id);
+
+        return {
+            props: {
+                profileData: {
+                    recipes: filteredRecipes,
+                    AIusage,
+                    totalGeneratedCount,
+                    apiRequestLimit
+                },
+            },
+        };
+    } catch (error) {
+        console.error('Failed to fetch profile data:', error);
+        return {
+            props: {
+                profileData: {
+                    recipes: [],
+                    AIusage: 0,
+                    totalGeneratedCount: 0,
+                    apiRequestLimit: 10
+                },
+            },
+        };
+    }
 };
 
 export default Profile;

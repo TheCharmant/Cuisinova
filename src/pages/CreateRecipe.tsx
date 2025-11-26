@@ -1,16 +1,22 @@
 import { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
+import { getSession } from 'next-auth/react';
 import { v4 as uuidv4 } from 'uuid';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+import mongoose from 'mongoose';
 import Loading from '../components/Loading';
 import IngredientForm from '../components/Recipe_Creation/IngredientForm';
 import DietaryPreferences from '../components/Recipe_Creation/DietaryPreferences';
 import ReviewIngredients from '../components/Recipe_Creation/ReviewIngredients';
 import SelectRecipes from '../components/Recipe_Creation/SelectRecipes';
 import LimitReached from '../components/Recipe_Creation/LimitReached';
-import { call_api, getServerSidePropsUtility } from '../utils/utils';
+import { call_api } from '../utils/utils';
 import { Ingredient, DietaryPreference, RecipeCategory, Recipe, IngredientDocumentType } from '../types/index';
+import { connectDB } from '../lib/mongodb';
+import IngredientModel from '../models/ingredient';
+import RecipeModel from '../models/recipe';
+import User from '../models/user';
 
 const steps = [
   'Choose Ingredients',
@@ -266,7 +272,62 @@ function Navigation({
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  return await getServerSidePropsUtility(context, 'api/get-ingredients', 'recipeCreationData');
+    try {
+        const session = await getSession(context);
+        if (!session) {
+            return {
+                redirect: {
+                    destination: '/',
+                    permanent: false,
+                },
+            };
+        }
+
+        // Establish a connection to the MongoDB database
+        await connectDB();
+
+        // Check if user has reached the free plan limit of 10 recipes
+        const userRecipeCount = await RecipeModel.countDocuments({ owner: session.user.id }).exec();
+
+        // Check if user has an active subscription
+        const user = await User.findById(session.user.id).exec();
+        const hasActiveSubscription = user?.subscription?.status === 'active' &&
+            new Date(user.subscription.endDate) > new Date();
+
+        if (userRecipeCount >= 10 && !hasActiveSubscription) {
+            return {
+                props: {
+                    recipeCreationData: {
+                        reachedLimit: true,
+                        ingredientList: []
+                    },
+                },
+            };
+        }
+
+        // Retrieve all ingredients from the database, sorted alphabetically by name
+        const allIngredients = await IngredientModel.find().sort({ name: 1 }).exec() as unknown as IngredientDocumentType[];
+
+        // Respond with the list of ingredients and reachedLimit flag as false
+        return {
+            props: {
+                recipeCreationData: {
+                    reachedLimit: false,
+                    ingredientList: allIngredients
+                },
+            },
+        };
+    } catch (error) {
+        console.error('Failed to fetch ingredients:', error);
+        return {
+            props: {
+                recipeCreationData: {
+                    reachedLimit: false,
+                    ingredientList: []
+                },
+            },
+        };
+    }
 };
 
 export default Navigation;
