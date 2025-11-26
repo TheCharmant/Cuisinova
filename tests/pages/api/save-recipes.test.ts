@@ -112,7 +112,7 @@ describe('Saving recipes', () => {
         const updatedreq: any = {
             ...req,
             body: {
-                ingredientName: 'mockIngredient'
+                recipes: stubRecipeBatch
             }
         }
         await saveRecipes(updatedreq, res)

@@ -24,6 +24,37 @@ const getS3Link = (uploadResults: UploadReturnType[] | null, location: string) =
 };
 
 /**
+ * Validates a recipe object to ensure it has all required fields.
+ * @param recipe - The recipe object to validate.
+ * @returns True if valid, false otherwise.
+ */
+const validateRecipe = (recipe: Recipe): boolean => {
+    if (!recipe.name || typeof recipe.name !== 'string' || recipe.name.trim() === '') return false;
+    if (!Array.isArray(recipe.ingredients) || recipe.ingredients.length === 0) return false;
+    if (!Array.isArray(recipe.instructions) || recipe.instructions.length === 0) return false;
+    if (!Array.isArray(recipe.dietaryPreference)) return false;
+    if (!recipe.additionalInformation || typeof recipe.additionalInformation !== 'object') return false;
+    if (!recipe.additionalInformation.tips || typeof recipe.additionalInformation.tips !== 'string') return false;
+    if (!recipe.additionalInformation.variations || typeof recipe.additionalInformation.variations !== 'string') return false;
+    if (!recipe.additionalInformation.servingSuggestions || typeof recipe.additionalInformation.servingSuggestions !== 'string') return false;
+    if (!recipe.additionalInformation.nutritionalInformation || typeof recipe.additionalInformation.nutritionalInformation !== 'string') return false;
+    if (!Array.isArray(recipe.categories)) return false;
+    if (!recipe.openaiPromptId || typeof recipe.openaiPromptId !== 'string') return false;
+
+    // Validate ingredients
+    for (const ing of recipe.ingredients) {
+        if (!ing.name || typeof ing.name !== 'string' || !ing.quantity || typeof ing.quantity !== 'string') return false;
+    }
+
+    // Validate instructions
+    for (const inst of recipe.instructions) {
+        if (typeof inst !== 'string' || inst.trim() === '') return false;
+    }
+
+    return true;
+};
+
+/**
  * API handler for generating images for recipes, uploading them to S3, and saving the recipes to MongoDB.
  * @param req - The Next.js API request object.
  * @param res - The Next.js API response object.
@@ -44,11 +75,22 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
             return res.status(401).json({ error: 'Invalid session or user ID' });
         }
 
-        const recipeNames = recipes.map(({ name, ingredients }: Recipe) => ({ name, ingredients }));
+        // Validate recipes
+        if (!Array.isArray(recipes) || recipes.length === 0) {
+            console.error('No recipes provided or invalid format');
+            return res.status(400).json({ error: 'No valid recipes provided' });
+        }
+
+        for (const recipe of recipes) {
+            if (!validateRecipe(recipe)) {
+                console.error('Invalid recipe data:', recipe);
+                return res.status(400).json({ error: 'Invalid recipe data provided' });
+            }
+        }
 
         // Generate images using OpenAI
         console.info('Getting images from OpenAI...');
-        const imageResults = await generateImages(recipeNames, session.user.id);
+        const imageResults = await generateImages(recipes, session.user.id);
         console.info('OpenAI imageResults:', JSON.stringify(imageResults, null, 2));
 
         // Prepare images for uploading to S3

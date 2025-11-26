@@ -9,8 +9,8 @@ import { generateRecipe } from '../../lib/openai';
  */
 const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) => {
     try {
-        // Extract ingredients and dietary preferences from request body
-        const { ingredients, dietaryPreferences } = req.body;
+        // Extract ingredients, categories, and dietary preferences from request body
+        const { ingredients, categories, dietaryPreferences } = req.body;
 
         // Validate ingredients input
         if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
@@ -19,7 +19,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
 
         // Generate recipes using OpenAI API
         console.info('Generating recipes from OpenAI...');
-        const response = await generateRecipe(ingredients, dietaryPreferences, session.user.id);
+        const response = await generateRecipe(ingredients, categories || [], dietaryPreferences || [], session.user.id);
 
         // Respond with the generated recipes
         res.status(200).json(response);

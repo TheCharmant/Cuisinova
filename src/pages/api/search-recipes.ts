@@ -13,7 +13,7 @@ import { ExtendedRecipe, PaginationQueryType } from '../../types';
  */
 const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) => {
     try {
-        const { page, limit, skip, query } = paginationQueryHelper(req.query as unknown as PaginationQueryType)
+        const { page, limit, skip, sortOption, filterOption, query } = paginationQueryHelper(req.query as unknown as PaginationQueryType)
 
         if (!query) {
             return res.status(400).json({ error: 'Search query (tag) is required' });
@@ -23,7 +23,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
         await connectDB();
 
         // Search by tag, ingredient name, or recipe name
-        const searchQuery = {
+        let searchQuery: any = {
             $or: [
                 { "tags.tag": { $regex: query, $options: "i" } },
                 { "ingredients.name": { $regex: query, $options: "i" } },
@@ -31,11 +31,24 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
             ]
         };
 
+        // Apply filter
+        if (filterOption === 'liked') {
+            searchQuery.likedBy = { $in: [session.user.id] };
+        } else if (filterOption === 'saved') {
+            // Assuming saved is same as liked
+            searchQuery.likedBy = { $in: [session.user.id] };
+        }
+
+        // Apply sort
+        let sort: any = { createdAt: -1 };
+        if (sortOption === 'popular') sort = { likedBy: -1 };
+
         // Execute both queries in parallel for efficiency
         const [recipes, popularTags, totalRecipes] = await Promise.all([
             // 🔹 Fetch paginated search results
             Recipe.find(searchQuery)
                 .populate(['owner', 'likedBy', 'comments.user'])
+                .sort(sort)
                 .skip(skip)
                 .limit(limit)
                 .lean() as unknown as ExtendedRecipe[],

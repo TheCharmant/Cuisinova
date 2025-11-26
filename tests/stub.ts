@@ -28,6 +28,10 @@ export const stub_recipe_1 = {
         "Recipe_1_preference_1",
         "Recipe_1_preference_2"
     ],
+    "categories": [
+        "Recipe_1_category_1",
+        "Recipe_1_category_2"
+    ],
     "additionalInformation": {
         "tips": "Recipe_1_tips",
         "variations": "Recipe_1_variations",
@@ -79,6 +83,10 @@ const stub_recipe_2 = {
     "dietaryPreference": [
         "Recipe_2_preference_1",
         "Recipe_2_preference_2"
+    ],
+    "categories": [
+        "Recipe_2_category_1",
+        "Recipe_2_category_2"
     ],
     "additionalInformation": {
         "tips": "Recipe_2_tips",

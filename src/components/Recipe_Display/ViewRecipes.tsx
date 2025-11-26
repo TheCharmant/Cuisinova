@@ -58,8 +58,8 @@ function ViewRecipes({ recipes, handleRecipeListUpdate, lastRecipeRef }: ViewRec
                 animate="visible"
                 variants={containerVariants}
             >
-                <motion.div 
-                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8"
+                <motion.div
+                    className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4"
                     variants={containerVariants}
                 >
                     {recipes.map((recipe, index) => (

@@ -129,37 +129,77 @@ const RecipeCard = ({ recipe, handleRecipeSelection, selectedRecipes, showSwitch
                     ))}
                 </motion.div>
 
-                {/* === Dietary Preferences === */}
-                <motion.h3
-                    className="text-coquette-lavender font-semibold text-base mb-3 font-sans"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.4 }}
-                    style={{ fontFamily: "'Poppins', sans-serif" }}
-                >
-                    Dietary Preference
-                </motion.h3>
-                <motion.div
-                    className="mb-5 flex flex-wrap gap-2"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5, staggerChildren: 0.05 }}
-                >
-                    {recipe.dietaryPreference.map((preference, index) => (
-                        <motion.span
-                            key={preference}
-                            className="bg-coquette-blush/20 text-coquette-rose text-sm px-3 py-1.5 rounded-full border border-coquette-blush/30"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 + (index * 0.03) }}
-                            whileHover={{ scale: 1.05, backgroundColor: "rgba(247, 200, 208, 0.3)" }}
-                            whileTap={{ scale: 0.95 }}
+                {/* === Categories === */}
+                {recipe.categories && recipe.categories.length > 0 && (
+                    <>
+                        <motion.h3
+                            className="text-coquette-lavender font-semibold text-base mb-3 font-sans"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.35 }}
                             style={{ fontFamily: "'Poppins', sans-serif" }}
                         >
-                            {preference}
-                        </motion.span>
-                    ))}
-                </motion.div>
+                            Categories
+                        </motion.h3>
+                        <motion.div
+                            className="mb-5 flex flex-wrap gap-2"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.4, staggerChildren: 0.05 }}
+                        >
+                            {recipe.categories.map((category, index) => (
+                                <motion.span
+                                    key={category}
+                                    className="bg-coquette-lavender/20 text-coquette-rose text-sm px-3 py-1.5 rounded-full border border-coquette-lavender/30"
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.15 + (index * 0.03) }}
+                                    whileHover={{ scale: 1.05, backgroundColor: "rgba(200, 184, 234, 0.3)" }}
+                                    whileTap={{ scale: 0.95 }}
+                                    style={{ fontFamily: "'Poppins', sans-serif" }}
+                                >
+                                    {category}
+                                </motion.span>
+                            ))}
+                        </motion.div>
+                    </>
+                )}
+
+                {/* === Dietary Preferences === */}
+                {recipe.dietaryPreference && recipe.dietaryPreference.length > 0 && (
+                    <>
+                        <motion.h3
+                            className="text-coquette-lavender font-semibold text-base mb-3 font-sans"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.45 }}
+                            style={{ fontFamily: "'Poppins', sans-serif" }}
+                        >
+                            Dietary Preference
+                        </motion.h3>
+                        <motion.div
+                            className="mb-5 flex flex-wrap gap-2"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.5, staggerChildren: 0.05 }}
+                        >
+                            {recipe.dietaryPreference.map((preference, index) => (
+                                <motion.span
+                                    key={preference}
+                                    className="bg-coquette-blush/20 text-coquette-rose text-sm px-3 py-1.5 rounded-full border border-coquette-blush/30"
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.2 + (index * 0.03) }}
+                                    whileHover={{ scale: 1.05, backgroundColor: "rgba(247, 200, 208, 0.3)" }}
+                                    whileTap={{ scale: 0.95 }}
+                                    style={{ fontFamily: "'Poppins', sans-serif" }}
+                                >
+                                    {preference}
+                                </motion.span>
+                            ))}
+                        </motion.div>
+                    </>
+                )}
 
                 {/* === Collapsible: Instructions === */}
                 <Disclosure>

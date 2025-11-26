@@ -147,8 +147,8 @@ const Home = () => {
             >
                 <div className="w-full">
                     <div className="flex flex-col items-center space-y-6">
-                        <div className="w-full max-w-4xl flex items-center justify-center">
-                            <motion.div className="flex-1 max-w-2xl">
+                        <div className="w-full max-w-2xl flex flex-row items-center justify-center gap-2">
+                            <motion.div className="flex-1 w-full">
                                 <SearchBar
                                     searchVal={searchVal}
                                     setSearchVal={setSearchVal}
@@ -159,7 +159,7 @@ const Home = () => {
 
                             {/* Filter/Sort Icon Button */}
                             <motion.button
-                                className="-ml-2 p-3 bg-white/90 backdrop-blur-sm rounded-2xl shadow-delicate border border-coquette-blush/30 hover:shadow-glow transition-all duration-300"
+                                className="p-3 bg-white/95 backdrop-blur-sm rounded-2xl shadow-delicate border-2 border-coquette-blush/50 hover:shadow-glow transition-all duration-300"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => setShowSortModal(true)}
@@ -241,6 +241,7 @@ const Home = () => {
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.8, opacity: 0 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
                         onClick={(e) => e.stopPropagation()}
                     >
                         <h3 className="text-xl font-bold text-coquette-rose mb-4 text-center coquette-text">Sort & Filter Recipes</h3>
@@ -320,7 +321,6 @@ const Home = () => {
                         <motion.div
                             className="flex flex-col items-center justify-center p-16 coquette-card shadow-delicate border border-coquette-blush/30 max-w-2xl mx-auto relative"
                         >
-                            <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-4xl animate-float">🎀</div>
                             <SparklesIcon className="h-20 w-20 text-coquette-lavender mb-6 animate-gentleGlow" />
                             <h3 className="text-2xl font-bold text-coquette-rose mb-4 coquette-text text-center">
                                 {searchVal
@@ -333,11 +333,6 @@ const Home = () => {
                                     ? "Try searching for different ingredients or create your own magical recipe! ✨"
                                     : "Be the first to create something delicious! Start by adding your favorite ingredients. 🌸"}
                             </p>
-                            <div className="flex gap-3">
-                                <span className="text-lg text-coquette-gold animate-bounceSparkle">✨</span>
-                                <span className="text-lg text-coquette-gold animate-bounceSparkle" style={{animationDelay: '0.5s'}}>💕</span>
-                                <span className="text-lg text-coquette-gold animate-bounceSparkle" style={{animationDelay: '1s'}}>🌸</span>
-                            </div>
                         </motion.div>
                     </div>
                 </motion.div>

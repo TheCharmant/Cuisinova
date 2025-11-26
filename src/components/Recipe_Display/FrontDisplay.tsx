@@ -40,8 +40,8 @@ const FrontDisplay = React.forwardRef<HTMLDivElement, FrontDisplayProps>(
     const isNew = new Date().getTime() - new Date(recipe.createdAt).getTime() < 24 * 60 * 60 * 1000; // 24 hours in ms
 
     return (
-        <div ref={ref} className="recipe-card max-w-sm bg-white rounded-2xl shadow-sm mt-4 mb-2 flex flex-col h-full overflow-hidden border border-gray-100">
-            <div className="relative w-full h-64 overflow-hidden">
+        <div ref={ref} className="recipe-card max-w-sm bg-white rounded-2xl shadow-sm mt-2 mb-1 flex flex-col h-full overflow-hidden border border-gray-100">
+            <div className="relative w-full h-48 overflow-hidden">
                 <Image
                     src={recipe.imgLink}
                     fill
@@ -68,11 +68,11 @@ const FrontDisplay = React.forwardRef<HTMLDivElement, FrontDisplayProps>(
                     </motion.button>
                 </div>
             </div>
-            <div className="p-5 flex-grow">
-                <h5 className="mb-2 text-xl font-semibold text-gray-900 text-center font-sans leading-tight">{recipe.name}</h5>
-                <p className="font-normal text-gray-500 text-sm text-center leading-relaxed">{recipe.additionalInformation.nutritionalInformation}</p>
+            <div className="p-3 flex-grow">
+                <h5 className="mb-1 text-lg font-semibold text-gray-900 text-center font-sans leading-tight">{recipe.name}</h5>
+                <p className="font-normal text-gray-500 text-xs text-center leading-relaxed">{recipe.additionalInformation.nutritionalInformation}</p>
             </div>
-            <div className="px-5 flex flex-wrap gap-2 mb-4 justify-center">
+            <div className="px-3 flex flex-wrap gap-1 mb-2 justify-center">
                 {
                     recipe.dietaryPreference.map((preference) => (
                         <motion.span
@@ -86,19 +86,19 @@ const FrontDisplay = React.forwardRef<HTMLDivElement, FrontDisplayProps>(
                     ))
                 }
             </div>
-            <div className="p-5 pt-0">
+            <div className="p-3 pt-0">
                 <div className="flex items-center justify-between">
                     <motion.button
-                        className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-purple-500 rounded-full shadow-sm focus:ring-2 focus:outline-none focus:ring-purple-300 hover:bg-purple-600"
+                        className="inline-flex items-center px-2 py-1 text-xs font-medium text-center text-white bg-purple-500 rounded-full shadow-sm focus:ring-2 focus:outline-none focus:ring-purple-300 hover:bg-purple-600"
                         onClick={() => showRecipe(recipe)}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                     >
                         See Recipe
-                        <ArrowRightCircleIcon className="block ml-2 h-4 w-4" />
+                        <ArrowRightCircleIcon className="block ml-1 h-3 w-3" />
                     </motion.button>
                     <motion.button
-                        className="py-2 px-4 text-purple-600 text-center border border-purple-200 rounded-full flex items-center gap-2 bg-purple-50 hover:bg-purple-100"
+                        className="py-0.5 px-1.5 text-purple-600 text-center border border-purple-200 rounded-full flex items-center gap-1 bg-purple-50 hover:bg-purple-100"
                         onClick={() => handleRecipeLike(recipe._id)}
                         disabled={recipe.owns}
                         data-testid="like_button"
@@ -106,7 +106,7 @@ const FrontDisplay = React.forwardRef<HTMLDivElement, FrontDisplayProps>(
                         whileTap={{ scale: 0.95 }}
                     >
                         {getThumbsup(recipe)}
-                        <span className="font-medium text-sm">{recipe.likedBy.length}</span>
+                        <span className="font-medium text-xs">{recipe.likedBy.length}</span>
                     </motion.button>
                 </div>
             </div>

@@ -153,7 +153,8 @@ export const paginationQueryHelper = (queryObj: PaginationQueryType) => {
   const limit = Number(queryObj.limit) || 12; // Default: 12 recipes per page
   const skip = (page - 1) * limit;
   const sortOption = typeof queryObj.sortOption === 'string' ? queryObj.sortOption : 'popular';
+  const filterOption = typeof queryObj.filterOption === 'string' ? queryObj.filterOption : 'all';
   const query = typeof queryObj.query === 'string' ? queryObj.query : undefined;
 
-  return { page, limit, skip, sortOption, query };
+  return { page, limit, skip, sortOption, filterOption, query };
 };

@@ -29,8 +29,6 @@ const FloatingActionButtons = () => {
 
   return (
     <div className="fixed bottom-8 right-8 flex flex-col items-end space-y-4 z-50">
-      {/* Kawaii sparkles accent */}
-      <span className="absolute -top-6 right-2 text-2xl opacity-60 animate-bounceSparkle select-none pointer-events-none">✨</span>
       {/* "Create Recipe" Button (Always Visible) */}
       <motion.button
         onClick={() => router.push('/CreateRecipe')}
@@ -51,7 +49,7 @@ const FloatingActionButtons = () => {
         {isVisible && (
           <motion.button
             onClick={scrollToTop}
-            className="bg-cream-100 text-violet-500 w-16 h-16 rounded-full shadow-pastel flex items-center justify-center hover:bg-peach-100 hover:text-violet-600 border-2 border-violet-200 backdrop-blur-md kawaii-fab transition-all duration-300"
+            className="bg-cream-100 text-violet-500 w-12 h-12 rounded-full shadow-pastel flex items-center justify-center hover:bg-peach-100 hover:text-violet-600 border-2 border-violet-200 backdrop-blur-md kawaii-fab transition-all duration-300"
             aria-label="Scroll to Top"
             initial={{ opacity: 0, scale: 0, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -61,7 +59,7 @@ const FloatingActionButtons = () => {
             whileTap={{ scale: 0.97 }}
             style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}
           >
-            <ArrowUpIcon className="h-8 w-8 opacity-80" />
+            <ArrowUpIcon className="h-6 w-6 opacity-80" />
           </motion.button>
         )}
       </AnimatePresence>

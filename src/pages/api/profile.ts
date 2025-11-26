@@ -30,10 +30,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
 
         // Count the number of AI-generated entries associated with the user's ID to get overall usage
         const totalGeneratedCount = await aigenerated.countDocuments({ userId: session.user.id }).exec();
-        const AIusage = Math.min(Math.round((totalGeneratedCount / Number(process.env.API_REQUEST_LIMIT)) * 100), 100);
+        const apiRequestLimit = 10;
+        const AIusage = Math.min(Math.round((totalGeneratedCount / apiRequestLimit) * 100), 100);
         // Filter results based on user session and respond with the filtered recipes
         const filteredRecipes = filterResults(profilePins, session.user.id);
-        res.status(200).json({ recipes: filteredRecipes, AIusage });
+        res.status(200).json({ recipes: filteredRecipes, AIusage, totalGeneratedCount, apiRequestLimit });
     } catch (error) {
         // Handle any errors that occur during fetching recipes
         console.error(error);

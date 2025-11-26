@@ -14,19 +14,34 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
         if (req.method === 'GET') {
             // Fetch recipes from the database
             await connectDB();
-            const { page = 1, limit = 12, sortOption = 'recent' } = req.query;
+            const { page = 1, limit = 12, sortOption = 'recent', filterOption = 'all' } = req.query;
             const pageNum = parseInt(page as string, 10) || 1;
             const limitNum = parseInt(limit as string, 10) || 12;
             let sort: any = { createdAt: -1 };
             if (sortOption === 'popular') sort = { likedBy: -1 };
             // You can add more sort options as needed
-            const recipes = await recipeModel.find({})
+            let query: any = {};
+            if (filterOption === 'liked') {
+                query.likedBy = { $in: [session.user.id] };
+            } else if (filterOption === 'saved') {
+                // Assuming saved is same as liked for now
+                query.likedBy = { $in: [session.user.id] };
+            }
+            // For 'all', no additional query
+            const recipes = await recipeModel.find(query)
                 .sort(sort)
                 .skip((pageNum - 1) * limitNum)
                 .limit(limitNum)
                 .lean();
-            const total = await recipeModel.countDocuments({});
-            return res.status(200).json({ recipes, total });
+            const totalRecipes = await recipeModel.countDocuments(query);
+            const totalPages = Math.ceil(totalRecipes / limitNum);
+            return res.status(200).json({
+                recipes,
+                currentPage: pageNum,
+                totalPages,
+                totalRecipes,
+                popularTags: [] // Placeholder, as not implemented
+            });
         }
 
         // POST: Generate recipes using OpenAI API

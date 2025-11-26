@@ -10,7 +10,13 @@ import {
   GlobeAltIcon,
   HeartIcon,
 } from '@heroicons/react/24/solid';
-import { DietaryPreference, Recipe } from '../../types/index';
+import { DietaryPreference, RecipeCategory, Recipe } from '../../types/index';
+
+const categoryGroups = {
+  Meals: ['Breakfast', 'Lunch', 'Dinner', 'Snack'] as RecipeCategory[],
+  Desserts: ['Ice cream', 'Cake', 'Cookies', 'Brownies', 'Donuts'] as RecipeCategory[],
+  Drinks: ['Smoothie', 'Juice', 'Coffee', 'Tea', 'Milk'] as RecipeCategory[],
+};
 
 const dietaryOptions: DietaryPreference[] = [
   'Vegetarian',
@@ -43,13 +49,17 @@ const tooltipMap: Record<DietaryPreference, string> = {
 };
 
 interface DietaryPreferencesProps {
+  categories: RecipeCategory[];
   preferences: DietaryPreference[];
+  updateCategories: (categories: RecipeCategory[]) => void;
   updatePreferences: (preferences: DietaryPreference[]) => void;
   generatedRecipes: Recipe[];
 }
 
 export default function DietaryPreferences({
+  categories,
   preferences,
+  updateCategories,
   updatePreferences,
   generatedRecipes,
 }: DietaryPreferencesProps) {
@@ -60,6 +70,12 @@ export default function DietaryPreferences({
       setNoPreference(true)
     }
   }, [preferences.length])
+
+  const handleCategoryChange = (checked: boolean, category: RecipeCategory) => {
+    if (checked && categories.length >= 2) return; // Max 2
+    const updatedCategories = categories.includes(category) ? categories.filter((c) => c !== category) : [...categories, category]
+    updateCategories(updatedCategories)
+  };
 
   const handlePreferenceChange = (checked: boolean, option: DietaryPreference) => {
     const updatedPreferences = preferences.includes(option) ? preferences.filter((p) => p !== option) : [...preferences, option]
@@ -77,12 +93,55 @@ export default function DietaryPreferences({
     >
       {/* Enhanced Title */}
       <h2 className="text-xl font-medium text-gray-800 mb-2 sm:text-2xl">
-        Dietary Preferences
+        Recipe Preferences
       </h2>
       <p className="text-sm text-gray-500 mb-4">
-        Choose as many preferences as you like—your recipes will match them!
+        Select 1-2 categories and dietary restrictions for your recipes!
       </p>
 
+      {/* Category Selection */}
+      <div className="mb-6">
+        <h3 className="text-lg font-medium text-gray-700 mb-3">Categories</h3>
+        {Object.entries(categoryGroups).map(([groupName, groupCategories]) => (
+          <div key={groupName} className="mb-4">
+            <h4 className="text-md font-medium text-gray-600 mb-2">{groupName}</h4>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              {groupCategories.map((category) => {
+                const selected = categories.includes(category);
+                const disabled = !selected && categories.length >= 2;
+                return (
+                  <div
+                    key={category}
+                    className={`flex items-center p-2 rounded-lg border transition-colors cursor-pointer ${
+                      selected ? 'bg-brand-50 border-brand-600' : disabled ? 'bg-gray-100 border-gray-200 opacity-50' : 'bg-white border-gray-200 hover:bg-gray-50'
+                    } ${generatedRecipes.length ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-md'}`}
+                    onClick={() => {
+                      if (generatedRecipes.length) return;
+                      handleCategoryChange(!selected, category);
+                    }}
+                  >
+                    <Checkbox
+                      checked={selected}
+                      onChange={(e) => handleCategoryChange(e, category)}
+                      className={`shrink-0 h-5 w-5 rounded border flex items-center justify-center ${selected ? 'bg-brand-600 border-brand-600' : 'bg-white border-gray-300'} focus:outline-none focus:ring-2 focus:ring-brand-500 transition-colors`}
+                      disabled={disabled || Boolean(generatedRecipes.length)}
+                      aria-label={category}
+                    >
+                      {selected && <CheckIcon className="h-3 w-3 text-white" />}
+                    </Checkbox>
+                    <span className="ml-2 text-gray-700 text-sm">{category}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <hr className="mb-4" />
+
+      {/* Dietary Preferences */}
+      <h3 className="text-lg font-medium text-gray-700 mb-3">Dietary Restriction</h3>
       {/* "No Preference" Option */}
       <div className="flex items-center mb-4">
         <Checkbox
@@ -95,7 +154,7 @@ export default function DietaryPreferences({
         >
           {noPreference && <CheckIcon className="h-3 w-3 text-white" />}
         </Checkbox>
-        <span className="ml-3 text-gray-700">No Preference</span>
+        <span className="ml-3 text-gray-700">No Restriction</span>
       </div>
 
       <hr className="mb-4" />

@@ -1,7 +1,7 @@
-import { Ingredient, DietaryPreference, Recipe, ExtendedRecipe } from '../types/index'
+import { Ingredient, DietaryPreference, RecipeCategory, Recipe, ExtendedRecipe } from '../types/index'
 
-export const getRecipeGenerationPrompt = (ingredients: Ingredient[], dietaryPreferences: DietaryPreference[]) => `
-I have the following ingredients: ${JSON.stringify(ingredients)}${dietaryPreferences.length ? ` and dietary preferences: ${dietaryPreferences.join(',')}` : ''}. Please provide me with three different delicious and diverse recipes. The response should be in the following JSON format without any additional text, markdown, or code formatting (e.g., no backticks):
+export const getRecipeGenerationPrompt = (ingredients: Ingredient[], categories: RecipeCategory[], dietaryPreferences: DietaryPreference[]) => `
+I have the following ingredients: ${JSON.stringify(ingredients)}${categories.length ? ` and preferred categories: ${categories.join(',')}` : ''}${dietaryPreferences.length ? ` and dietary preferences: ${dietaryPreferences.join(',')}` : ''}. Please provide me with three different delicious and diverse recipes. The response should be in the following JSON format without any additional text, markdown, or code formatting (e.g., no backticks):
 [
     {
         "name": "Recipe Name",

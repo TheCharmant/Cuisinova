@@ -1,215 +1,202 @@
-import { useRouter } from 'next/router';
-import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
-import { Bars3Icon, XMarkIcon, HomeIcon, PlusCircleIcon, InformationCircleIcon } from '@heroicons/react/24/outline'
-import Image from 'next/image'
-import { signOut } from 'next-auth/react';
-import Notifications from './Notifications';
-import { motion } from 'framer-motion';
+import { useRouter } from "next/router";
+import Link from "next/link";
+import {
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+} from "@headlessui/react";
+import {
+  Bars3Icon,
+  XMarkIcon,
+  HomeIcon,
+  PlusCircleIcon,
+} from "@heroicons/react/24/outline";
+import Image from "next/image";
+import { signOut } from "next-auth/react";
+import { motion } from "framer-motion";
 
 const userNavigation = [
-    { name: 'Your Profile', route: '/Profile' },
-    { name: 'Sign out', route: '/auth/signout' },
-]
+  { name: "Your Profile", route: "./Profile" },
+  { name: "Sign out", route: "/auth/signout" },
+];
 
 const navigation = [
-    { 
-        name: 'Home', 
-        route: '/Home', 
-        icon: HomeIcon,
-        style: 'bg-coquette-cream/80 text-coquette-rose hover:bg-coquette-softPink hover:text-coquette-lavender shadow-delicate backdrop-blur-sm',
-    },
-    { 
-        name: 'Create Recipes', 
-        route: '/CreateRecipe', 
-        icon: PlusCircleIcon,
-        style: 'bg-gradient-to-r from-coquette-blush to-coquette-lavender text-white px-4 py-2 rounded-full shadow-delicate hover:shadow-glow',
-    },
-]
+  {
+    name: "Home",
+    route: "/Home",
+    icon: HomeIcon,
+  },
+  {
+    name: "Create Recipes",
+    route: "/CreateRecipe",
+    icon: PlusCircleIcon,
+  },
+];
 
 function classNames(...classes: string[]) {
-    return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(" ");
 }
 
-interface HeaderProps {
-    user: {
-        name?: string | null | undefined
-        image?: string | null | undefined
-        email?: string | null | undefined
-    } | undefined
+export default function Header({ user }: any) {
+  const router = useRouter();
+
+  const handleNavigation = (item: any) => {
+    if (item.name === "Sign out") return signOut();
+    router.push(item.route);
+  };
+
+  if (!user) return null;
+
+  return (
+    <Disclosure
+      as="nav"
+      className="sticky top-0 z-header bg-gradient-to-r from-coquette-cream via-coquette-softPink to-coquette-lavender backdrop-blur-xl shadow-delicate border-b border-coquette-blush/30"
+    >
+      {({ open }) => (
+        <>
+          {/* Desktop Header */}
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex h-20 items-center justify-between">
+              {/* Logo + Nav */}
+              <div className="flex items-center gap-4">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-white rounded-full p-1 shadow-lg"
+                >
+                  <Image
+                    src="/cuisinova-logo.png"
+                    alt="Cuisinova Logo"
+                    width={50}
+                    height={50}
+                    className="rounded-full border-4 border-coquette-blush/50 shadow-delicate"
+                    priority
+                  />
+                </motion.div>
+
+                {/* Desktop Nav */}
+                <div className="hidden md:flex items-center space-x-4 ml-6">
+                  {navigation.map((item) => {
+                    const isActive = router.pathname === item.route;
+                    return (
+                      <Link
+                        key={item.name}
+                        href={item.route}
+                        className={classNames(
+                          "flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold text-base transition-all duration-300 shadow-delicate",
+                          isActive
+                            ? "bg-white/95 text-coquette-rose ring-2 ring-coquette-blush/50 backdrop-blur-sm"
+                            : "bg-coquette-cream/80 text-coquette-rose hover:bg-coquette-softPink hover:text-coquette-lavender"
+                        )}
+                      >
+                        <item.icon className="h-5 w-5 opacity-70" />
+                        {item.name}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Desktop User Menu */}
+              <div className="hidden md:flex items-center gap-4">
+                <Menu as="div" className="relative">
+                  <MenuButton className="rounded-full border-2 border-coquette-blush/40 bg-white shadow-delicate hover:shadow-glow transition-all">
+                    <Image
+                      src={user?.image || ""}
+                      alt="profile"
+                      width={40}
+                      height={40}
+                      className="h-10 w-10 rounded-full"
+                    />
+                  </MenuButton>
+
+                  <MenuItems className="absolute right-0 mt-2 w-48 rounded-xl bg-white/95 shadow-delicate border border-coquette-blush/20 backdrop-blur-sm p-2">
+                    {userNavigation.map((item) => (
+                      <MenuItem key={item.name}>
+                        {({ focus }) => (
+                          <button
+                            onClick={() => handleNavigation(item)}
+                            className={classNames(
+                              "w-full text-left px-4 py-2 rounded-lg font-medium transition-all",
+                              focus && "bg-coquette-softPink/40"
+                            )}
+                          >
+                            {item.name}
+                          </button>
+                        )}
+                      </MenuItem>
+                    ))}
+                  </MenuItems>
+                </Menu>
+              </div>
+
+              {/* Mobile Menu Button */}
+              <div className="md:hidden">
+                <DisclosureButton className="rounded-full p-3 bg-white/20 text-white backdrop-blur-sm shadow-lg">
+                  {open ? (
+                    <XMarkIcon className="h-6 w-6" />
+                  ) : (
+                    <Bars3Icon className="h-6 w-6" />
+                  )}
+                </DisclosureButton>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Menu */}
+          <DisclosurePanel className="md:hidden px-4 pb-4">
+            {/* Mobile Nav */}
+            <div className="mt-3 space-y-3 bg-gradient-to-r from-coquette-cream/90 via-coquette-softPink/70 to-coquette-lavender/70 backdrop-blur-lg p-4 rounded-2xl shadow-delicate border border-coquette-blush/30">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.route}
+                  className={classNames(
+                    "flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all",
+                    router.pathname === item.route
+                      ? "bg-white/95 text-coquette-rose shadow-delicate ring-2 ring-coquette-blush/50"
+                      : "bg-coquette-cream/80 text-coquette-rose hover:bg-coquette-softPink hover:text-coquette-lavender"
+                  )}
+                >
+                  <item.icon className="h-5 w-5 opacity-70" />
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+
+            {/* Mobile User Section */}
+            <div className="mt-3 p-4 bg-gradient-to-r from-coquette-cream/90 via-coquette-softPink/70 to-coquette-lavender/70 rounded-2xl backdrop-blur-lg shadow-delicate border border-coquette-blush/30">
+              <div className="flex items-center gap-3 mb-4">
+                <Image
+                  src={user?.image || ""}
+                  alt="profile"
+                  width={45}
+                  height={45}
+                  className="rounded-full border-2 border-coquette-blush/50 shadow-md"
+                />
+                <div>
+                  <p className="font-bold text-coquette-rose">{user?.name}</p>
+                  <p className="text-sm text-coquette-rose/70">{user?.email}</p>
+                </div>
+              </div>
+
+              {userNavigation.map((item) => (
+                <button
+                  key={item.name}
+                  onClick={() => handleNavigation(item)}
+                  className="w-full text-left px-4 py-3 rounded-lg font-semibold text-coquette-rose hover:bg-coquette-softPink/60 hover:text-coquette-lavender transition-all"
+                >
+                  {item.name}
+                </button>
+              ))}
+            </div>
+          </DisclosurePanel>
+        </>
+      )}
+    </Disclosure>
+  );
 }
-
-function Header({ user }: HeaderProps) {
-
-    const router = useRouter();
-
-    const handleNavigation = (menu: { name: string, route: string }) => {
-        if (menu.name === 'Sign out') {
-            signOut()
-            return
-        }
-        router.push(menu.route)
-    }
-
-    if (!user) return null;
-    return (
-    <Disclosure as="nav" className="sticky top-0 z-header bg-gradient-to-r from-coquette-cream via-coquette-softPink to-coquette-lavender shadow-delicate backdrop-blur-md bg-opacity-95 border-b-2 border-coquette-blush/30" style={{ scrollbarGutter: 'stable', fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}>
-            {({ open }) => (
-                <>
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <div className="flex h-20 items-center justify-between">
-                            <div className="flex items-center">
-                                <motion.div 
-                                    className="flex-shrink-0 bg-white rounded-full p-1 shadow-lg"
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                >
-                                    <Image
-                                        src="/cuisinova-logo.png"
-                                        alt="Cuisinova Logo"
-                                        width={50}
-                                        height={50}
-                                        className="rounded-full border-4 border-coquette-blush/50 shadow-delicate"
-                                        priority
-                                    />
-                                </motion.div>
-                                <div className="hidden md:block">
-                                    <div className="ml-10 flex items-baseline space-x-6">
-                                        {navigation.map((item) => (
-                                            <motion.button
-                                                key={item.name}
-                                                className={classNames(
-                                                    item.route === router.pathname
-                                                        ? 'bg-white/95 text-coquette-rose font-bold shadow-delicate ring-2 ring-coquette-blush/50 backdrop-blur-sm'
-                                                        : item.style,
-                                                    'rounded-full px-5 py-2.5 text-base font-bold flex items-center gap-2 transition-all duration-300 kawaii-nav',
-                                                )}
-                                                aria-current={item.route === router.pathname ? 'page' : undefined}
-                                                onClick={() => handleNavigation(item)}
-                                                whileHover={{ scale: 1.08, rotate: 2 }}
-                                                whileTap={{ scale: 0.96 }}
-                                                style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}
-                                            >
-                                                <item.icon className="h-5 w-5 opacity-70" />
-                                                {item.name}
-                                            </motion.button>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="hidden md:block">
-                                <div className="ml-4 flex items-center md:ml-6 space-x-4">
-                                    {/* Profile dropdown */}
-                                    <Menu as="div" className="relative">
-                                        <div>
-                                            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                                <MenuButton className="relative flex max-w-xs items-center rounded-full bg-white/95 border-2 border-coquette-blush/40 text-sm focus:outline-none focus:ring-2 focus:ring-coquette-lavender focus:ring-offset-2 focus:ring-offset-coquette-softPink shadow-delicate hover:shadow-glow transition-all duration-300 backdrop-blur-sm">
-                                                    <span className="absolute -inset-1.5" />
-                                                    <span className="sr-only">Open user menu</span>
-                                                    <Image
-                                                        src={user?.image || ''}
-                                                        alt=""
-                                                        width={75}
-                                                        height={75}
-                                                        className="h-10 w-10 rounded-full"
-                                                    />
-                                                </MenuButton>
-                                            </motion.div>
-                                        </div>
-                                        <MenuItems
-                                            className="absolute right-0 z-overlay mt-2 w-48 origin-top-right rounded-2xl bg-white/95 py-2 shadow-delicate ring-1 ring-coquette-blush/30 border border-coquette-blush/20 backdrop-blur-sm transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
-                                        >
-                                            {userNavigation.map((item) => (
-                                                <MenuItem key={item.name}>
-                                                    {({ focus }) => (
-                                                        <motion.button
-                                                            className={classNames(
-                                                                focus ? 'bg-coquette-softPink/50' : '',
-                                                                'block px-4 py-3 text-sm text-coquette-lavender w-full text-left hover:bg-gradient-to-r hover:from-coquette-softPink/30 hover:to-coquette-lavender/30 transition-all duration-300 coquette-body',
-                                                            )}
-                                                            onClick={() => handleNavigation(item)}
-                                                            whileHover={{ x: 5 }}
-                                                        >
-                                                            {item.name}
-                                                        </motion.button>
-                                                    )}
-                                                </MenuItem>
-                                            ))}
-                                        </MenuItems>
-                                    </Menu>
-                                </div>
-                            </div>
-                            <div className="-mr-2 flex md:hidden">
-                                {/* Mobile menu button */}
-                                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                    <DisclosureButton className="relative inline-flex items-center justify-center rounded-full bg-white/20 p-3 text-white hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-brand-800 backdrop-blur-sm shadow-lg">
-                                        <span className="absolute -inset-0.5" />
-                                        <span className="sr-only">Open main menu</span>
-                                        {open ? (
-                                            <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-                                        ) : (
-                                            <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-                                        )}
-                                    </DisclosureButton>
-                                </motion.div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <DisclosurePanel className="md:hidden">
-                        <div className="space-y-3 px-4 pb-4 pt-4 sm:px-5 bg-white/5 backdrop-blur-sm mt-2 rounded-2xl mx-2 shadow-lg">
-                            {navigation.map((item) => (
-                                <motion.div key={item.name} whileHover={{ x: 5 }} whileTap={{ scale: 0.98 }}>
-                                    <DisclosureButton
-                                        className={classNames(
-                                            item.route === router.pathname
-                                                ? 'bg-white/95 text-coquette-rose shadow-delicate ring-2 ring-coquette-blush/50 backdrop-blur-sm'
-                                                : 'bg-coquette-cream/80 text-coquette-lavender hover:bg-coquette-softPink',
-                                            'flex items-center gap-3 w-full rounded-xl px-4 py-3 text-base font-bold transition-all duration-300 kawaii-nav',
-                                        )}
-                                        aria-current={item.route === router.pathname ? 'page' : undefined}
-                                        onClick={() => handleNavigation(item)}
-                                        style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}
-                                    >
-                                        <item.icon className="h-5 w-5 opacity-70" />
-                                        {item.name}
-                                    </DisclosureButton>
-                                </motion.div>
-                            ))}
-                        </div>
-                        <div className="border-t border-white/10 mx-2 mt-2 pb-3 pt-4">
-                            <div className="flex items-center px-5 bg-white/5 backdrop-blur-sm rounded-xl p-4 shadow-md">
-                                <div className="flex-shrink-0">
-                                    <Image
-                                        src={user?.image || ''}
-                                        alt=""
-                                        width={75}
-                                        height={75}
-                                        className="h-12 w-12 rounded-full border-2 border-white/70 shadow-md"
-                                    />
-                                </div>
-                                <div className="ml-4">
-                                    <div className="text-base font-bold leading-none text-white">{user?.name}</div>
-                                    <div className="text-sm font-medium leading-none text-gray-200 mt-1.5">{user?.email}</div>
-                                </div>
-                            </div>
-                            <div className="mt-4 space-y-2 px-2 bg-white/5 backdrop-blur-sm rounded-xl p-2 mx-2 shadow-md">
-                                {userNavigation.map((item) => (
-                                    <motion.div key={item.name} whileHover={{ x: 5 }} whileTap={{ scale: 0.98 }}>
-                                        <DisclosureButton
-                                            className="block w-full rounded-xl px-4 py-3 text-base font-medium text-white hover:bg-white/10 transition-all duration-300 text-left"
-                                            onClick={() => handleNavigation(item)}
-                                        >
-                                            {item.name}
-                                        </DisclosureButton>
-                                    </motion.div>
-                                ))}
-                            </div>
-                        </div>
-                    </DisclosurePanel>
-                </>
-            )}
-        </Disclosure>
-    )
-}
-
-export default Header

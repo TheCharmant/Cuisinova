@@ -84,8 +84,6 @@ export default function RecipeDetail() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-cream-100 via-peach-100 to-violet-100 p-6 animate-fadeInUp relative overflow-x-hidden">
-            {/* Kawaii sparkles accent */}
-            <span className="absolute left-10 top-10 text-4xl opacity-50 animate-bounceSparkle select-none pointer-events-none">✨</span>
             {/* Recipe Card */}
             <div className="max-w-4xl mx-auto bg-gradient-to-br from-peach-100 via-white to-violet-50 shadow-pastel rounded-[2.5rem] overflow-hidden border-2 border-peach-100 hover:shadow-2xl transition-all duration-300 kawaii-card">
                 <RecipeHeader recipeData={recipeData} /> {/* Recipe header with image and title */}

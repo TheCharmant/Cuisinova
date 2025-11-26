@@ -10,7 +10,9 @@ import { ExtendedRecipe } from '../types';
 interface ProfileProps {
     profileData: {
         recipes: ExtendedRecipe[];
-        AIusage: number
+        AIusage: number;
+        totalGeneratedCount?: number;
+        apiRequestLimit?: number;
     }
 }
 
@@ -38,8 +40,10 @@ function Profile({ profileData }: ProfileProps) {
         return view;
     };
 
-    // Defensive check for AIusage
+    // Defensive checks
     const safeAIusage = typeof profileData?.AIusage === 'number' ? profileData.AIusage : 0;
+    const safeTotalGeneratedCount = typeof profileData?.totalGeneratedCount === 'number' ? profileData.totalGeneratedCount : 0;
+    const safeApiRequestLimit = typeof profileData?.apiRequestLimit === 'number' ? profileData.apiRequestLimit : 10;
 
     if (!profileData) {
         return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -79,6 +83,8 @@ function Profile({ profileData }: ProfileProps) {
                             updateSelection={(val) => setDisplaySetting(val)}
                             selectedDisplay={displaySetting}
                             AIusage={safeAIusage}
+                            totalGeneratedCount={safeTotalGeneratedCount}
+                            apiRequestLimit={safeApiRequestLimit}
                         />
                     </div>
                 </div>

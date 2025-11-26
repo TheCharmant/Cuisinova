@@ -9,6 +9,9 @@ export type Ingredient = {
 // Type for dietary preferences in client
 export type DietaryPreference = 'Vegetarian' | 'Vegan' | 'Gluten-Free' | 'Keto' | 'Dairy-Free' | 'Halal' | 'Kosher';
 
+// Type for recipe categories
+export type RecipeCategory = 'Breakfast' | 'Lunch' | 'Dinner' | 'Snack' | 'Ice cream' | 'Cake' | 'Cookies' | 'Brownies' | 'Donuts' | 'Smoothie' | 'Juice' | 'Coffee' | 'Tea' | 'Milk';
+
 interface RecipeIngredient {
     name: string;
     quantity: string;
@@ -26,6 +29,7 @@ export interface Recipe {
     ingredients: RecipeIngredient[];
     instructions: string[];
     dietaryPreference: string[];
+    categories: string[];
     additionalInformation: AdditionalInformation;
     openaiPromptId: string
 }
@@ -105,5 +109,6 @@ export interface PaginationQueryType {
     page?: string,
     limit?: string,
     sortOption?: string,
+    filterOption?: string,
     query?: string
 }

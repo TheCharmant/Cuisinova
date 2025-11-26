@@ -8,16 +8,6 @@ const AnimatedBackground = () => {
     left: `${Math.random() * 100}%`,
   });
 
-  const floatingElements = [
-    { emoji: '✨', size: 'text-2xl', delay: 0 },
-    { emoji: '💫', size: 'text-xl', delay: 1 },
-    { emoji: '🌸', size: 'text-lg', delay: 2 },
-    { emoji: '🍃', size: 'text-base', delay: 3 },
-    { emoji: '🦋', size: 'text-lg', delay: 4 },
-    { emoji: '🌟', size: 'text-xl', delay: 5 },
-    { emoji: '💖', size: 'text-sm', delay: 6 },
-    { emoji: '🌺', size: 'text-base', delay: 7 },
-  ];
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
@@ -38,29 +28,6 @@ const AnimatedBackground = () => {
           ease: 'easeInOut'
         }}
       />
-
-      {/* Floating elements */}
-      {floatingElements.map((element, index) => (
-        <motion.div
-          key={index}
-          className={`absolute ${element.size} opacity-20 select-none`}
-          style={generateRandomPosition()}
-          animate={{
-            y: [0, -20, 0],
-            x: [0, 10, -10, 0],
-            rotate: [0, 5, -5, 0],
-            scale: [1, 1.1, 0.9, 1],
-          }}
-          transition={{
-            duration: 6 + Math.random() * 4,
-            repeat: Infinity,
-            delay: element.delay,
-            ease: 'easeInOut',
-          }}
-        >
-          {element.emoji}
-        </motion.div>
-      ))}
 
       {/* Subtle geometric shapes */}
       <motion.div

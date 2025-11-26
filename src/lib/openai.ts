@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { Ingredient, DietaryPreference, Recipe, ExtendedRecipe } from '../types/index';
+import { Ingredient, DietaryPreference, RecipeCategory, Recipe, ExtendedRecipe } from '../types/index';
 import aiGenerated from '../models/aigenerated';
 import { connectDB } from '../lib/mongodb';
 import { ImagesResponse } from 'openai/resources';
@@ -46,8 +46,8 @@ type ResponseType = {
     openaiPromptId: string;
 };
 
-// Generate recipes by sending a chat completion request to OpenAI using ingredients and dietary preferences
-export const generateRecipe = async (ingredients: Ingredient[], dietaryPreferences: DietaryPreference[], userId: string): Promise<ResponseType> => {
+// Generate recipes by sending a chat completion request to OpenAI using ingredients, categories, and dietary preferences
+export const generateRecipe = async (ingredients: Ingredient[], categories: RecipeCategory[], dietaryPreferences: DietaryPreference[], userId: string): Promise<ResponseType> => {
     try {
         // API request limit check removed
         await connectDB();
@@ -58,7 +58,7 @@ export const generateRecipe = async (ingredients: Ingredient[], dietaryPreferenc
         //     throw new Error(`You have reached your limit of ${apiRequestLimit} AI-generated recipes.`);
         // }
         
-        const prompt = getRecipeGenerationPrompt(ingredients, dietaryPreferences);
+        const prompt = getRecipeGenerationPrompt(ingredients, categories, dietaryPreferences);
         const model = 'gpt-3.5-turbo';
         const response = await openai.chat.completions.create({
             model,
@@ -69,7 +69,22 @@ export const generateRecipe = async (ingredients: Ingredient[], dietaryPreferenc
             max_tokens: 1500,
         });
         const _id = await saveOpenaiResponses({ userId, prompt, response, model });
-        return { recipes: response.choices[0].message?.content, openaiPromptId: _id || 'null-prompt-id' };
+        const recipesContent = response.choices[0].message?.content;
+        if (recipesContent) {
+            try {
+                const parsedRecipes = JSON.parse(recipesContent);
+                // Ensure dietaryPreference and categories are set to the selected values
+                const updatedRecipes = parsedRecipes.map((recipe: any) => ({
+                    ...recipe,
+                    dietaryPreference: dietaryPreferences.length > 0 ? dietaryPreferences : [],
+                    categories: categories.length > 0 ? categories : []
+                }));
+                return { recipes: JSON.stringify(updatedRecipes), openaiPromptId: _id || 'null-prompt-id' };
+            } catch (error) {
+                console.error('Failed to parse AI response:', error);
+            }
+        }
+        return { recipes: recipesContent, openaiPromptId: _id || 'null-prompt-id' };
     } catch (error) {
         console.error('Failed to generate recipe:', error);
         throw new Error(error instanceof Error ? error.message : 'Failed to generate recipe');

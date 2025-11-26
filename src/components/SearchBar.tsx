@@ -38,13 +38,13 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   return (
     <div
-      className={`relative flex items-center w-full max-w-xl mx-auto bg-white/90 backdrop-blur-sm rounded-lg shadow-md hover:shadow-lg border border-gray-300 transition-all duration-300 ${className}`}
+      className={`relative flex items-center w-full max-w-xl mx-auto bg-white/90 backdrop-blur-sm rounded-2xl shadow-md hover:shadow-lg border border-gray-300 transition-all duration-300 ${className}`}
       style={{ fontFamily: 'Poppins, Nunito, Quicksand, sans-serif' }}
     >
       <div
         className="flex items-center justify-center p-2 text-gray-500 hover:text-gray-700 transition-all duration-200"
       >
-        <MagnifyingGlassIcon className="h-5 w-5" />
+        <MagnifyingGlassIcon className="h-4 w-4" />
       </div>
       <input
         ref={inputRef}

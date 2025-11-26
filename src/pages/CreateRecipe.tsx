@@ -2,23 +2,25 @@ import { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { v4 as uuidv4 } from 'uuid';
-import { ChevronDownIcon } from '@heroicons/react/24/solid';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import Loading from '../components/Loading';
-import StepComponent from '../components/Recipe_Creation/StepComponent';
-import ReviewComponent from '../components/Recipe_Creation/ReviewIngredients';
-import SelectRecipesComponent from '../components/Recipe_Creation/SelectRecipes';
+import IngredientForm from '../components/Recipe_Creation/IngredientForm';
+import DietaryPreferences from '../components/Recipe_Creation/DietaryPreferences';
+import ReviewIngredients from '../components/Recipe_Creation/ReviewIngredients';
+import SelectRecipes from '../components/Recipe_Creation/SelectRecipes';
 import LimitReached from '../components/Recipe_Creation/LimitReached';
 import { call_api, getServerSidePropsUtility } from '../utils/utils';
-import { Ingredient, DietaryPreference, Recipe, IngredientDocumentType } from '../types/index';
+import { Ingredient, DietaryPreference, RecipeCategory, Recipe, IngredientDocumentType } from '../types/index';
 
 const steps = [
   'Choose Ingredients',
-  'Choose Diet',
-  'Review and Create Recipes',
+  'Choose Dietary Preferences',
+  'Review & Generate Recipes',
   'Select Recipes',
 ];
 
 const initialIngredients: Ingredient[] = [];
+const initialCategories: RecipeCategory[] = [];
 const initialPreferences: DietaryPreference[] = [];
 const initialRecipes: Recipe[] = [];
 const initialSelectedIds: string[] = [];
@@ -31,8 +33,9 @@ function Navigation({
     reachedLimit: boolean;
   };
 }) {
-  const [step, setStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
   const [ingredients, setIngredients] = useState(initialIngredients);
+  const [categories, setCategories] = useState(initialCategories);
   const [preferences, setPreferences] = useState(initialPreferences);
   const [generatedRecipes, setGeneratedRecipes] = useState(initialRecipes);
   const [selectedRecipeIds, setSelectedRecipeIds] = useState(initialSelectedIds);
@@ -51,8 +54,19 @@ function Navigation({
     }
   }, [oldIngredients]);
 
+  const handleNext = () => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
 
-  const handleIngredientSubmit = async () => {
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleGenerate = async () => {
     try {
       setIsLoading(true);
       setIsComplete(false);
@@ -63,6 +77,7 @@ function Navigation({
         method: 'post',
         payload: {
           ingredients,
+          categories,
           dietaryPreferences: preferences,
         },
       });
@@ -76,15 +91,15 @@ function Navigation({
       setIsComplete(true);
       setTimeout(() => {
         setIsLoading(false);
-        setStep(step + 1);
-      }, 500); // Smooth transition after completion
+        setCurrentStep(3); // Go to select recipes
+      }, 500);
     } catch (error) {
       console.log(error);
       setIsLoading(false);
     }
   };
 
-  const handleRecipeSubmit = async (recipes: Recipe[]) => {
+  const handleSave = async (recipes: Recipe[]) => {
     try {
       setIsLoading(true);
       setIsComplete(false);
@@ -99,10 +114,11 @@ function Navigation({
       setTimeout(() => {
         setIsLoading(false);
         setIngredients(initialIngredients);
+        setCategories(initialCategories);
         setPreferences(initialPreferences);
         setGeneratedRecipes(initialRecipes);
         setSelectedRecipeIds(initialSelectedIds);
-        setStep(0);
+        setCurrentStep(0);
         router.push('/Profile');
       }, 500);
     } catch (error) {
@@ -110,7 +126,6 @@ function Navigation({
       setIsLoading(false);
     }
   };
-
 
   // Defensive checks for undefined/null data
   if (!recipeCreationData || typeof recipeCreationData !== 'object') {
@@ -125,85 +140,124 @@ function Navigation({
       />
     );
   }
-  const safeGeneratedRecipes = Array.isArray(generatedRecipes) ? generatedRecipes : [];
-  const safeIngredientList = Array.isArray(recipeCreationData.ingredientList) ? recipeCreationData.ingredientList : [];
-  return (
-  <div className="min-h-screen p-4 md:p-8 flex justify-center relative overflow-hidden">
-    {/* Decorative elements */}
-    <div className="absolute top-10 left-10 text-3xl opacity-60 animate-float">🌸</div>
-    <div className="absolute top-20 right-16 text-2xl opacity-50 animate-bounceSparkle">💖</div>
-    <div className="absolute bottom-20 left-20 text-2xl opacity-40 animate-float" style={{animationDelay: '1s'}}>✨</div>
-    <div className="absolute bottom-10 right-10 text-3xl opacity-30 animate-gentleGlow">🎀</div>
 
-    <div className={`w-full space-y-4 animate-fadeInUp ${safeGeneratedRecipes.length ? 'max-w-7xl' : 'max-w-2xl'}`}>
-      <div className="text-center mb-6 relative">
-        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 text-4xl opacity-70 animate-float">🎀</div>
-        <h1 className="text-3xl font-bold coquette-text text-center relative">
-           Create Recipe
-           <span className="absolute -right-8 top-0 text-2xl animate-bounceSparkle">✨</span>
-         </h1>
-         {/* eslint-disable-next-line react/no-unescaped-entities */}
-         <p className="text-coquette-lavender coquette-body mt-2">Let's whip up something magical together! 💕</p>
-      </div>
-        {safeGeneratedRecipes.length === 0 ? (
-          steps.slice(0, 3).map((title, idx) => (
-            <div key={title} className="coquette-card">
+  const safeIngredientList = Array.isArray(recipeCreationData.ingredientList) ? recipeCreationData.ingredientList : [];
+  const progressPercentage = ((currentStep + 1) / steps.length) * 100;
+
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 0:
+        return (
+          <IngredientForm
+            ingredientList={safeIngredientList}
+            ingredients={ingredients}
+            updateIngredients={setIngredients}
+            generatedRecipes={[]}
+          />
+        );
+      case 1:
+        return (
+          <DietaryPreferences
+            categories={categories}
+            preferences={preferences}
+            updateCategories={setCategories}
+            updatePreferences={setPreferences}
+            generatedRecipes={[]}
+          />
+        );
+      case 2:
+        return (
+          <ReviewIngredients
+            ingredients={ingredients}
+            categories={categories}
+            dietaryPreference={preferences}
+            onSubmit={handleGenerate}
+            onEdit={() => setCurrentStep(0)}
+            generatedRecipes={[]}
+          />
+        );
+      case 3:
+        return (
+          <SelectRecipes
+            generatedRecipes={generatedRecipes}
+            selectedRecipes={selectedRecipeIds}
+            updateSelectedRecipes={setSelectedRecipeIds}
+            handleRecipeSubmit={handleSave}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="min-h-screen p-4 md:p-8 flex justify-center relative overflow-hidden">
+      <div className="w-full max-w-4xl space-y-6 animate-fadeInUp">
+        {/* Header */}
+        <div className="text-center mb-6 relative">
+          <h1 className="text-3xl font-bold coquette-text text-center relative">
+             Create Recipe
+           </h1>
+           <p className="text-coquette-lavender coquette-body mt-2">Let's whip up something magical together! 💕</p>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="coquette-card p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold coquette-text">Step {currentStep + 1} of {steps.length}</h2>
+            <span className="text-sm text-coquette-lavender">{steps[currentStep]}</span>
+          </div>
+          <div className="w-full bg-coquette-softPink rounded-full h-3 mb-4">
+            <div
+              className="bg-gradient-to-r from-coquette-blush to-coquette-lavender h-3 rounded-full transition-all duration-500"
+              style={{ width: `${progressPercentage}%` }}
+            ></div>
+          </div>
+          <div className="flex justify-between text-xs text-coquette-lavender">
+            {steps.map((step, index) => (
+              <span key={index} className={index <= currentStep ? 'text-coquette-rose font-medium' : ''}>
+                {index + 1}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Step Content */}
+        <div className="coquette-card p-6 pb-12 mb-16">
+          {isLoading ? (
+            <Loading isProgressBar isComplete={isComplete} loadingType={loadingType} />
+          ) : (
+            renderStepContent()
+          )}
+        </div>
+
+        {/* Navigation Buttons */}
+        {!isLoading && (
+          <div className="flex justify-between items-center mt-8">
+            <button
+              onClick={handleBack}
+              disabled={currentStep === 0}
+              className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-coquette-blush to-coquette-lavender text-white rounded-full font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-delicate hover:shadow-glow"
+            >
+              <ChevronLeftIcon className="w-5 h-5" />
+              Back
+            </button>
+            <div className="text-sm text-coquette-lavender font-medium">
+              Step {currentStep + 1} of {steps.length}
+            </div>
+            {currentStep < steps.length - 1 ? (
               <button
-                className={`w-full flex items-center justify-between p-4 font-medium text-left coquette-body ${step === idx ? 'text-coquette-rose' : 'text-coquette-lavender'}`}
-                onClick={() => setStep(step === idx ? -1 : idx)}
+                onClick={handleNext}
+                disabled={currentStep === 2 && (ingredients.length === 0 || preferences.length === 0)}
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-coquette-blush to-coquette-lavender text-white rounded-full font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-delicate hover:shadow-glow"
               >
-                <span>{`Step ${idx + 1}: ${title}`}</span>
-                <ChevronDownIcon
-                  className={`w-5 h-5 transform transition-transform ${step === idx ? 'rotate-180 text-coquette-lavender' : 'text-coquette-blush'}`}
-                />
+                Next
+                <ChevronRightIcon className="w-5 h-5" />
               </button>
-              {step === idx && (
-                <div className="p-4 border-t border-coquette-blush/30">
-                  {isLoading ? (
-                    <Loading isProgressBar isComplete={isComplete} loadingType={loadingType} />
-                  ) : (
-                    <StepComponent
-                      step={idx}
-                      ingredientList={safeIngredientList}
-                      ingredients={ingredients}
-                      updateIngredients={setIngredients}
-                      preferences={preferences}
-                      updatePreferences={setPreferences}
-                      editInputs={() => setStep(0)}
-                      handleIngredientSubmit={handleIngredientSubmit}
-                      generatedRecipes={safeGeneratedRecipes}
-                    />
-                  )}
-                </div>
-              )}
-            </div>
-          ))
-        ) : (
-          <>
-            <div className="coquette-card">
-              <div className="p-4">
-                <ReviewComponent
-                  ingredients={ingredients}
-                  dietaryPreference={preferences}
-                  onSubmit={() => {}}
-                  onEdit={() => {}}
-                  generatedRecipes={safeGeneratedRecipes}
-                />
-              </div>
-            </div>
-            <div className="coquette-card p-4">
-              {isLoading ? (
-                <Loading isProgressBar isComplete={isComplete} loadingType={loadingType} />
-              ) : (
-                <SelectRecipesComponent
-                  generatedRecipes={safeGeneratedRecipes}
-                  selectedRecipes={selectedRecipeIds}
-                  updateSelectedRecipes={setSelectedRecipeIds}
-                  handleRecipeSubmit={handleRecipeSubmit}
-                />
-              )}
-            </div>
-          </>
+            ) : (
+              <div></div> // Placeholder for alignment
+            )}
+          </div>
         )}
       </div>
     </div>

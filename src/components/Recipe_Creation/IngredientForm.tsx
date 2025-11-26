@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { Combobox, ComboboxInput, ComboboxButton, ComboboxOptions, ComboboxOption } from '@headlessui/react';
 import { CheckIcon, ChevronDownIcon, XMarkIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import clsx from 'clsx';
-import NewIngredientDialog from './NewIngredientDialog';
 import { Ingredient, Recipe, IngredientDocumentType } from '../../types/index';
 
 type ComboIngredient = { id: number; name: string };
@@ -40,7 +39,16 @@ function IngredientList({ ingredientList, ingredientUpdate, generatedRecipes }: 
 
     const handleSelectedIngredient = (ingredient: ComboIngredient) => {
         setSelectedIngredient(initialComboIngredient);
+        setQuery('');
         ingredientUpdate(ingredient?.name);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && query.trim()) {
+            setSelectedIngredient(initialComboIngredient);
+            ingredientUpdate(query.trim());
+            setQuery('');
+        }
     };
 
     return (
@@ -58,7 +66,9 @@ function IngredientList({ ingredientList, ingredientUpdate, generatedRecipes }: 
                         )}
                         displayValue={(ingredient: ComboIngredient) => ingredient?.name}
                         onChange={(event) => setQuery(event.target.value)}
-                        placeholder="Select an existing ingredient"
+                        onKeyDown={handleKeyDown}
+                        placeholder="Type an ingredient name"
+                        value={query}
                     />
                     <ComboboxButton className="absolute inset-y-0 right-0 flex items-center pr-3">
                         <ChevronDownIcon className="w-5 h-5 text-gray-400" aria-hidden="true" />
@@ -151,14 +161,7 @@ export default function IngredientForm({
         <div
             className="w-full p-4 sm:p-6 bg-gradient-to-br from-slate-50 to-stone-100 shadow-md rounded-xl animate-fadeInUp"
         >
-            {/* Enhanced "Add New Ingredient" Button */}
-            <div className="flex justify-end w-full">
-                <NewIngredientDialog
-                    ingredientList={ingredientList}
-                    updateIngredientList={(newIngredient) => setIngredientList([...ingredientList, newIngredient])}
-                />
-            </div>
-            <div className="mt-4 w-full">
+            <div className="w-full">
                 <IngredientList
                     ingredientList={ingredientList}
                     ingredientUpdate={(val) => handleChange(val)}

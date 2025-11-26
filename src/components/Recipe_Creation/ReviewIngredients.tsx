@@ -12,7 +12,7 @@ import {
   GlobeAltIcon,
   HeartIcon,
 } from '@heroicons/react/24/solid';
-import { Ingredient, DietaryPreference, Recipe } from '../../types/index';
+import { Ingredient, DietaryPreference, RecipeCategory, Recipe } from '../../types/index';
 import useWindowSize from '../Hooks/useWindowSize';
 
 const preferenceIconMap: Record<
@@ -30,6 +30,7 @@ const preferenceIconMap: Record<
 
 interface ReviewComponentProps {
   ingredients: Ingredient[];
+  categories: RecipeCategory[];
   dietaryPreference: DietaryPreference[];
   onSubmit: () => void;
   onEdit: () => void;
@@ -38,6 +39,7 @@ interface ReviewComponentProps {
 
 const ReviewComponent = ({
   ingredients,
+  categories,
   dietaryPreference,
   onSubmit,
   onEdit,
@@ -91,6 +93,26 @@ const ReviewComponent = ({
               </li>
             ))}
           </ul>
+        </div>
+
+        {/* Categories Section */}
+        <div className="mb-6">
+          <h3 className="text-gray-700 font-semibold text-lg mb-2">
+            {`${categories.length} Categor${categories.length !== 1 ? 'ies' : 'y'}:`}
+          </h3>
+          <div
+            className="flex flex-wrap gap-2 overflow-y-auto"
+            style={{ maxHeight: '70px' }}
+          >
+            {categories.map((category) => (
+              <span
+                key={category}
+                className="flex items-center bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full"
+              >
+                {category}
+              </span>
+            ))}
+          </div>
         </div>
 
         {/* Dietary Preferences Section */}

@@ -197,7 +197,7 @@ describe('playAudio', () => {
 describe('paginationQueryHelper', () => {
   test('returns defaults when query object is empty', () => {
     const result = paginationQueryHelper({} as PaginationQueryType);
-    expect(result).toEqual({ page: 1, limit: 12, skip: 0, sortOption: 'popular', query: undefined });
+    expect(result).toEqual({ page: 1, limit: 12, skip: 0, sortOption: 'popular', filterOption: 'all', query: undefined });
   });
 
   test('converts page and limit to numbers', () => {
