@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 import { apiMiddleware } from '../../lib/apiMiddleware';
 import { connectDB } from '../../lib/mongodb';
 import Recipe from '../../models/recipe';
-import aigenerated from '../../models/aigenerated';
 import { filterResults } from '../../utils/utils';
 import { ExtendedRecipe } from '../../types';
 
@@ -28,8 +27,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
             .lean()
             .exec() as unknown as ExtendedRecipe[];
 
-        // Count the number of AI-generated entries associated with the user's ID to get overall usage
-        const totalGeneratedCount = await aigenerated.countDocuments({ userId: session.user.id }).exec();
+        // Count the number of recipes created by the user (AI generations = recipes created)
+        const totalGeneratedCount = await Recipe.countDocuments({ owner: mongooseUserId }).exec();
         const apiRequestLimit = 10;
         const AIusage = Math.min(Math.round((totalGeneratedCount / apiRequestLimit) * 100), 100);
         // Filter results based on user session and respond with the filtered recipes
