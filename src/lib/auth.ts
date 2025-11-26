@@ -35,7 +35,7 @@ export const authOptions: NextAuthOptions = {
         },
         async redirect({ url, baseUrl }) {
             // Always redirect to the server URL for mobile app
-            return "https://cuisinova.cloud";
+            return "https://www.cuisinova.cloud";
         }
     },
 

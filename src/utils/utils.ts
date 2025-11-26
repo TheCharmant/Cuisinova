@@ -35,34 +35,38 @@ export const updateRecipeList = (
 
 // Utility to fetch data on server-side while ensuring user authentication
 export const getServerSidePropsUtility = async (context: GetServerSidePropsContext, address: string, propskey: string = 'recipes') => {
-  try {
-    const session = await getSession(context);
-    if (!session) {
+   try {
+      const session = await getSession(context);
+      if (!session) {
+         return {
+            redirect: {
+               destination: '/',
+               permanent: false,
+            },
+         };
+      }
+      // Use full URL for server-side API calls
+      const protocol = context.req.headers['x-forwarded-proto'] || 'http';
+      const host = context.req.headers.host;
+      const baseURL = `${protocol}://${host}`;
+      const { data } = await axios.get(`${baseURL}/${address}`, {
+         headers: {
+            Cookie: context.req.headers.cookie || '',
+         },
+      });
       return {
-        redirect: {
-          destination: '/',
-          permanent: false,
-        },
+         props: {
+            [propskey]: data,
+         },
       };
-    }
-    const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/${address}`, {
-      headers: {
-        Cookie: context.req.headers.cookie || '',
-      },
-    });
-    return {
-      props: {
-        [propskey]: data,
-      },
-    };
-  } catch (error) {
-    console.error(`Failed to fetch ${propskey}:`, error); // Logs errors in fetching data
-    return {
-      props: {
-        [propskey]: [], // Returns an empty list if there's an error
-      },
-    };
-  }
+   } catch (error) {
+      console.error(`Failed to fetch ${propskey}:`, error); // Logs errors in fetching data
+      return {
+         props: {
+            [propskey]: [], // Returns an empty list if there's an error
+         },
+      };
+   }
 };
 
 // REST API call utility supporting multiple HTTP methods
