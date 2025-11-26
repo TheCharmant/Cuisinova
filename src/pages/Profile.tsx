@@ -1,16 +1,13 @@
 import { GetServerSideProps } from 'next';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { getSession } from 'next-auth/react';
-import mongoose from 'mongoose';
+import { useSession } from 'next-auth/react';
 import ProfileInformation from '../components/Profile_Information/ProfileInformation';
 import ProfileStickyBanner from '../components/Profile_Information/ProfileStickyBanner';
 import ViewRecipes from '../components/Recipe_Display/ViewRecipes';
-import { updateRecipeList, filterResults } from '../utils/utils';
+import { updateRecipeList } from '../utils/utils';
 import { ExtendedRecipe } from '../types';
-import { connectDB } from '../lib/mongodb';
-import Recipe from '../models/recipe';
-import aigenerated from '../models/aigenerated';
+import { call_api } from '../utils/utils';
 
 interface ProfileProps {
     profileData: {
@@ -22,10 +19,42 @@ interface ProfileProps {
 }
 
 function Profile({ profileData }: ProfileProps) {
+    const { data: session, status } = useSession();
+    const [loading, setLoading] = useState(true);
+    const [profileDataState, setProfileDataState] = useState(profileData);
+
     // Defensive checks for undefined/null data
-    const safeRecipes = Array.isArray(profileData?.recipes) ? profileData.recipes : [];
+    const safeRecipes = Array.isArray(profileDataState?.recipes) ? profileDataState.recipes : [];
     const [latestRecipes, setLatestRecipes] = useState<ExtendedRecipe[]>(safeRecipes);
     const [displaySetting, setDisplaySetting] = useState('created');
+
+    useEffect(() => {
+        const fetchProfileData = async () => {
+            if (status === 'loading') return;
+
+            if (!session) {
+                setLoading(false);
+                return;
+            }
+
+            try {
+                // Fetch profile data from API
+                const data = await call_api({
+                    address: '/api/profile',
+                    method: 'get'
+                });
+
+                setProfileDataState(data);
+                setLatestRecipes(data.recipes || []);
+            } catch (error) {
+                console.error('Failed to fetch profile data:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProfileData();
+    }, [session, status]);
 
     const handleRecipeListUpdate = (recipe: ExtendedRecipe | null, deleteId?: string) => {
         setLatestRecipes(updateRecipeList(latestRecipes, recipe, deleteId));
@@ -46,12 +75,16 @@ function Profile({ profileData }: ProfileProps) {
     };
 
     // Defensive checks
-    const safeAIusage = typeof profileData?.AIusage === 'number' ? profileData.AIusage : 0;
-    const safeTotalGeneratedCount = typeof profileData?.totalGeneratedCount === 'number' ? profileData.totalGeneratedCount : 0;
-    const safeApiRequestLimit = typeof profileData?.apiRequestLimit === 'number' ? profileData.apiRequestLimit : 10;
+    const safeAIusage = typeof profileDataState?.AIusage === 'number' ? profileDataState.AIusage : 0;
+    const safeTotalGeneratedCount = typeof profileDataState?.totalGeneratedCount === 'number' ? profileDataState.totalGeneratedCount : 0;
+    const safeApiRequestLimit = typeof profileDataState?.apiRequestLimit === 'number' ? profileDataState.apiRequestLimit : 10;
 
-    if (!profileData) {
+    if (loading || status === 'loading') {
         return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    }
+
+    if (!session) {
+        return <div className="min-h-screen flex items-center justify-center">Please log in to view your profile.</div>;
     }
 
     return (
@@ -112,61 +145,18 @@ function Profile({ profileData }: ProfileProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    try {
-        const session = await getSession(context);
-        if (!session) {
-            return {
-                redirect: {
-                    destination: '/',
-                    permanent: false,
-                },
-            };
-        }
-
-        // Convert session user ID to a mongoose ObjectId
-        const mongooseUserId = new mongoose.Types.ObjectId(session.user.id);
-
-        // Connect to the database
-        await connectDB();
-
-        // Fetch recipes owned or liked by the user
-        const profilePins = await Recipe.find({
-            $or: [{ owner: mongooseUserId }, { likedBy: mongooseUserId }],
-        })
-            .populate(['owner', 'likedBy', 'comments.user'])
-            .lean()
-            .exec() as unknown as ExtendedRecipe[];
-
-        // Count the number of AI-generated entries associated with the user's ID to get overall usage
-        const totalGeneratedCount = await aigenerated.countDocuments({ userId: session.user.id }).exec();
-        const apiRequestLimit = 10;
-        const AIusage = Math.min(Math.round((totalGeneratedCount / apiRequestLimit) * 100), 100);
-        // Filter results based on user session and respond with the filtered recipes
-        const filteredRecipes = filterResults(profilePins, session.user.id);
-
-        return {
-            props: {
-                profileData: {
-                    recipes: filteredRecipes,
-                    AIusage,
-                    totalGeneratedCount,
-                    apiRequestLimit
-                },
+    // For now, return empty data and let client-side handle authentication
+    // This avoids session issues in production
+    return {
+        props: {
+            profileData: {
+                recipes: [],
+                AIusage: 0,
+                totalGeneratedCount: 0,
+                apiRequestLimit: 10
             },
-        };
-    } catch (error) {
-        console.error('Failed to fetch profile data:', error);
-        return {
-            props: {
-                profileData: {
-                    recipes: [],
-                    AIusage: 0,
-                    totalGeneratedCount: 0,
-                    apiRequestLimit: 10
-                },
-            },
-        };
-    }
+        },
+    };
 };
 
 export default Profile;

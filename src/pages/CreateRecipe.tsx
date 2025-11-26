@@ -273,42 +273,14 @@ function Navigation({
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     try {
-        const session = await getSession(context);
-        if (!session) {
-            return {
-                redirect: {
-                    destination: '/',
-                    permanent: false,
-                },
-            };
-        }
-
         // Establish a connection to the MongoDB database
         await connectDB();
-
-        // Check if user has reached the free plan limit of 10 recipes
-        const userRecipeCount = await RecipeModel.countDocuments({ owner: session.user.id }).exec();
-
-        // Check if user has an active subscription
-        const user = await User.findById(session.user.id).exec();
-        const hasActiveSubscription = user?.subscription?.status === 'active' &&
-            new Date(user.subscription.endDate) > new Date();
-
-        if (userRecipeCount >= 10 && !hasActiveSubscription) {
-            return {
-                props: {
-                    recipeCreationData: {
-                        reachedLimit: true,
-                        ingredientList: []
-                    },
-                },
-            };
-        }
 
         // Retrieve all ingredients from the database, sorted alphabetically by name
         const allIngredients = await IngredientModel.find().sort({ name: 1 }).exec() as unknown as IngredientDocumentType[];
 
-        // Respond with the list of ingredients and reachedLimit flag as false
+        // For now, don't check user limits on server-side to avoid session issues
+        // The client-side will handle authentication and limits
         return {
             props: {
                 recipeCreationData: {
