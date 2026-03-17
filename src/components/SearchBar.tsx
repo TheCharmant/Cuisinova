@@ -38,10 +38,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   return (
     <div
-      className={`relative flex items-center w-full max-w-xl mx-auto bg-minimalist-sky/60 backdrop-blur-sm rounded-2xl shadow-delicate hover:shadow-soft transition-all duration-200 ${className}`}
+      className={`relative flex items-center w-full max-w-xl mx-auto bg-minimalist-sky/60 backdrop-blur-sm rounded-2xl shadow-delicate ${className}`}
     >
       <div
-        className="flex items-center justify-center p-2 text-gray-500 hover:text-gray-700 transition-all duration-200"
+        className="flex items-center justify-center p-2 text-minimalist-slate/60"
       >
         <MagnifyingGlassIcon className="h-4 w-4" />
       </div>
@@ -66,7 +66,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         >
           <button
             onClick={handleClear}
-            className="p-1 mr-1 text-gray-400 hover:text-gray-600 hover:scale-110 active:scale-90 transition-all duration-200"
+            className="p-1 mr-1 text-minimalist-slate/50 active:opacity-80 transition-opacity duration-150"
             aria-label="Clear search"
           >
             <XMarkIcon className="h-5 w-5" />
