@@ -18,6 +18,7 @@ import { useRouter } from 'next/router';
 import audioload from '../../assets/audioload.gif';
 import audioGenerate from '../../assets/audiogenerate.gif'
 import { ExtendedRecipe } from '../../types';
+import { useChat } from '../../contexts/ChatContext';
 
 interface ActionPopoverProps {
     handlers: {
@@ -44,6 +45,7 @@ interface ActionPopoverProps {
 export function ActionPopover({ handlers, states, data }: ActionPopoverProps) {
 
     const router = useRouter();
+    const { openChat } = useChat();
 
     const handleOpenRecipe = () => {
         if (!handlers.closeDialog) return;
@@ -107,7 +109,12 @@ export function ActionPopover({ handlers, states, data }: ActionPopoverProps) {
                                 Copy Link
                             </button>
                             <button
-                                className="group flex w-full items-center gap-2 rounded-lg py-2 px-4 text-gray-700 hover:bg-gray-100 focus:bg-gray-100" onClick={() => router.push(`/ChatAssistant?recipeId=${data.recipe._id}`)}>
+                                className="group flex w-full items-center gap-2 rounded-lg py-2 px-4 text-gray-700 hover:bg-gray-100 focus:bg-gray-100"
+                                onClick={() => {
+                                    close();
+                                    openChat(data.recipe._id);
+                                }}
+                            >
                                 <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5 text-gray-500" />
                                 Chat with Assistant
                             </button>

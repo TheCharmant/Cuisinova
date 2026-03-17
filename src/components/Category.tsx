@@ -69,7 +69,7 @@ const Category = ({ tags: rawTags, onTagToggle, searchVal }: CategoryProps) => {
                 transition={{ delay: 0.2 }}
                 style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}
             >
-                <span className="mr-2 text-xl">🏷️</span> Category
+                Category
             </motion.h2>
             {/* Edge fade for scroll hint */}
             <div className="pointer-events-none absolute top-[44px] left-0 h-10 w-8 z-10 bg-gradient-to-r from-white/90 via-white/60 to-transparent rounded-l-3xl" />

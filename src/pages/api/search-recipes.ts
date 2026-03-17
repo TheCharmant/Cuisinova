@@ -45,7 +45,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
 
         // Execute both queries in parallel for efficiency
         const [recipes, popularTags, totalRecipes] = await Promise.all([
-            // 🔹 Fetch paginated search results
+            // Fetch paginated search results
             Recipe.find(searchQuery)
                 .populate(['owner', 'likedBy', 'comments.user'])
                 .sort(sort)
@@ -53,7 +53,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
                 .limit(limit)
                 .lean() as unknown as ExtendedRecipe[],
 
-            // 🔹 Fetch `popularTags` from the ENTIRE collection (not just filtered results)
+            // Fetch `popularTags` from the ENTIRE collection (not just filtered results)
             Recipe.aggregate([
                 { $unwind: "$ingredients" },
                 { $group: { _id: "$ingredients.name", count: { $sum: 1 } } },
@@ -61,7 +61,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
                 { $limit: 20 }
             ]),
 
-            // 🔹 Get total matching recipes (for pagination)
+            // Get total matching recipes (for pagination)
             Recipe.countDocuments(searchQuery),
         ]);
 

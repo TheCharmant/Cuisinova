@@ -121,7 +121,7 @@ export default function Hero() {
                                 className={`text-lg font-bold leading-6 px-6 py-2 rounded-full transition-all duration-300 kawaii-nav hover:scale-110 active:scale-95 ${selectedPage === item.key ? 'text-violet-700 bg-gradient-to-r from-peach-300 via-brand-300 to-violet-300 shadow-pastel ring-2 ring-peach-200' : 'text-brand-600 bg-white/80 border-2 border-peach-100 hover:bg-peach-100 hover:text-violet-600 hover:shadow-lg'}`}
                                 style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}
                             >
-                                <span className="mr-1">{index === 0 ? '🍰' : index === 1 ? '✨' : '💖'}</span>{item.name}
+                                {item.name}
                             </button>
                         ))}
                     </div>
@@ -131,7 +131,7 @@ export default function Hero() {
                             className="text-xl font-bold leading-6 text-white bg-gradient-to-r from-peach-300 via-brand-400 to-violet-400 hover:from-peach-400 hover:to-violet-500 px-8 py-3 rounded-full shadow-pastel hover:shadow-xl hover:scale-110 active:scale-95 transition-all duration-300 accent-script"
                             style={{ fontFamily: 'Pacifico, cursive' }}
                         >
-                            <span className="mr-2">💖</span>Get Cooking! <span aria-hidden="true">&rarr;</span>
+                            Get started <span aria-hidden="true">&rarr;</span>
                         </button>
                     </div>
                 </nav>
@@ -187,7 +187,7 @@ export default function Hero() {
                                     className="-mx-3 block w-full rounded-lg px-3 py-2.5 text-xl font-bold leading-7 text-white bg-gradient-to-r from-peach-300 via-brand-400 to-violet-400 hover:from-peach-400 hover:to-violet-500 hover:scale-110 active:scale-95 transition-all accent-script"
                                     style={{ fontFamily: 'Pacifico, cursive' }}
                                 >
-                                    <span className="mr-2">💖</span>Get Cooking!
+                                    Get started
                                 </button>
                             </div>
                         </div>

@@ -65,7 +65,7 @@ const RecipeCard = ({ recipe, handleRecipeSelection, selectedRecipes, showSwitch
                         transition={{ delay: 0.1, type: "spring" }}
                         style={{ fontFamily: "'Playfair Display', 'Cormorant Garamond', serif" }}
                     >
-                        {recipe.name} 💕
+                        {recipe.name}
                     </motion.h2>
 
                     {/* Optional Switch to Select Recipe */}

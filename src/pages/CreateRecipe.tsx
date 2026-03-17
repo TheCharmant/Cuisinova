@@ -223,7 +223,7 @@ function Navigation({
              Create Recipe
             </h1>
             {/* eslint-disable-next-line react/no-unescaped-entities */}
-            <p className="text-coquette-lavender coquette-body mt-2">Let's whip up something magical together! 💕</p>
+            <p className="text-minimalist-slate/80 mt-2">Create a recipe based on your ingredients and preferences.</p>
         </div>
 
         {/* Progress Bar */}

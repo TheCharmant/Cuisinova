@@ -157,10 +157,15 @@ export default function IngredientForm({
     [pantryItems]
   );
 
-    const handleChange = (val: string | undefined) => {
+  const isInIngredientList = (val: string) =>
+    ingredientList.some((i) => i.name.toLowerCase() === val.toLowerCase());
+
+  const handleChange = async (val: string | undefined) => {
         if (!val) return;
+    const trimmed = val.trim();
+    if (!trimmed) return;
         const isRepeat = ingredients.some(
-            (i) => i.name.toLowerCase() === val.toLowerCase()
+      (i) => i.name.toLowerCase() === trimmed.toLowerCase()
         );
         if (isRepeat) {
             setError('This ingredient is already selected.');
@@ -171,10 +176,49 @@ export default function IngredientForm({
             return
         }
         setError(null);
-        updateIngredients([
-            ...ingredients,
-            { name: val, id: uuidv4() },
-        ]);
+
+    let finalName = trimmed;
+
+    // If user typed a new ingredient, validate spelling/validity first.
+    if (!isInIngredientList(trimmed)) {
+      try {
+        const validation = await call_api({
+          address: '/api/validate-ingredient',
+          method: 'post',
+          payload: { ingredientName: trimmed },
+        });
+
+        if (validation?.message === 'Invalid') {
+          const suggested = Array.isArray(validation?.suggested) ? validation.suggested : [];
+          setError(
+            suggested.length
+              ? `Ingredient not recognized. Did you mean: ${suggested.join(', ')}?`
+              : 'Ingredient not recognized. Please check spelling.'
+          );
+          return;
+        }
+
+        if (validation?.newIngredient?.name) {
+          finalName = validation.newIngredient.name;
+          // Add to local list so it appears in suggestions next time
+          setIngredientList((prev) => {
+            if (prev.some((i) => i.name.toLowerCase() === finalName.toLowerCase())) return prev;
+            return [{ _id: validation.newIngredient._id, name: finalName } as any, ...prev];
+          });
+        }
+      } catch {
+        // If validation fails, don't block entry (keeps existing functionality).
+        finalName = trimmed;
+      }
+    }
+
+    updateIngredients([
+      ...ingredients,
+      { name: finalName, id: uuidv4() },
+    ]);
+
+    // Auto-add every used ingredient to pantry (best-effort, non-blocking)
+    addToPantry(finalName);
     };
 
   const addToPantry = async (name: string) => {
@@ -268,7 +312,7 @@ export default function IngredientForm({
                 Your pantry is empty. Add ingredients as you go (use “Add last selected to pantry”), or type an ingredient in “All ingredients”.
               </div>
             ) : (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto pr-1">
                 {pantryItems.map((item) => {
                   const alreadySelected = ingredients.some((i) => i.name.toLowerCase() === item.name.toLowerCase());
                   return (

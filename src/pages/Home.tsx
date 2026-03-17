@@ -255,7 +255,7 @@ const Home = () => {
                                         : 'bg-coquette-softPink/50 text-coquette-rose hover:bg-coquette-blush/20'
                                 }`}
                             >
-                                🔥 Most Popular
+                                Most popular
                             </button>
                             <button
                                 onClick={() => sortRecipes('recent')}
@@ -265,7 +265,7 @@ const Home = () => {
                                         : 'bg-coquette-softPink/50 text-coquette-rose hover:bg-coquette-blush/20'
                                 }`}
                             >
-                                🕒 Most Recent
+                                Most recent
                             </button>
                             <div className="text-sm font-medium text-coquette-lavender mb-2 mt-4">Filter by:</div>
                             <button
@@ -276,7 +276,7 @@ const Home = () => {
                                         : 'bg-coquette-softPink/50 text-coquette-rose hover:bg-coquette-blush/20'
                                 }`}
                             >
-                                📚 All Recipes
+                                All recipes
                             </button>
                             <button
                                 onClick={() => filterRecipes('liked')}
@@ -286,7 +286,7 @@ const Home = () => {
                                         : 'bg-coquette-softPink/50 text-coquette-rose hover:bg-coquette-blush/20'
                                 }`}
                             >
-                                ❤️ Liked Recipes
+                                Liked recipes
                             </button>
                             <button
                                 onClick={() => filterRecipes('saved')}
@@ -296,7 +296,7 @@ const Home = () => {
                                         : 'bg-coquette-softPink/50 text-coquette-rose hover:bg-coquette-blush/20'
                                 }`}
                             >
-                                💾 Saved Recipes
+                                Saved recipes
                             </button>
                         </div>
                         <button
@@ -326,12 +326,11 @@ const Home = () => {
                                 {searchVal
                                     ? `No recipes found for "${searchVal}"`
                                     : "No recipes found yet"}
-                                <span className="ml-2">💔</span>
                             </h3>
                             <p className="text-coquette-lavender text-center coquette-body text-lg leading-relaxed mb-6 px-4">
                                 {searchVal
-                                    ? "Try searching for different ingredients or create your own magical recipe! ✨"
-                                    : "Be the first to create something delicious! Start by adding your favorite ingredients. 🌸"}
+                                    ? "Try searching for different ingredients or create a new recipe."
+                                    : "Be the first to create something delicious. Start by adding your favorite ingredients."}
                             </p>
                         </motion.div>
                     </div>

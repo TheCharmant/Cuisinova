@@ -88,7 +88,7 @@ ${additionalInformation?.nutritionalInformation ? `#### Nutritional Info:\n${add
 
 ---
 
-🎙 **Narration Guidelines:**  
+**Narration Guidelines:**  
 - Deliver the narration in a **calm and professional manner**, without excessive excitement.  
 - Read ingredients **clearly and efficiently**—avoid unnecessary emphasis or dramatization.  
 - Guide the user **step-by-step with smooth but direct transitions**, keeping it **practical and instructional**.  

@@ -41,7 +41,7 @@ const FloatingActionButtons = () => {
         transition={{ type: "spring", stiffness: 400, damping: 15 }}
         style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}
       >
-        🍳
+        <PlusIcon className="h-8 w-8" aria-hidden="true" />
       </motion.button>
 
       {/* Scroll to Top Button (Appears on Scroll) */}

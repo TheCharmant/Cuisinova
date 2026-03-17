@@ -63,13 +63,12 @@ const PopularTags = ({ tags: rawTags, onTagToggle, searchVal }: PopularTagsProps
             transition={{ duration: 0.5 }}
         >
             <motion.h2 
-                className='mb-2 text-lg font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-peach-400 via-brand-400 to-violet-500 flex items-center accent-script pl-2'
+                className='mb-2 text-lg font-bold text-minimalist-slate flex items-center pl-2'
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}
             >
-                <span className="mr-2 text-xl">🏷️</span> Popular Tags
+                Popular Tags
             </motion.h2>
             {/* Edge fade for scroll hint */}
             <div className="pointer-events-none absolute top-[44px] left-0 h-10 w-8 z-10 bg-gradient-to-r from-cream-100/90 via-cream-100/60 to-transparent rounded-l-3xl" />

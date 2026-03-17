@@ -94,7 +94,7 @@ export default function RecipeDetail() {
                     <div className="mb-4 flex justify-end print:hidden">
                         <button
                             type="button"
-                            className="px-4 py-2 rounded-full bg-white border border-peach-200 text-gray-700 shadow-sm hover:shadow-md transition-all"
+                            className="px-2 py-1 text-sm text-minimalist-slate/80 hover:text-minimalist-slate transition-colors"
                             onClick={() => window.print()}
                         >
                             Print recipe
@@ -124,13 +124,13 @@ export default function RecipeDetail() {
                     {/* Ingredients */}
                     <div className="flex flex-col">
                         <div className="mb-4">
-                        <h3 className="mb-2 text-xl font-bold accent-script">🍑 Ingredients</h3> {/* Section title */}
+                        <h3 className="mb-2 text-xl font-bold">Ingredients</h3>
                             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2"> {/* Responsive grid layout */}
                                 {recipeData.ingredients.map((ingredient) => (
                                     <li key={ingredient.name} className="flex items-center kawaii-chip"> {/* Ingredient item */}
                                         <CheckCircleIcon className="w-5 h-5 text-peach-400 mr-2 flex-shrink-0" /> {/* Icon next to ingredient */}
                                         <span className="text-brand-700 font-medium">
-                                            <span className="mr-1">🥕</span>{ingredient.name}{ingredient.quantity && ` (${ingredient.quantity})`} {/* Ingredient name and quantity */}
+                                            {ingredient.name}{ingredient.quantity && ` (${ingredient.quantity})`}
                                         </span>
                                     </li>
                                 ))}
@@ -141,12 +141,12 @@ export default function RecipeDetail() {
 
                     {/* Instructions */}
                     <div className="mb-4">
-                        <h3 className="mb-2 text-xl font-bold accent-script">📝 Instructions</h3> {/* Section title */}
+                        <h3 className="mb-2 text-xl font-bold">Instructions</h3>
                         <ol className="list-decimal list-inside space-y-4">
                             {recipeData.instructions.map((step, index) => (
                                 <li key={index} className="flex items-start kawaii-bubble bg-peach-100/60 rounded-xl p-3 mb-2 shadow-pastel">
                                     <span className="font-bold text-peach-500 mr-3 text-lg">{index + 1}.</span>
-                                    <p className="text-brand-700 font-medium"><span className="mr-1">✨</span>{step}</p>
+                                    <p className="text-brand-700 font-medium">{step}</p>
                                 </li>
                             ))}
                         </ol>
@@ -154,7 +154,7 @@ export default function RecipeDetail() {
 
                     {/* Additional Information */}
                     <div className="mb-6">
-                        <h3 className="mb-4 text-xl font-bold accent-script">💡 Additional Information</h3> {/* Section title */}
+                        <h3 className="mb-4 text-xl font-bold">Additional Information</h3>
                         <div className="space-y-4">
                             <div className="bg-cream-100/80 rounded-xl p-4 shadow-pastel">
                                 <h4 className="font-bold text-peach-500">Tips:</h4>

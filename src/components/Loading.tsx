@@ -2,40 +2,23 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 const generationMessages = [
-    '🔪 Chopping up some fresh ingredients...',
-    '🥘 Stirring the pot with expert precision...',
-    '🍳 Heating the pan to the perfect temperature...',
-    '🧂 Adding a pinch of magic (and salt)...',
-    '🍅 Tossing in the tomatoes—watch out for splashes!',
-    '🔥 Turning up the heat for that perfect sear...',
-    '🧁 Sprinkling in some creativity and flavor...',
-    '🍽️ Plating the dish like a Michelin-star chef...',
-    '🥄 Taste-testing... hmm, needs just a little more zest!',
-    '🧑‍🍳 Adjusting the seasoning like a pro...',
-    '🥖 Tearing up some fresh bread for the side...',
-    '🍋 Squeezing in a bit of citrus for balance...',
-    '🍷 Deglazing the pan with a splash of wine...',
-    '🌀 Blending flavors together into something amazing...',
-    '💡 A spark of inspiration—trying a new twist on the recipe!',
-    '🌿 Garnishing with a touch of fresh herbs...',
-    '⏳ Giving it time to simmer and develop rich flavors...',
-    '🎨 Perfecting the presentation—food is art, after all!',
-    '📸 Snapping a pic before serving—this one’s a beauty!',
-    '🥢 Arranging everything just right before the final reveal...',
+    'Preparing ingredients...',
+    'Building your recipe options...',
+    'Optimizing instructions...',
+    'Finalizing details...',
+    'Almost ready...',
 ];
 
 const savingMessages = [
-    '🖼️ Generating beautiful images for your recipe...', // OpenAI image generation
-    '🚀 Fetching the perfect visuals from AI...', // OpenAI image retrieval
-    '📤 Uploading your recipe images to the cloud...', // Uploading to S3
-    '☁️ Storing images securely on our servers...', // Confirming image storage
-    '📝 Preparing your recipe details...', // Recipe structuring before saving
-    '💾 Saving your recipe to your personal cookbook...', // Database save
-    '📑 Finalizing everything and making it just right...', // Final processing
+    'Generating images...', // OpenAI image generation
+    'Uploading assets...', // Uploading to S3
+    'Preparing recipe details...', // Recipe structuring before saving
+    'Saving your recipe...', // Database save
+    'Finalizing...', // Final processing
 ];
 
-const finalGenerationMessage = '🍳 Finalizing your recipe... hold tight, flavor takes time!';
-const finalSavingMessage = '🔄 Putting it all together... fetching images, saving your recipe, and making sure everything is perfect!';
+const finalGenerationMessage = 'Finalizing your recipe...';
+const finalSavingMessage = 'Finalizing...';
 
 const Loading = ({
     isComplete = false,
@@ -56,7 +39,7 @@ const Loading = ({
 
         if (isComplete) {
             setProgress(100);
-            setCurrentMessage('✅ Your recipe is ready!');
+            setCurrentMessage('Your recipe is ready.');
             return;
         }
 
@@ -83,7 +66,7 @@ const Loading = ({
         return () => clearInterval(interval);
     }, [isComplete, isProgressBar, loadingType]);
 
-    // 🚀 Responsive Progress Bar
+    // Responsive Progress Bar
     if (isProgressBar) {
         return (
             <motion.div 

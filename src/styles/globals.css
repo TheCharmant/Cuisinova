@@ -14,16 +14,12 @@
    These define the foreground and background colors used throughout the app.
 */
 :root {
-  --foreground-rgb: 60, 40, 60; /* Soft dark for text */
-  --background-start-rgb: 255, 253, 247; /* Cream background */
-  --background-end-rgb: 253, 242, 248; /* Light pink background */
-  --primary-color: #ec4899; /* Pink */
-  --secondary-color: #8b5cf6; /* Violet */
-  --accent-color: #ffb385; /* Peach */
-  --accent-secondary: #ffd1b3; /* Light peach */
-  --card-shadow: 0 10px 30px -5px rgba(139, 92, 246, 0.10);
-  --hover-shadow: 0 20px 40px -5px rgba(255, 179, 133, 0.15);
-  --button-shadow: 0 4px 10px rgba(255, 179, 133, 0.18);
+  /* Minimalist palette (use these hex values only) */
+  --c-sky: #d9ecff;
+  --c-blue: #b8d6f2;
+  --c-sand: #f7efe3;
+  --c-rose: #e7c7c2;
+  --c-slate: #5b6f7f;
 }
 
 /* 
@@ -45,53 +41,20 @@
    Sets the text color dynamically based on the foreground variable.
 */
 body {
-  color: rgb(var(--foreground-rgb));
-  font-family: 'Poppins', 'Nunito', 'Quicksand', sans-serif;
-  background: linear-gradient(135deg, #FFF9F8 0%, #FCE4EC 25%, #E1BEE7 50%, #F5F5F5 75%, #E8F5E8 100%);
+  color: var(--c-slate);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: var(--c-sand);
   background-attachment: fixed;
   overflow-x: hidden;
   min-height: 100vh;
-  /* Soft, romantic background with gentle gradients */
 }
 
 @layer base {
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Baloo 2', 'Fredoka One', 'Montserrat', cursive, sans-serif;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     font-weight: 700;
-    letter-spacing: 0.01em;
-  }
-  h1 {
-    @apply text-4xl md:text-5xl lg:text-6xl;
-    background: linear-gradient(135deg, #F7C8D0 0%, #C8B8EA 50%, #F8D49D 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 0.5em;
-    text-shadow: 0 2px 4px rgba(247, 200, 208, 0.1);
-  }
-  h2 {
-    @apply text-2xl md:text-3xl lg:text-4xl font-bold;
-    color: #C06C84;
-    font-family: 'Playfair Display', 'Cormorant Garamond', serif;
-  }
-  h3 {
-    @apply text-xl md:text-2xl font-semibold;
-    color: #C8B8EA;
-    font-family: 'Poppins', sans-serif;
-  }
-  .accent-script {
-    font-family: 'Pacifico', cursive;
-    color: #F8D49D;
-    font-size: 1.2em;
-    letter-spacing: 0.03em;
-  }
-  .coquette-text {
-    font-family: 'Playfair Display', 'Cormorant Garamond', serif;
-    color: #C06C84;
-  }
-  .coquette-body {
-    font-family: 'Poppins', sans-serif;
-    color: #6B5B95;
+    letter-spacing: -0.01em;
+    color: var(--c-slate);
   }
 }
 
@@ -166,59 +129,18 @@ html {
   scrollbar-gutter: stable; /* Prevents layout shift by reserving space for the scrollbar */
 }
 
-/*
-   Base heading styles for consistent hierarchy and spacing
-*/
 @layer base {
-  h1 {
-    @apply text-3xl md:text-4xl font-bold mt-6 mb-4;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  h2 {
-    @apply text-2xl md:text-3xl font-semibold mt-6 mb-4;
-    font-family: 'Poppins', sans-serif;
-    color: var(--primary-color);
-  }
-  h3 {
-    @apply text-xl md:text-2xl font-semibold mt-4 mb-2;
-    font-family: 'Poppins', sans-serif;
-    color: var(--secondary-color);
-  }
-  
-  /* Add cute aesthetic elements */
   button {
-    @apply transition-all duration-300 rounded-full;
-    box-shadow: 0 4px 12px rgba(247, 200, 208, 0.15);
-  }
-
-  button:hover {
-    box-shadow: 0 6px 20px rgba(247, 200, 208, 0.25);
-    transform: translateY(-1px);
+    @apply transition-colors duration-200;
   }
 
   input, textarea, select {
-    @apply rounded-2xl border-coquette-blush/30 focus:border-coquette-lavender focus:ring focus:ring-coquette-blush/20 focus:ring-opacity-50 transition-all duration-300;
-    background: rgba(255, 249, 248, 0.8);
+    @apply rounded-xl border border-minimalist-blue/60 focus:border-minimalist-slate focus:ring focus:ring-minimalist-blue/30 transition-all duration-200;
+    background: var(--c-sky);
+    color: var(--c-slate);
   }
 
-  /* Card styling */
-  .card {
-    @apply bg-white/90 backdrop-blur-sm rounded-3xl shadow-delicate overflow-hidden border border-coquette-blush/20 hover:shadow-glow transition-all duration-300;
-  }
-
-  /* Coquette specific styles */
-  .coquette-button {
-    @apply bg-gradient-to-r from-coquette-blush to-coquette-lavender text-white rounded-full px-6 py-3 font-medium shadow-delicate hover:shadow-glow transition-all duration-300;
-  }
-
-  .coquette-card {
-    @apply bg-white/95 backdrop-blur-sm rounded-3xl border border-coquette-blush/30 shadow-delicate;
-  }
-
-  .coquette-input {
-    @apply rounded-2xl border-coquette-blush/40 bg-coquette-cream/50 focus:border-coquette-lavender focus:ring-coquette-blush/30;
+  .coquette-card, .card {
+    @apply bg-minimalist-sky/60 backdrop-blur-sm rounded-2xl border border-minimalist-blue/60 shadow-delicate;
   }
 }
