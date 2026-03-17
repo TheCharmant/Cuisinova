@@ -60,6 +60,12 @@ const FloatingWidget = ({
     // Drag only when clicking the header area
     const el = ref.current;
     if (!el) return;
+
+    // Don't start drag when clicking interactive controls inside the header
+    const target = e.target as HTMLElement | null;
+    if (target?.closest('button,a,input,textarea,select,label,svg,path')) {
+      return;
+    }
     (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
 
     const start = { x: e.clientX, y: e.clientY };

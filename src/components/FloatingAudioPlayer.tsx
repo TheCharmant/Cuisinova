@@ -69,9 +69,9 @@ const FloatingAudioPlayer: React.FC = () => {
     <FloatingWidget
       storageKey="floating-audio"
       defaultPos={{ x: 16, y: 16 }}
-      defaultSize={{ width: 420, height: 180 }}
+      defaultSize={{ width: 420, height: 150 }}
       minWidth={340}
-      minHeight={160}
+      minHeight={140}
       className="bg-minimalist-slate text-minimalist-sand rounded-2xl shadow-soft border border-minimalist-blue/40"
       header={
         <div className="flex items-center justify-between px-3 py-2">
