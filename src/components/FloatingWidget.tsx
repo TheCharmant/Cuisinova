@@ -15,6 +15,8 @@ type FloatingWidgetProps = {
   className?: string;
   minWidth?: number;
   minHeight?: number;
+  bodyOverflow?: 'auto' | 'hidden';
+  bodyClassName?: string;
 };
 
 const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
@@ -28,6 +30,8 @@ const FloatingWidget = ({
   className = '',
   minWidth = 280,
   minHeight = 140,
+  bodyOverflow = 'auto',
+  bodyClassName = '',
 }: FloatingWidgetProps) => {
   const ref = useRef<HTMLDivElement | null>(null);
   const [pos, setPos] = useState<Pos>(defaultPos);
@@ -131,7 +135,9 @@ const FloatingWidget = ({
       >
         {header}
       </div>
-      <div className="flex-1 overflow-auto">{children}</div>
+      <div className={`flex-1 ${bodyOverflow === 'auto' ? 'overflow-auto' : 'overflow-hidden'} ${bodyClassName}`}>
+        {children}
+      </div>
     </div>
   );
 };

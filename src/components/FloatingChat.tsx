@@ -19,6 +19,7 @@ const FloatingChat = () => {
       minWidth={300}
       minHeight={220}
       className="bg-minimalist-sky/70 backdrop-blur-md rounded-2xl shadow-soft border border-minimalist-blue/60"
+      bodyOverflow="hidden"
       header={
         <div className="flex items-center justify-between px-3 py-2">
           <div className="flex items-center gap-2 min-w-0">
@@ -46,7 +47,7 @@ const FloatingChat = () => {
         </div>
       }
     >
-      <div className="px-3 pb-1">
+      <div className="h-full px-3 pb-1">
         {isOpen && isExpanded ? (
           <ChatBox recipeId={recipeId} compact />
         ) : (

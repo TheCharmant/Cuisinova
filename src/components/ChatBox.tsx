@@ -80,9 +80,9 @@ export default function ChatBox({ recipeId, compact = false }: Props) {
         />
     );
     return (
-        <div className={`${compact ? '' : 'mt-6'} flex flex-col gap-3`}>
+        <div className={`${compact ? '' : 'mt-6'} flex flex-col gap-3 ${compact ? 'h-full' : ''}`}>
             {messages.length > 0 && (
-                <div className="border border-minimalist-blue/60 rounded-xl p-4 bg-minimalist-sky/40 max-h-[320px] overflow-y-auto space-y-4 shadow-inner">
+                <div className={`border border-minimalist-blue/60 rounded-xl p-4 bg-minimalist-sky/40 space-y-4 shadow-inner ${compact ? 'flex-1 overflow-y-auto' : 'max-h-[320px] overflow-y-auto'}`}>
                     {messages.map((msg, idx) => (
                         <div
                             key={idx}
