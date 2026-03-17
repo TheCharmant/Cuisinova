@@ -15,9 +15,9 @@ const FloatingChat = () => {
     <FloatingWidget
       storageKey="floating-chat"
       defaultPos={{ x: 16, y: 120 }}
-      defaultSize={{ width: 360, height: 420 }}
+      defaultSize={{ width: 360, height: 280 }}
       minWidth={300}
-      minHeight={240}
+      minHeight={220}
       className="bg-minimalist-sky/70 backdrop-blur-md rounded-2xl shadow-soft border border-minimalist-blue/60"
       header={
         <div className="flex items-center justify-between px-3 py-2">
@@ -48,7 +48,7 @@ const FloatingChat = () => {
     >
       <div className="px-3 pb-1">
         {isOpen && isExpanded ? (
-          <ChatBox recipeId={recipeId} />
+          <ChatBox recipeId={recipeId} compact />
         ) : (
           <div className="text-sm text-minimalist-slate/70">Chat is closed.</div>
         )}

@@ -12,9 +12,10 @@ type Message = {
 
 type Props = {
     recipeId: string;
+    compact?: boolean;
 };
 
-export default function ChatBox({ recipeId }: Props) {
+export default function ChatBox({ recipeId, compact = false }: Props) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -79,7 +80,7 @@ export default function ChatBox({ recipeId }: Props) {
         />
     );
     return (
-        <div className="mt-6 flex flex-col gap-4">
+        <div className={`${compact ? '' : 'mt-6'} flex flex-col gap-3`}>
             {messages.length > 0 && (
                 <div className="border border-minimalist-blue/60 rounded-xl p-4 bg-minimalist-sky/40 max-h-[320px] overflow-y-auto space-y-4 shadow-inner">
                     {messages.map((msg, idx) => (

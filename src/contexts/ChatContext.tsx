@@ -27,7 +27,10 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
         setRecipeId(id);
         setIsOpen(true);
       },
-      closeChat: () => setIsOpen(false),
+      closeChat: () => {
+        setIsOpen(false);
+        setRecipeId(null);
+      },
     }),
     [isOpen, recipeId]
   );
