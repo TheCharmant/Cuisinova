@@ -27,18 +27,21 @@ const SelectRecipesComponent = ({ generatedRecipes, selectedRecipes, updateSelec
     return (
         <div className="flex flex-col">
 
-            {/* Responsive Recipe Cards with Spacing */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {generatedRecipes.map((recipe) => (
-                    <div key={recipe.openaiPromptId}>
-                        <RecipeCard
-                            recipe={recipe}
-                            handleRecipeSelection={handleRecipeSelection}
-                            selectedRecipes={selectedRecipes}
-                            showSwitch
-                        />
-                    </div>
-                ))}
+            {/* Horizontal layout (no portrait compression) */}
+            <div className="w-full overflow-x-auto hide-scrollbar">
+                <div className="flex gap-6 min-w-max pb-2">
+                    {generatedRecipes.map((recipe) => (
+                        <div key={recipe.openaiPromptId} className="w-[360px] flex-shrink-0">
+                            <RecipeCard
+                                recipe={recipe}
+                                handleRecipeSelection={handleRecipeSelection}
+                                selectedRecipes={selectedRecipes}
+                                showSwitch
+                                removeMargin
+                            />
+                        </div>
+                    ))}
+                </div>
             </div>
             <div className="mt-8 w-full flex justify-center">
                 {finalRecipes.length ? (

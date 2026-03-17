@@ -10,6 +10,7 @@ import {
   ChevronDownIcon,
 } from '@heroicons/react/24/solid';
 import Image from 'next/image';
+import FloatingWidget from './FloatingWidget';
 
 const FloatingAudioPlayer: React.FC = () => {
   const {
@@ -65,133 +66,114 @@ const FloatingAudioPlayer: React.FC = () => {
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <div className="fixed bottom-4 right-4 z-floating bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border-2 border-peach-200 overflow-hidden transition-all duration-300 kawaii-card">
-      {/* Compact View */}
-      <div className="flex items-center p-3 gap-3 min-w-[280px]">
-        {/* Recipe Image */}
-        {currentRecipe?.imgLink && (
-          <div className="relative w-12 h-12 rounded-xl overflow-hidden border-2 border-peach-200 shadow-pastel flex-shrink-0">
-            <Image
-              src={currentRecipe.imgLink}
-              alt={currentRecipe.name}
-              fill
-              style={{ objectFit: 'cover' }}
-              className="rounded-xl"
-            />
-          </div>
-        )}
-
-        {/* Recipe Info */}
-        <div className="flex-1 min-w-0">
-          <h4 className="text-sm font-bold text-brand-700 truncate">
-            {isLoading ? 'Loading audio...' : currentRecipe?.name}
-          </h4>
-          <p className="text-xs text-gray-500 truncate">
-            {isLoading ? 'Please wait...' : 'Recipe Audio'}
-          </p>
-        </div>
-
-        {/* Controls */}
-        <div className="flex items-center gap-2">
-          {!isLoading && (
-            <>
-              <button
-                onClick={togglePlayPause}
-                className="w-10 h-10 rounded-full bg-gradient-to-r from-peach-300 to-violet-300 hover:from-peach-400 hover:to-violet-400 flex items-center justify-center shadow-pastel hover:shadow-lg transition-all duration-200 hover:scale-105 active:scale-95"
-                disabled={isLoading}
-              >
-                {isPlaying ? (
-                  <PauseIcon className="w-5 h-5 text-white" />
-                ) : (
-                  <PlayIcon className="w-5 h-5 text-white ml-0.5" />
-                )}
-              </button>
-
-              <button
-                onClick={stopAudio}
-                className="w-8 h-8 rounded-full bg-red-100 hover:bg-red-200 flex items-center justify-center shadow-pastel transition-all duration-200 hover:scale-105 active:scale-95"
-              >
-                <StopIcon className="w-4 h-4 text-red-600" />
-              </button>
-
-              <button
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center shadow-pastel transition-all duration-200 hover:scale-105 active:scale-95"
-              >
-                {isExpanded ? (
-                  <ChevronDownIcon className="w-4 h-4 text-gray-600" />
-                ) : (
-                  <ChevronUpIcon className="w-4 h-4 text-gray-600" />
-                )}
-              </button>
-            </>
-          )}
-
-          {isLoading && (
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-peach-300 to-violet-300 flex items-center justify-center shadow-pastel">
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+    <FloatingWidget
+      storageKey="floating-audio"
+      defaultPos={{ x: 16, y: 16 }}
+      defaultSize={{ width: 420, height: 180 }}
+      minWidth={340}
+      minHeight={160}
+      className="bg-minimalist-slate text-minimalist-sand rounded-2xl shadow-soft border border-minimalist-blue/40"
+      header={
+        <div className="flex items-center justify-between px-3 py-2">
+          <div className="flex items-center gap-3 min-w-0">
+            {currentRecipe?.imgLink ? (
+              <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-minimalist-blue/30 flex-shrink-0">
+                <Image
+                  src={currentRecipe.imgLink}
+                  alt={currentRecipe.name}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                />
+              </div>
+            ) : (
+              <div className="w-10 h-10 rounded-lg bg-minimalist-blue/30 flex-shrink-0" />
+            )}
+            <div className="min-w-0">
+              <div className="text-sm font-semibold truncate">
+                {isLoading ? 'Loading audio…' : currentRecipe?.name}
+              </div>
+              <div className="text-xs text-minimalist-sand/70 truncate">Audio player</div>
             </div>
-          )}
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="p-2 rounded-full text-minimalist-sand/80 hover:text-minimalist-sand transition-colors"
+            aria-label={isExpanded ? 'Collapse player' : 'Expand player'}
+          >
+            {isExpanded ? <ChevronDownIcon className="h-4 w-4" /> : <ChevronUpIcon className="h-4 w-4" />}
+          </button>
         </div>
-      </div>
+      }
+    >
+      <div className="px-3 pb-3">
+        {/* Transport */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={togglePlayPause}
+            className="h-10 w-10 rounded-full bg-minimalist-sand text-minimalist-slate flex items-center justify-center"
+            disabled={isLoading}
+            aria-label={isPlaying ? 'Pause' : 'Play'}
+          >
+            {isPlaying ? <PauseIcon className="h-5 w-5" /> : <PlayIcon className="h-5 w-5 ml-0.5" />}
+          </button>
+          <button
+            onClick={stopAudio}
+            className="h-10 w-10 rounded-full bg-minimalist-blue/30 text-minimalist-sand flex items-center justify-center"
+            aria-label="Stop"
+          >
+            <StopIcon className="h-4 w-4" />
+          </button>
 
-      {/* Expanded View */}
-      {isExpanded && !isLoading && (
-        <div className="px-3 pb-3 border-t border-peach-100">
-          {/* Progress Bar */}
-          <div className="mb-3">
+          <div className="flex-1 min-w-0">
             <div
-              className="w-full h-2 bg-gray-200 rounded-full cursor-pointer overflow-hidden"
+              className="w-full h-2 bg-minimalist-blue/30 rounded-full cursor-pointer overflow-hidden"
               onClick={handleProgressClick}
             >
               <div
-                className="h-full bg-gradient-to-r from-peach-400 to-violet-400 rounded-full transition-all duration-300"
+                className="h-full bg-minimalist-sand rounded-full"
                 style={{ width: `${progressPercentage}%` }}
               />
             </div>
-            <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <div className="flex justify-between text-[11px] text-minimalist-sand/70 mt-1">
               <span>{formatTime(currentTime)}</span>
               <span>{formatTime(duration)}</span>
             </div>
           </div>
+        </div>
 
-          {/* Volume Control */}
-          <div className="flex items-center gap-2">
+        {/* Expanded controls */}
+        {isExpanded && (
+          <div className="mt-3 flex items-center gap-2">
             <button
               onClick={() => setShowVolumeSlider(!showVolumeSlider)}
-              className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center shadow-pastel transition-all duration-200 hover:scale-105 active:scale-95"
+              className="h-9 w-9 rounded-full bg-minimalist-blue/30 flex items-center justify-center"
+              aria-label="Volume"
             >
               {volume === 0 ? (
-                <SpeakerXMarkIcon className="w-4 h-4 text-gray-600" />
+                <SpeakerXMarkIcon className="h-4 w-4" />
               ) : (
-                <SpeakerWaveIcon className="w-4 h-4 text-gray-600" />
+                <SpeakerWaveIcon className="h-4 w-4" />
               )}
             </button>
-
             {showVolumeSlider && (
-              <div className="flex-1">
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.1"
-                  value={volume}
-                  onChange={handleVolumeChange}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-                  style={{
-                    background: `linear-gradient(to right, #f9a8d4 0%, #c084fc ${volume * 100}%, #e5e7eb ${volume * 100}%, #e5e7eb 100%)`
-                  }}
-                />
-              </div>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+                value={volume}
+                onChange={handleVolumeChange}
+                className="flex-1"
+              />
             )}
-
-            <span className="text-xs text-gray-500 min-w-[3rem] text-right">
+            <span className="text-[11px] text-minimalist-sand/70 w-10 text-right">
               {Math.round(volume * 100)}%
             </span>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </FloatingWidget>
   );
 };
 

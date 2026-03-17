@@ -1,5 +1,5 @@
-import { Switch, Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
-import { ChevronDownIcon } from '@heroicons/react/24/solid';
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
+import { ChevronDownIcon, CheckCircleIcon } from '@heroicons/react/24/solid';
 import { Recipe } from '../types/index';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -16,6 +16,7 @@ interface RecipeCardProps {
 const RecipeCard = ({ recipe, handleRecipeSelection, selectedRecipes, showSwitch, removeMargin }: RecipeCardProps) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const parentClassName = `w-full bg-coquette-cream shadow-sm rounded-3xl overflow-hidden relative border border-coquette-blush/20 hover:shadow-md transition-all duration-300 ${removeMargin ? '' : 'mt-6 mb-4'} max-h-[70vh] flex flex-col`;
+    const isSelected = selectedRecipes.includes(recipe.openaiPromptId);
 
     return (
         <motion.div
@@ -68,32 +69,18 @@ const RecipeCard = ({ recipe, handleRecipeSelection, selectedRecipes, showSwitch
                         {recipe.name}
                     </motion.h2>
 
-                    {/* Optional Switch to Select Recipe */}
+                    {/* Optional Check Button to Select Recipe */}
                     {showSwitch && (
-                        <Switch
-                            checked={selectedRecipes.includes(recipe.openaiPromptId)}
-                            onChange={() =>
-                                handleRecipeSelection ? handleRecipeSelection(recipe.openaiPromptId) : undefined
-                            }
-                            className={`
-                relative inline-flex flex-shrink-0
-                ${selectedRecipes.includes(recipe.openaiPromptId) ? 'bg-gradient-to-r from-coquette-blush to-coquette-lavender' : 'bg-gray-200'}
-                h-6 w-11
-                cursor-pointer rounded-full border-2 border-transparent
-                transition-colors duration-300 ease-in-out focus:outline-none shadow-sm
-            `}
+                        <button
+                            type="button"
+                            onClick={() => handleRecipeSelection?.(recipe.openaiPromptId)}
+                            className={`flex items-center justify-center h-9 w-9 rounded-full transition-colors ${
+                                isSelected ? 'bg-minimalist-blue/70 text-minimalist-slate' : 'bg-minimalist-sky/50 text-minimalist-slate/60'
+                            }`}
+                            aria-label={isSelected ? 'Unselect recipe' : 'Select recipe'}
                         >
-                            <span className="sr-only">Use setting</span>
-                            <span
-                                aria-hidden="true"
-                                className={`
-                    pointer-events-none inline-block
-                    h-5 w-5
-                    ${selectedRecipes.includes(recipe.openaiPromptId) ? 'translate-x-5' : 'translate-x-0'}
-                    transform rounded-full bg-white shadow ring-0 transition duration-300 ease-in-out
-                `}
-                            />
-                        </Switch>
+                            <CheckCircleIcon className={`h-6 w-6 ${isSelected ? '' : 'opacity-50'}`} />
+                        </button>
                     )}
                 </div>
 

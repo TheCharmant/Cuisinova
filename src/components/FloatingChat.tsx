@@ -3,6 +3,7 @@ import { ChatBubbleOvalLeftEllipsisIcon, XMarkIcon } from '@heroicons/react/24/o
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/solid';
 import { useChat } from '../contexts/ChatContext';
 import ChatBox from './ChatBox';
+import FloatingWidget from './FloatingWidget';
 
 const FloatingChat = () => {
   const { isOpen, recipeId, closeChat } = useChat();
@@ -11,8 +12,14 @@ const FloatingChat = () => {
   if (!recipeId) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 z-floating">
-      <div className="bg-minimalist-sky/70 backdrop-blur-md rounded-2xl shadow-soft border border-minimalist-blue/60 overflow-hidden min-w-[280px] max-w-[380px]">
+    <FloatingWidget
+      storageKey="floating-chat"
+      defaultPos={{ x: 16, y: 120 }}
+      defaultSize={{ width: 360, height: 420 }}
+      minWidth={300}
+      minHeight={240}
+      className="bg-minimalist-sky/70 backdrop-blur-md rounded-2xl shadow-soft border border-minimalist-blue/60"
+      header={
         <div className="flex items-center justify-between px-3 py-2">
           <div className="flex items-center gap-2 min-w-0">
             <ChatBubbleOvalLeftEllipsisIcon className="h-5 w-5 text-minimalist-slate" />
@@ -37,19 +44,16 @@ const FloatingChat = () => {
             </button>
           </div>
         </div>
-
-        {isOpen && isExpanded && (
-          <div className="px-3 pb-3">
-            <ChatBox recipeId={recipeId} />
-          </div>
-        )}
-        {!isOpen && (
-          <div className="px-3 pb-3 text-sm text-minimalist-slate/70">
-            Chat is closed.
-          </div>
+      }
+    >
+      <div className="px-3 pb-3">
+        {isOpen && isExpanded ? (
+          <ChatBox recipeId={recipeId} />
+        ) : (
+          <div className="text-sm text-minimalist-slate/70">Chat is closed.</div>
         )}
       </div>
-    </div>
+    </FloatingWidget>
   );
 };
 

@@ -59,11 +59,18 @@ body {
 }
 
 @media print {
+  @page {
+    size: A4;
+    margin: 18mm;
+  }
+
   /* Make print output clean and ink-friendly */
   body {
     background: #ffffff !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+    font-family: "Times New Roman", Times, serif !important;
+    color: #000000 !important;
   }
 
   /* Hide everything except the recipe area */
@@ -75,14 +82,27 @@ body {
     visibility: visible;
   }
   #print-area {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
+    position: static;
+    width: auto;
     box-shadow: none !important;
     border: none !important;
     border-radius: 0 !important;
     background: #ffffff !important;
+  }
+
+  /* Remove app-like styling for formal print */
+  #print-area * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    background: transparent !important;
+    color: #000000 !important;
+    border-color: #000000 !important;
+  }
+
+  /* Keep recipe image modest */
+  #print-area img {
+    max-height: 70mm;
+    object-fit: cover;
   }
 
   /* Avoid broken images/sections */
