@@ -17,6 +17,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
             return res.status(400).json({ error: 'Ingredients are required' });
         }
 
+        // Enforce single-category selection (or none)
+        if (categories && Array.isArray(categories) && categories.length > 1) {
+            return res.status(400).json({ error: 'Select only one category' });
+        }
+
         // Generate recipes using OpenAI API
         console.info('Generating recipes from OpenAI...');
         const response = await generateRecipe(ingredients, categories || [], dietaryPreferences || [], session.user.id);

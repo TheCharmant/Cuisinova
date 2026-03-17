@@ -85,9 +85,21 @@ export default function RecipeDetail() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-cream-100 via-peach-100 to-violet-100 p-6 animate-fadeInUp relative overflow-x-hidden">
             {/* Recipe Card */}
-            <div className="max-w-4xl mx-auto bg-gradient-to-br from-peach-100 via-white to-violet-50 shadow-pastel rounded-[2.5rem] overflow-hidden border-2 border-peach-100 hover:shadow-2xl transition-all duration-300 kawaii-card">
+            <div
+                id="print-area"
+                className="max-w-4xl mx-auto bg-gradient-to-br from-peach-100 via-white to-violet-50 shadow-pastel rounded-[2.5rem] overflow-hidden border-2 border-peach-100 hover:shadow-2xl transition-all duration-300 kawaii-card"
+            >
                 <RecipeHeader recipeData={recipeData} /> {/* Recipe header with image and title */}
                 <div className="p-6">
+                    <div className="mb-4 flex justify-end print:hidden">
+                        <button
+                            type="button"
+                            className="px-4 py-2 rounded-full bg-white border border-peach-200 text-gray-700 shadow-sm hover:shadow-md transition-all"
+                            onClick={() => window.print()}
+                        >
+                            Print recipe
+                        </button>
+                    </div>
                     <ActionPopover
                         handlers={{
                             handleClone,

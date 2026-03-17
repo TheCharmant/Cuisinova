@@ -15,7 +15,7 @@ import { DietaryPreference, RecipeCategory, Recipe } from '../../types/index';
 const categoryGroups = {
   Meals: ['Breakfast', 'Lunch', 'Dinner', 'Snack'] as RecipeCategory[],
   Desserts: ['Ice cream', 'Cake', 'Cookies', 'Brownies', 'Donuts'] as RecipeCategory[],
-  Drinks: ['Smoothie', 'Juice', 'Coffee', 'Tea', 'Milk'] as RecipeCategory[],
+  Other: ['Smoothie', 'Juice', 'Coffee', 'Tea', 'Milk'] as RecipeCategory[],
 };
 
 const dietaryOptions: DietaryPreference[] = [
@@ -72,9 +72,12 @@ export default function DietaryPreferences({
   }, [preferences.length])
 
   const handleCategoryChange = (checked: boolean, category: RecipeCategory) => {
-    if (checked && categories.length >= 2) return; // Max 2
-    const updatedCategories = categories.includes(category) ? categories.filter((c) => c !== category) : [...categories, category]
-    updateCategories(updatedCategories)
+    // Limit to exactly one category selection (or none)
+    if (checked) {
+      updateCategories([category]);
+      return;
+    }
+    updateCategories(categories.filter((c) => c !== category));
   };
 
   const handlePreferenceChange = (checked: boolean, option: DietaryPreference) => {
@@ -96,7 +99,7 @@ export default function DietaryPreferences({
         Recipe Preferences
       </h2>
       <p className="text-sm text-gray-500 mb-4">
-        Select 1-2 categories and dietary restrictions for your recipes!
+        Select 1 category and (optional) dietary restrictions for your recipes.
       </p>
 
       {/* Category Selection */}
@@ -108,7 +111,7 @@ export default function DietaryPreferences({
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
               {groupCategories.map((category) => {
                 const selected = categories.includes(category);
-                const disabled = !selected && categories.length >= 2;
+                const disabled = !selected && categories.length >= 1;
                 return (
                   <div
                     key={category}

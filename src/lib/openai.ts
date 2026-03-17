@@ -4,6 +4,7 @@ import aiGenerated from '../models/aigenerated';
 import { connectDB } from '../lib/mongodb';
 import { ImagesResponse } from 'openai/resources';
 import recipeModel from '../models/recipe';
+import { z } from 'zod';
 import {
     getRecipeGenerationPrompt,
     getImageGenerationPrompt,
@@ -46,6 +47,38 @@ type ResponseType = {
     openaiPromptId: string;
 };
 
+const RecipeGenerationSchema = z.array(
+    z.object({
+        name: z.string().min(1),
+        ingredients: z.array(
+            z.object({
+                name: z.string().min(1),
+                quantity: z.string().nullable().optional(),
+            })
+        ).min(1),
+        instructions: z.array(z.string().min(1)).min(1),
+        dietaryPreference: z.array(z.string()).optional(),
+        additionalInformation: z.object({
+            tips: z.string().optional().default(''),
+            variations: z.string().optional().default(''),
+            servingSuggestions: z.string().optional().default(''),
+            nutritionalInformation: z.string().optional().default(''),
+        }).optional().default({
+            tips: '',
+            variations: '',
+            servingSuggestions: '',
+            nutritionalInformation: '',
+        }),
+    })
+).min(1);
+
+const extractJsonArray = (text: string): string | null => {
+    const start = text.indexOf('[');
+    const end = text.lastIndexOf(']');
+    if (start === -1 || end === -1 || end <= start) return null;
+    return text.slice(start, end + 1);
+};
+
 // Generate recipes by sending a chat completion request to OpenAI using ingredients, categories, and dietary preferences
 export const generateRecipe = async (ingredients: Ingredient[], categories: RecipeCategory[], dietaryPreferences: DietaryPreference[], userId: string): Promise<ResponseType> => {
     try {
@@ -69,21 +102,44 @@ export const generateRecipe = async (ingredients: Ingredient[], categories: Reci
             max_tokens: 1500,
         });
         const _id = await saveOpenaiResponses({ userId, prompt, response, model });
-        const recipesContent = response.choices[0].message?.content;
+        const recipesContent = response.choices[0].message?.content ?? null;
+
+        const tryParseAndValidate = (raw: string) => {
+            const extracted = extractJsonArray(raw) ?? raw;
+            const parsed = JSON.parse(extracted);
+            const validated = RecipeGenerationSchema.parse(parsed);
+            const updatedRecipes = validated.map((recipeLike: any) => ({
+                ...recipeLike,
+                dietaryPreference: dietaryPreferences.length > 0 ? dietaryPreferences : [],
+                categories: categories.length > 0 ? categories : [],
+            }));
+            return JSON.stringify(updatedRecipes);
+        };
+
         if (recipesContent) {
             try {
-                const parsedRecipes = JSON.parse(recipesContent);
-                // Ensure dietaryPreference and categories are set to the selected values
-                const updatedRecipes = parsedRecipes.map((recipe: any) => ({
-                    ...recipe,
-                    dietaryPreference: dietaryPreferences.length > 0 ? dietaryPreferences : [],
-                    categories: categories.length > 0 ? categories : []
-                }));
-                return { recipes: JSON.stringify(updatedRecipes), openaiPromptId: _id || 'null-prompt-id' };
+                return { recipes: tryParseAndValidate(recipesContent), openaiPromptId: _id || 'null-prompt-id' };
             } catch (error) {
-                console.error('Failed to parse AI response:', error);
+                console.error('Failed to parse/validate AI response. Retrying with JSON repair...', error);
+            }
+
+            // One retry: ask model to output ONLY valid JSON array
+            const repairPrompt = `Fix the following so it becomes a strictly valid JSON array of recipes (no markdown, no commentary). Output JSON only.\n\n${recipesContent}`;
+            const repaired = await openai.chat.completions.create({
+                model,
+                messages: [{ role: 'user', content: repairPrompt }],
+                max_tokens: 1500,
+            });
+            const repairedContent = repaired.choices[0].message?.content ?? null;
+            if (repairedContent) {
+                try {
+                    return { recipes: tryParseAndValidate(repairedContent), openaiPromptId: _id || 'null-prompt-id' };
+                } catch (error) {
+                    console.error('Failed to parse/validate repaired AI response:', error);
+                }
             }
         }
+
         return { recipes: recipesContent, openaiPromptId: _id || 'null-prompt-id' };
     } catch (error) {
         console.error('Failed to generate recipe:', error);

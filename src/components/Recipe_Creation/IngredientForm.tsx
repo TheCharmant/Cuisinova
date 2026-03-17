@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Combobox, ComboboxInput, ComboboxButton, ComboboxOptions, ComboboxOption } from '@headlessui/react';
 import { CheckIcon, ChevronDownIcon, XMarkIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import clsx from 'clsx';
 import { Ingredient, Recipe, IngredientDocumentType } from '../../types/index';
+import { call_api } from '../../utils/utils';
 
 type ComboIngredient = { id: number; name: string };
 
@@ -130,7 +131,31 @@ export default function IngredientForm({
 }: IngredientFormProps) {
     const [ingredientList, setIngredientList] = useState(originalIngredientList);
     const [error, setError] = useState<string | null>(null);
+  const [tab, setTab] = useState<'all' | 'pantry'>('all');
+  const [pantryItems, setPantryItems] = useState<{ name: string }[]>([]);
+  const [isPantryLoading, setIsPantryLoading] = useState(false);
     const progressPercent = Math.min(ingredients.length, 10) * 10;
+
+  useEffect(() => {
+    const loadPantry = async () => {
+      try {
+        setIsPantryLoading(true);
+        const data = await call_api({ address: '/api/pantry', method: 'get' });
+        setPantryItems(Array.isArray(data?.items) ? data.items : []);
+      } catch (e) {
+        // Pantry is additive; failures should not block recipe creation.
+        setPantryItems([]);
+      } finally {
+        setIsPantryLoading(false);
+      }
+    };
+    loadPantry();
+  }, []);
+
+  const pantryNames = useMemo(
+    () => new Set(pantryItems.map((i) => i.name.toLowerCase())),
+    [pantryItems]
+  );
 
     const handleChange = (val: string | undefined) => {
         if (!val) return;
@@ -152,6 +177,28 @@ export default function IngredientForm({
         ]);
     };
 
+  const addToPantry = async (name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    if (pantryNames.has(trimmed.toLowerCase())) return;
+    try {
+      const data = await call_api({ address: '/api/pantry', method: 'post', payload: { name: trimmed } });
+      const newName = data?.item?.name ?? trimmed;
+      setPantryItems((prev) => [{ name: newName }, ...prev].sort((a, b) => a.name.localeCompare(b.name)));
+    } catch {
+      // Ignore: pantry is optional.
+    }
+  };
+
+  const removeFromPantry = async (name: string) => {
+    try {
+      await call_api({ address: '/api/pantry', method: 'delete', payload: { name } });
+      setPantryItems((prev) => prev.filter((i) => i.name !== name));
+    } catch {
+      // Ignore: pantry is optional.
+    }
+  };
+
     const deleteIngredient = (id: string) => {
         if (Boolean(generatedRecipes.length)) return;
         updateIngredients(ingredients.filter((ingredient) => ingredient.id !== id));
@@ -161,12 +208,105 @@ export default function IngredientForm({
         <div
             className="w-full p-4 sm:p-6 bg-gradient-to-br from-slate-50 to-stone-100 shadow-md rounded-xl animate-fadeInUp"
         >
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="inline-flex rounded-full bg-white shadow-sm border border-gray-200 p-1">
+          <button
+            type="button"
+            onClick={() => setTab('all')}
+            className={clsx(
+              'px-4 py-2 text-sm font-medium rounded-full transition-colors',
+              tab === 'all' ? 'bg-brand-600 text-white' : 'text-gray-600 hover:bg-gray-50'
+            )}
+            disabled={Boolean(generatedRecipes.length)}
+          >
+            All ingredients
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('pantry')}
+            className={clsx(
+              'px-4 py-2 text-sm font-medium rounded-full transition-colors',
+              tab === 'pantry' ? 'bg-brand-600 text-white' : 'text-gray-600 hover:bg-gray-50'
+            )}
+            disabled={Boolean(generatedRecipes.length)}
+          >
+            Pantry
+          </button>
+        </div>
+
+        {tab === 'pantry' && (
+          <button
+            type="button"
+            onClick={() => addToPantry(ingredients[ingredients.length - 1]?.name ?? '')}
+            className="text-sm font-medium text-brand-700 hover:text-brand-800 disabled:opacity-50"
+            disabled={!ingredients.length || Boolean(generatedRecipes.length)}
+            title="Adds your most recently selected ingredient to your pantry"
+          >
+            Add last selected to pantry
+          </button>
+        )}
+      </div>
+
             <div className="w-full">
-                <IngredientList
-                    ingredientList={ingredientList}
-                    ingredientUpdate={(val) => handleChange(val)}
-                    generatedRecipes={generatedRecipes}
-                />
+        {tab === 'all' ? (
+          <IngredientList
+            ingredientList={ingredientList}
+            ingredientUpdate={(val) => handleChange(val)}
+            generatedRecipes={generatedRecipes}
+          />
+        ) : (
+          <div className="rounded-xl border border-gray-200 bg-white p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h2 className="text-base font-semibold text-gray-800">Your Pantry</h2>
+                <p className="text-xs text-gray-500">Tap an item to add it to this recipe.</p>
+              </div>
+              {isPantryLoading && <span className="text-xs text-gray-500">Loading…</span>}
+            </div>
+            {!pantryItems.length ? (
+              <div className="text-sm text-gray-600">
+                Your pantry is empty. Add ingredients as you go (use “Add last selected to pantry”), or type an ingredient in “All ingredients”.
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {pantryItems.map((item) => {
+                  const alreadySelected = ingredients.some((i) => i.name.toLowerCase() === item.name.toLowerCase());
+                  return (
+                    <div
+                      key={item.name}
+                      className={clsx(
+                        'group flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm',
+                        alreadySelected ? 'bg-gray-50 border-gray-200 text-gray-400' : 'bg-white border-gray-200 text-gray-700 hover:border-brand-300 hover:bg-brand-50 cursor-pointer'
+                      )}
+                      onClick={() => {
+                        if (alreadySelected || generatedRecipes.length) return;
+                        handleChange(item.name);
+                      }}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <span>{item.name}</span>
+                      <button
+                        type="button"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-gray-600"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          removeFromPantry(item.name);
+                        }}
+                        aria-label={`Remove ${item.name} from pantry`}
+                        disabled={Boolean(generatedRecipes.length)}
+                        title="Remove from pantry"
+                      >
+                        <XMarkIcon className="w-4 h-4" />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
                 <div className="mt-3">
                     <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
                         <div
