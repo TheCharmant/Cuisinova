@@ -46,7 +46,7 @@ const FloatingChat = () => {
         </div>
       }
     >
-      <div className="px-3 pb-3">
+      <div className="px-3 pb-1">
         {isOpen && isExpanded ? (
           <ChatBox recipeId={recipeId} />
         ) : (

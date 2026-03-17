@@ -102,7 +102,7 @@ const FloatingWidget = ({
   return (
     <div
       ref={ref}
-      className={`fixed z-floating ${className}`}
+      className={`fixed z-floating flex flex-col ${className}`}
       style={{
         left: pos.x,
         top: pos.y,
@@ -111,7 +111,7 @@ const FloatingWidget = ({
         minWidth,
         minHeight,
         resize: 'both',
-        overflow: 'auto',
+        overflow: 'hidden',
       }}
       onMouseUp={onResize}
       onTouchEnd={onResize}
@@ -125,7 +125,7 @@ const FloatingWidget = ({
       >
         {header}
       </div>
-      <div>{children}</div>
+      <div className="flex-1 overflow-auto">{children}</div>
     </div>
   );
 };

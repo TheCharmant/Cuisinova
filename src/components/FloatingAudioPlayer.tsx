@@ -106,7 +106,7 @@ const FloatingAudioPlayer: React.FC = () => {
         </div>
       }
     >
-      <div className="px-3 pb-3">
+      <div className="px-3 pb-1">
         {/* Transport */}
         <div className="flex items-center gap-2">
           <button
@@ -144,7 +144,7 @@ const FloatingAudioPlayer: React.FC = () => {
 
         {/* Expanded controls */}
         {isExpanded && (
-          <div className="mt-3 flex items-center gap-2">
+          <div className="mt-2 flex items-center gap-2">
             <button
               onClick={() => setShowVolumeSlider(!showVolumeSlider)}
               className="h-9 w-9 rounded-full bg-minimalist-blue/30 flex items-center justify-center"
