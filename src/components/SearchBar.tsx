@@ -57,7 +57,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         placeholder={placeholder}
-        className="w-full py-2 px-2 text-minimalist-slate bg-transparent outline-none placeholder:text-minimalist-slate/50 placeholder:transition-colors placeholder:duration-200 focus:placeholder:text-minimalist-slate/40 font-medium text-base focus:outline-none focus:ring-0"
+        className="w-full py-2 px-2 text-minimalist-slate bg-transparent outline-none border-0 focus:border-0 focus:ring-0 placeholder:text-minimalist-slate/50 placeholder:transition-colors placeholder:duration-200 focus:placeholder:text-minimalist-slate/40 font-medium text-base focus:outline-none"
         autoComplete="off"
       />
       {searchVal && (
