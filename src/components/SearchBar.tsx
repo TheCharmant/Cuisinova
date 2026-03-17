@@ -38,8 +38,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   return (
     <div
-      className={`relative flex items-center w-full max-w-xl mx-auto bg-white/90 backdrop-blur-sm rounded-2xl shadow-md hover:shadow-lg border border-gray-300 transition-all duration-300 ${className}`}
-      style={{ fontFamily: 'Poppins, Nunito, Quicksand, sans-serif' }}
+      className={`relative flex items-center w-full max-w-xl mx-auto bg-minimalist-sky/60 backdrop-blur-sm rounded-2xl shadow-delicate hover:shadow-soft transition-all duration-200 ${className}`}
     >
       <div
         className="flex items-center justify-center p-2 text-gray-500 hover:text-gray-700 transition-all duration-200"
@@ -58,8 +57,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         placeholder={placeholder}
-        className="w-full py-2 px-2 text-coquette-rose bg-transparent outline-none placeholder:text-coquette-lavender/60 placeholder:transition-all placeholder:duration-300 focus:placeholder:text-coquette-lavender font-medium text-lg focus:outline-none focus:ring-0"
-        style={{ fontFamily: 'Poppins, Nunito, Quicksand, sans-serif' }}
+        className="w-full py-2 px-2 text-minimalist-slate bg-transparent outline-none placeholder:text-minimalist-slate/50 placeholder:transition-colors placeholder:duration-200 focus:placeholder:text-minimalist-slate/40 font-medium text-base focus:outline-none focus:ring-0"
         autoComplete="off"
       />
       {searchVal && (
