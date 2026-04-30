@@ -6,10 +6,18 @@ export const getRecipeGenerationPrompt = (ingredients: Ingredient[], categories:
         ing.quantity ? `${ing.name} (${ing.quantity})` : ing.name
     ).join(', ');
 
-    return `
-I have exactly these ingredients: ${ingredientList}.${categories.length ? ` I prefer recipes in these categories: ${categories.join(', ')}.` : ''}${dietaryPreferences.length ? ` I need these dietary preferences: ${dietaryPreferences.join(', ')}.` : ''}
+    const categoryInstruction = categories.length 
+        ? `\n\nIMPORTANT: You MUST ONLY generate recipes that belong to the following category/categories: ${categories.join(', ')}. Every recipe must strictly fit the specified category. Do NOT generate recipes from other categories.`
+        : '';
 
-Create exactly 3 different recipes using ONLY the ingredients listed above. Do NOT add any additional ingredients. The response must be valid JSON only:
+    const dietaryInstruction = dietaryPreferences.length
+        ? `\n\nDietary Requirements: These recipes MUST adhere to ${dietaryPreferences.join(', ')}. Do not include ingredients that violate these restrictions.`
+        : '';
+
+    return `
+I have exactly these ingredients: ${ingredientList}.${categoryInstruction}${dietaryInstruction}
+
+Create exactly 3 different recipes using ONLY the ingredients listed above and fitting ONLY the specified category/dietary requirements. The response must be valid JSON only:
 
 [
     {
@@ -23,6 +31,7 @@ Create exactly 3 different recipes using ONLY the ingredients listed above. Do N
             "Step two."
         ],
         "dietaryPreference": ${JSON.stringify(dietaryPreferences)},
+        "categories": ${JSON.stringify(categories)},
         "additionalInformation": {
             "tips": "Brief practical tips",
             "variations": "Possible variations using the same ingredients",
@@ -32,11 +41,12 @@ Create exactly 3 different recipes using ONLY the ingredients listed above. Do N
     }
 ]
 
-IMPORTANT RULES:
+STRICT RULES:
 - Use ONLY the ingredients provided. No extra ingredients allowed.
-- The "ingredients" array in each recipe must contain only items from the provided list.
+- Every recipe MUST belong to the category/categories: ${JSON.stringify(categories)}.
+- If dietary preferences are specified, ALL recipes must strictly comply.
+- The "categories" field in the JSON must exactly match the specified categories.
 - Quantities must include units (grams, cups, tsp, etc.).
-- Dietary preferences must be respected (e.g., if Vegan, don't include meat).
 - Return exactly 3 recipes in a valid JSON array.
 - No markdown, no code blocks, no extra text - JSON only.
 `;

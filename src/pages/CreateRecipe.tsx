@@ -137,7 +137,7 @@ function Navigation({
       await call_api({
         address: '/api/save-recipes',
         method: 'post',
-        payload: { recipes },
+        payload: { recipes, categories }, // Pass selected categories
       });
       setIsComplete(true);
       showToast('Recipes saved successfully!', 'success');

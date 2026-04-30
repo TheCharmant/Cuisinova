@@ -35,9 +35,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
         console.log('Session user:', session?.user ? 'User exists' : 'No user');
         console.log('Session user ID:', session?.user?.id);
 
-        // Extract recipes from the request body
-        const { recipes } = req.body;
+        // Extract recipes and optional categories filter from the request body
+        const { recipes, categories } = req.body;
         console.log('Recipes received:', recipes?.length || 0);
+        console.log('Selected categories:', categories);
 
         if (!session?.user?.id) {
             console.error('No valid session or user ID found');
@@ -68,8 +69,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
 
             // Ensure arrays exist
             const instructions = Array.isArray(r.instructions) ? r.instructions : [];
-            const dietaryPreference = Array.isArray(r.dietaryPreference) ? r.dietaryPreference : [];
-            const categories = Array.isArray(r.categories) ? r.categories : [];
+            let dietaryPreference = Array.isArray(r.dietaryPreference) ? r.dietaryPreference : [];
+            let recipeCategories = Array.isArray(r.categories) ? r.categories : [];
+
+            // If selected categories were provided, enforce them: replace AI categories with user selection
+            if (categories && Array.isArray(categories) && categories.length > 0) {
+                recipeCategories = categories;
+            }
 
             // Ensure additionalInformation fields are strings
             const additionalInformation = {
@@ -84,7 +90,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
                 ingredients,
                 instructions,
                 dietaryPreference,
-                categories,
+                categories: recipeCategories,
                 additionalInformation,
                 // Ensure openaiPromptId is string
                 openaiPromptId: typeof r.openaiPromptId === 'string' ? r.openaiPromptId : '',
