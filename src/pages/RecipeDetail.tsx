@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import Image from 'next/image';
 import { HandThumbUpIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
-import { EllipsisHorizontalIcon, HandThumbUpIcon as HandThumbUpSolid } from '@heroicons/react/16/solid'
+import { EllipsisHorizontalIcon, HandThumbUpIcon as HandThumbUpSolid, ArrowDownTrayIcon, DocumentTextIcon } from '@heroicons/react/16/solid'
 import useActionPopover from "../components/Hooks/useActionPopover";
 import { useRecipeData } from "../components/Hooks/useRecipeData";
 import { ActionPopover } from "../components/Recipe_Display/ActionPopover";
@@ -10,6 +10,8 @@ import UserLink from "../components/UserLink";
 import Loading from "../components/Loading";
 import ErrorPage from "./auth/error";
 import { call_api } from "../utils/utils";
+import { downloadRecipeAsPDF, downloadRecipeAsTXT } from "../utils/downloadUtils";
+import { useToast } from "../contexts/ToastContext";
 
 const getThumbsup = ({ liked, owns }: { liked: boolean, owns: boolean }) => {
     const baseClass = "size-6";
@@ -26,6 +28,7 @@ export default function RecipeDetail() {
     const router = useRouter();
     const { recipeId } = router.query as { recipeId?: string }; // Extract recipeId from the URL query parameters
     const { recipeData, loading, error, setRecipeData, setLoading } = useRecipeData(recipeId);
+    const { showToast } = useToast();
 
 
     const updateRecipe = (audioLink: string) => {
@@ -67,9 +70,17 @@ export default function RecipeDetail() {
             setLoading(true)
             const { message, error } = await handleDeleteRecipe();
             setLoading(false)
+            if (!error) {
+                showToast('Recipe deleted successfully!', 'success');
+            } else {
+                showToast(error, 'error');
+            }
             router.push('/')
         } catch (error) {
             console.error(error)
+            showToast('Failed to delete recipe', 'error');
+            setLoading(false);
+            router.push('/')
         }
     }
 
@@ -173,6 +184,35 @@ export default function RecipeDetail() {
                                 <p className="text-brand-700">{recipeData.additionalInformation.nutritionalInformation}</p>
                             </div>
                         </div>
+                    </div>
+
+                    {/* Download Buttons */}
+                    <div className="mb-6 flex flex-wrap gap-2 justify-end print:hidden">
+                        <button
+                            type="button"
+                            className="flex items-center gap-1 px-3 py-1.5 text-sm text-minimalist-slate/80 hover:text-minimalist-slate border border-gray-200 rounded-full hover:bg-gray-50 transition-colors"
+                            onClick={() => downloadRecipeAsTXT(recipeData)}
+                            title="Download as TXT"
+                        >
+                            <DocumentTextIcon className="w-4 h-4" />
+                            <span>TXT</span>
+                        </button>
+                        <button
+                            type="button"
+                            className="flex items-center gap-1 px-3 py-1.5 text-sm text-minimalist-slate/80 hover:text-minimalist-slate border border-gray-200 rounded-full hover:bg-gray-50 transition-colors"
+                            onClick={() => downloadRecipeAsPDF(recipeData)}
+                            title="Download as PDF"
+                        >
+                            <ArrowDownTrayIcon className="w-4 h-4" />
+                            <span>PDF</span>
+                        </button>
+                        <button
+                            type="button"
+                            className="px-2 py-1.5 text-sm text-minimalist-slate/80 hover:text-minimalist-slate transition-colors"
+                            onClick={() => window.print()}
+                        >
+                            Print recipe
+                        </button>
                     </div>
 
                     {/* Liked By Section */}

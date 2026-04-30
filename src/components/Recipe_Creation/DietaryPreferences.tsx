@@ -108,7 +108,7 @@ export default function DietaryPreferences({
         {Object.entries(categoryGroups).map(([groupName, groupCategories]) => (
           <div key={groupName} className="mb-4">
             <h4 className="text-md font-medium text-gray-600 mb-2">{groupName}</h4>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 w-full overflow-x-hidden">
               {groupCategories.map((category) => {
                 const selected = categories.includes(category);
                 const disabled = !selected && categories.length >= 1;
@@ -163,7 +163,7 @@ export default function DietaryPreferences({
       <hr className="mb-4" />
 
       {/* Dietary Options with Wrapped Layout */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 w-full overflow-x-hidden">
         {dietaryOptions.map((option) => {
           const Icon = iconMap[option];
           const selected = preferences.includes(option);

@@ -10,6 +10,7 @@ import { AudioProvider } from '../contexts/AudioContext';
 import FloatingAudioPlayer from '../components/FloatingAudioPlayer';
 import { ChatProvider } from '../contexts/ChatContext';
 import FloatingChat from '../components/FloatingChat';
+import { ToastProvider } from '../contexts/ToastContext';
 import '../styles/globals.css';
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
@@ -39,15 +40,17 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
         <SessionProvider session={session} refetchInterval={5 * 60}>
             <AudioProvider>
                 <ChatProvider>
-                    <Layout>
-                        <Head>
-                            <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-                        </Head>
-                        <Component {...pageProps} />
-                    </Layout>
-                    <FloatingAudioPlayer />
-                    <FloatingChat />
-                    <div id="alert-root"></div>
+                    <ToastProvider>
+                        <Layout>
+                            <Head>
+                                <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+                            </Head>
+                            <Component {...pageProps} />
+                        </Layout>
+                        <FloatingAudioPlayer />
+                        <FloatingChat />
+                        <div id="alert-root"></div>
+                    </ToastProvider>
                 </ChatProvider>
             </AudioProvider>
         </SessionProvider>

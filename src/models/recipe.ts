@@ -19,7 +19,7 @@ const ingredientSchema = new mongoose.Schema({
 });
 
 const recipeSchema = new mongoose.Schema({
-    owner: { type: mongoose.Schema.Types.ObjectId, ref: User },
+    owner: { type: mongoose.Schema.Types.ObjectId, ref: User, index: true },
     name: { type: String, required: true },
     ingredients: [ingredientSchema],
     instructions: [{ type: String, required: true }],
@@ -31,10 +31,11 @@ const recipeSchema = new mongoose.Schema({
         nutritionalInformation: { type: String, required: true },
     },
     imgLink: { type: String },
-    openaiPromptId: {type: String, required: true},
+    openaiPromptId: {type: String, required: true, index: true},
     likedBy: {
         type: [{ type: mongoose.Schema.Types.ObjectId, ref: User }],
         default: [],
+        index: true
     },
     comments: {
         type: [commentSchema],
@@ -43,8 +44,11 @@ const recipeSchema = new mongoose.Schema({
     tags: {
         type: [tagSchema],
         default: [],
+        index: true
     },
-    audio: { type: String, required: false }
+    audio: { type: String, required: false },
+    createdAt: { type: Date, default: Date.now, index: true },
+    updatedAt: { type: Date, default: Date.now, index: true }
 }, { timestamps: true });
 
 const Recipe: Model<RecipeDocument> = mongoose.models.Recipe || mongoose.model<RecipeDocument>('Recipe', recipeSchema);

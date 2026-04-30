@@ -291,7 +291,7 @@ export default function IngredientForm({
         )}
       </div>
 
-            <div className="w-full">
+            <div className="w-full max-w-full overflow-x-hidden">
         {tab === 'all' ? (
           <IngredientList
             ingredientList={ingredientList}
@@ -299,7 +299,7 @@ export default function IngredientForm({
             generatedRecipes={generatedRecipes}
           />
         ) : (
-          <div className="rounded-xl border border-gray-200 bg-white p-4">
+          <div className="rounded-xl border border-gray-200 bg-white p-4 w-full max-w-full">
             <div className="flex items-center justify-between mb-3">
               <div>
                 <h2 className="text-base font-semibold text-gray-800">Your Pantry</h2>
@@ -308,18 +308,18 @@ export default function IngredientForm({
               {isPantryLoading && <span className="text-xs text-gray-500">Loading…</span>}
             </div>
             {!pantryItems.length ? (
-              <div className="text-sm text-gray-600">
-                Your pantry is empty. Add ingredients as you go (use “Add last selected to pantry”), or type an ingredient in “All ingredients”.
-              </div>
+              <p className="text-sm text-gray-600">
+                Your pantry is empty. Add ingredients as you go (use &quot;Add last selected to pantry&quot;), or type an ingredient in &quot;All ingredients&quot;.
+              </p>
             ) : (
-              <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto pr-1">
+              <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto pr-1 w-full">
                 {pantryItems.map((item) => {
                   const alreadySelected = ingredients.some((i) => i.name.toLowerCase() === item.name.toLowerCase());
                   return (
                     <div
                       key={item.name}
                       className={clsx(
-                        'group flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm',
+                        'group flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm whitespace-nowrap',
                         alreadySelected ? 'bg-gray-50 border-gray-200 text-gray-400' : 'bg-white border-gray-200 text-gray-700 hover:border-brand-300 hover:bg-brand-50 cursor-pointer'
                       )}
                       onClick={() => {
@@ -342,7 +342,7 @@ export default function IngredientForm({
                         disabled={Boolean(generatedRecipes.length)}
                         title="Remove from pantry"
                       >
-                        <XMarkIcon className="w-4 h-4" />
+                        <XMarkIcon className="w-4 h-4 flex-shrink-0" />
                       </button>
                     </div>
                   );
@@ -351,7 +351,7 @@ export default function IngredientForm({
             )}
           </div>
         )}
-                <div className="mt-3">
+                <div className="mt-3 w-full">
                     <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
                         <div
                             className="h-full bg-brand-500 transition-all"

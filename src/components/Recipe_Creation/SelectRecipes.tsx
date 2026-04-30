@@ -29,7 +29,7 @@ const SelectRecipesComponent = ({ generatedRecipes, selectedRecipes, updateSelec
 
             {/* Horizontal layout (no portrait compression) */}
             <div className="w-full overflow-x-auto hide-scrollbar">
-                <div className="flex gap-6 min-w-max pb-2">
+                <div className="flex gap-4 min-w-max pb-2 w-full">
                     {generatedRecipes.map((recipe) => (
                         <div key={recipe.openaiPromptId} className="w-[360px] flex-shrink-0">
                             <RecipeCard

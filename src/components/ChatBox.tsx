@@ -24,12 +24,13 @@ export default function ChatBox({ recipeId, compact = false }: Props) {
 
     const router = useRouter();
     const bottomRef = useRef<HTMLDivElement | null>(null);
+    const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
     const MAX_TOKENS = 3000;
 
     useEffect(() => {
-        if (bottomRef.current) {
-            bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [messages, isLoading]);
 
@@ -79,41 +80,42 @@ export default function ChatBox({ recipeId, compact = false }: Props) {
             onAction={() => router.push(`/RecipeDetail?recipeId=${recipeId}`)}
         />
     );
-    return (
-        <div className={`${compact ? '' : 'mt-6'} flex flex-col gap-3 ${compact ? 'h-full' : ''}`}>
-            {messages.length > 0 && (
-                <div className={`border border-minimalist-blue/60 rounded-xl p-4 bg-minimalist-sky/40 space-y-4 shadow-inner ${compact ? 'flex-1 overflow-y-auto' : 'max-h-[320px] overflow-y-auto'}`}>
-                    {messages.map((msg, idx) => (
-                        <div
-                            key={idx}
-                            className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                        >
-                            <div
-                                className={`px-4 py-2 rounded-xl text-sm max-w-[75%] shadow-sm border ${
-                                    msg.role === 'user'
-                                        ? 'bg-minimalist-blue/60 text-minimalist-slate border-minimalist-blue/60'
-                                        : 'bg-minimalist-sand text-minimalist-slate border-minimalist-blue/40'
-                                }`}
-                            >
-                                <ReactMarkdown>{msg.content}</ReactMarkdown>
-                            </div>
-                        </div>
-                    ))}
-                    {isLoading && (
-                        <div className="text-sm text-minimalist-slate/70 italic animate-pulse">Assistant is typing...</div>
-                    )}
-                    {tokenTotal >= MAX_TOKENS && (
-                        <div className="text-sm text-red-500 italic">
-                            {`You've reached the token limit for this chat session.`}
-                        </div>
-                    )}
-                    <div ref={bottomRef} />
-                </div>
-            )}
 
-            <div className="flex items-center gap-2">
+    return (
+        <div className={`${compact ? '' : 'mt-6'} flex flex-col h-[500px] sm:h-[550px]`}>
+            {/* Messages area - scrollable */}
+            <div className={`flex-1 overflow-y-auto border border-minimalist-blue/60 rounded-xl p-4 bg-minimalist-sky/40 space-y-4 shadow-inner ${compact ? '' : ''}`}>
+                {messages.map((msg, idx) => (
+                    <div
+                        key={idx}
+                        className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                    >
+                        <div
+                            className={`px-4 py-2 rounded-xl text-sm max-w-[75%] shadow-sm border ${
+                                msg.role === 'user'
+                                    ? 'bg-minimalist-blue/60 text-minimalist-slate border-minimalist-blue/60'
+                                    : 'bg-minimalist-sand text-minimalist-slate border-minimalist-blue/40'
+                            }`}
+                        >
+                            <ReactMarkdown>{msg.content}</ReactMarkdown>
+                        </div>
+                    </div>
+                ))}
+                {isLoading && (
+                    <div className="text-sm text-minimalist-slate/70 italic animate-pulse">Assistant is typing...</div>
+                )}
+                {tokenTotal >= MAX_TOKENS && (
+                    <div className="text-sm text-red-500 italic">
+                        {`You've reached the token limit for this chat session.`}
+                    </div>
+                )}
+                <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input area - fixed at bottom */}
+            <div className="flex items-center gap-2 pt-3 mt-3 border-t border-minimalist-blue/20">
                 <textarea
-                    className="flex-grow border border-minimalist-blue/60 rounded-xl px-4 py-2 text-sm h-[80px] resize-none overflow-y-auto focus:ring-2 focus:ring-minimalist-blue/40 focus:border-minimalist-slate focus:outline-none transition-all duration-200 bg-minimalist-sky/40 text-minimalist-slate"
+                    className="flex-grow border border-minimalist-blue/60 rounded-xl px-4 py-3 text-sm h-[80px] resize-none overflow-y-auto focus:ring-2 focus:ring-minimalist-blue/40 focus:border-minimalist-slate focus:outline-none transition-all duration-200 bg-minimalist-sky/40 text-minimalist-slate"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Ask a question about this recipe..."
@@ -128,7 +130,7 @@ export default function ChatBox({ recipeId, compact = false }: Props) {
                 <button
                     onClick={handleSend}
                     disabled={isLoading || !input.trim() || tokenTotal >= MAX_TOKENS}
-                    className="bg-minimalist-slate text-minimalist-sand px-4 py-2 rounded-xl text-sm hover:bg-minimalist-slate/90 transition-colors disabled:opacity-50"
+                    className="bg-minimalist-slate text-minimalist-sand px-4 py-3 rounded-xl text-sm hover:bg-minimalist-slate/90 transition-colors disabled:opacity-50 h-[80px] flex items-center justify-center"
                     aria-label="Send"
                 >
                     <PaperAirplaneIcon className="h-5 w-5" />

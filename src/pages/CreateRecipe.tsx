@@ -17,6 +17,7 @@ import { connectDB } from '../lib/mongodb';
 import IngredientModel from '../models/ingredient';
 import RecipeModel from '../models/recipe';
 import User from '../models/user';
+import { useToast } from '../contexts/ToastContext';
 
 const steps = [
   'Choose Ingredients',
@@ -52,6 +53,7 @@ function Navigation({
 
   const router = useRouter();
   const { oldIngredients } = router.query;
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (oldIngredients && Array.isArray(oldIngredients)) {
@@ -113,6 +115,7 @@ function Navigation({
 
       setGeneratedRecipes(parsedRecipes);
       setIsComplete(true);
+      showToast('Recipes generated successfully!', 'success');
       setTimeout(() => {
         setIsLoading(false);
         setCurrentStep(3); // Go to select recipes
@@ -120,6 +123,7 @@ function Navigation({
     } catch (error) {
       console.log(error);
       setIsLoading(false);
+      showToast('Failed to generate recipes. Please try again.', 'error');
     }
   };
 
@@ -134,6 +138,7 @@ function Navigation({
         payload: { recipes },
       });
       setIsComplete(true);
+      showToast('Recipes saved successfully!', 'success');
 
       setTimeout(() => {
         setIsLoading(false);
@@ -148,6 +153,7 @@ function Navigation({
     } catch (error) {
       console.log(error);
       setIsLoading(false);
+      showToast('Failed to save recipes. Please try again.', 'error');
     }
   };
 
