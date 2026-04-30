@@ -31,7 +31,7 @@ const SelectRecipesComponent = ({ generatedRecipes, selectedRecipes, updateSelec
             <div className="w-full overflow-x-auto hide-scrollbar">
                 <div className="flex gap-4 min-w-max pb-2 w-full">
                     {generatedRecipes.map((recipe) => (
-                        <div key={recipe.openaiPromptId} className="w-[360px] flex-shrink-0">
+                        <div key={recipe.openaiPromptId} className="w-[300px] sm:w-[360px] flex-shrink-0">
                             <RecipeCard
                                 recipe={recipe}
                                 handleRecipeSelection={handleRecipeSelection}

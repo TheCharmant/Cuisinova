@@ -224,18 +224,17 @@ function Navigation({
 
   return (
     <div className="min-h-screen p-4 md:p-8 flex justify-center relative overflow-hidden">
-      <div className="w-full max-w-4xl space-y-6 animate-fadeInUp">
+      <div className="w-full max-w-7xl mx-auto space-y-6 animate-fadeInUp">
         {/* Header */}
         <div className="text-center mb-6 relative">
           <h1 className="text-3xl font-bold coquette-text text-center relative">
              Create Recipe
-            </h1>
-            {/* eslint-disable-next-line react/no-unescaped-entities */}
-            <p className="text-minimalist-slate/80 mt-2">Create a recipe based on your ingredients and preferences.</p>
+          </h1>
+          <p className="text-sm text-coquette-lavender mt-2">Create a recipe based on your ingredients and preferences.</p>
         </div>
 
         {/* Progress Bar */}
-        <div className="coquette-card p-6">
+        <div className="coquette-card p-4 md:p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold coquette-text">Step {currentStep + 1} of {steps.length}</h2>
             <span className="text-sm text-coquette-lavender">{steps[currentStep]}</span>
@@ -255,8 +254,8 @@ function Navigation({
           </div>
         </div>
 
-        {/* Step Content */}
-        <div className="coquette-card p-6 pb-12 mb-16">
+        {/* Step Content - flexible height */}
+        <div className="coquette-card p-4 md:p-6 pb-12 mb-16 min-h-[400px]">
           {isLoading ? (
             <Loading isProgressBar isComplete={isComplete} loadingType={loadingType} />
           ) : (
@@ -270,23 +269,23 @@ function Navigation({
             {currentStep > 0 && (
               <button
                 onClick={handleBack}
-                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-coquette-blush to-coquette-lavender text-white rounded-full font-medium transition-all duration-300 shadow-delicate hover:shadow-glow"
+                className="flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-coquette-blush to-coquette-lavender text-white rounded-full font-medium transition-all duration-300 shadow-delicate hover:shadow-glow text-sm md:text-base"
               >
-                <ChevronLeftIcon className="w-5 h-5" />
+                <ChevronLeftIcon className="w-4 h-4 md:w-5 md:h-5" />
                 Back
               </button>
             )}
-            <div className="text-sm text-coquette-lavender font-medium">
+            <div className="text-sm md:text-base text-coquette-lavender font-medium">
               Step {currentStep + 1} of {steps.length}
             </div>
             {currentStep < steps.length - 1 ? (
               <button
                 onClick={handleNext}
                 disabled={currentStep === 2 && (ingredients.length === 0 || preferences.length === 0)}
-                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-coquette-blush to-coquette-lavender text-white rounded-full font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-delicate hover:shadow-glow"
+                className="flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-coquette-blush to-coquette-lavender text-white rounded-full font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-delicate hover:shadow-glow text-sm md:text-base"
               >
                 Next
-                <ChevronRightIcon className="w-5 h-5" />
+                <ChevronRightIcon className="w-4 h-4 md:w-5 md:h-5" />
               </button>
             ) : (
               <div></div> // Placeholder for alignment
