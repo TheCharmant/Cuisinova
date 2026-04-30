@@ -1,32 +1,46 @@
 import { Ingredient, DietaryPreference, RecipeCategory, Recipe, ExtendedRecipe } from '../types/index'
 
-export const getRecipeGenerationPrompt = (ingredients: Ingredient[], categories: RecipeCategory[], dietaryPreferences: DietaryPreference[]) => `
-I have the following ingredients: ${JSON.stringify(ingredients)}${categories.length ? ` and preferred categories: ${categories.join(',')}` : ''}${dietaryPreferences.length ? ` and dietary preferences: ${dietaryPreferences.join(',')}` : ''}. Please provide me with three different delicious and diverse recipes. The response should be in the following JSON format without any additional text, markdown, or code formatting (e.g., no backticks):
+export const getRecipeGenerationPrompt = (ingredients: Ingredient[], categories: RecipeCategory[], dietaryPreferences: DietaryPreference[]) => {
+    // Format ingredients as "name (quantity)" or just "name"
+    const ingredientList = ingredients.map(ing => 
+        ing.quantity ? `${ing.name} (${ing.quantity})` : ing.name
+    ).join(', ');
+
+    return `
+I have exactly these ingredients: ${ingredientList}.${categories.length ? ` I prefer recipes in these categories: ${categories.join(', ')}.` : ''}${dietaryPreferences.length ? ` I need these dietary preferences: ${dietaryPreferences.join(', ')}.` : ''}
+
+Create exactly 3 different recipes using ONLY the ingredients listed above. Do NOT add any additional ingredients. The response must be valid JSON only:
+
 [
     {
         "name": "Recipe Name",
         "ingredients": [
-            {"name": "Ingredient 1", "quantity": "quantity and unit"},
-            {"name": "Ingredient 2", "quantity": "quantity and unit"},
-            ...
+            {"name": "Ingredient Name", "quantity": "quantity and unit"},
+            {"name": "Another Ingredient", "quantity": "quantity and unit"}
         ],
         "instructions": [
-            "Do this first.",
-            "Then do this.",
-            ...
+            "Step one.",
+            "Step two."
         ],
-        "dietaryPreference": ${dietaryPreferences.length ? `["${dietaryPreferences.join('", "')}"]` : '[]'},
+        "dietaryPreference": ${JSON.stringify(dietaryPreferences)},
         "additionalInformation": {
-            "tips": "Provide practical cooking tips, such as using the right cookware or ingredient substitutions.",
-            "variations": "Suggest creative variations for the recipe, like adding more vegetables or using different proteins.",
-            "servingSuggestions": "Include ideas for how to serve the dish (e.g., with toast, salad, or specific sauces).",
-            "nutritionalInformation": "Provide approximate nutritional details (e.g., calories, protein, fat, etc.)."
+            "tips": "Brief practical tips",
+            "variations": "Possible variations using the same ingredients",
+            "servingSuggestions": "How to serve",
+            "nutritionalInformation": "Nutritional details"
         }
-    },
-    ...
+    }
 ]
-Please ensure the recipes are diverse in type or cuisine (e.g., different meal categories or international flavors) and use all the ingredients listed unless dietary preferences or practicality dictate otherwise. Quantities must include appropriate units (e.g., grams, cups, teaspoons) for precision. Provide clear, detailed instructions suitable for someone with basic cooking skills. The instructions should be ordered but not include step numbers. Additionally, ensure the recipes respect the dietary preferences provided by suggesting suitable alternatives where necessary. The JSON must be valid and parsable without any additional text or formatting outside the JSON structure. If no dietary preferences are specified, the "dietaryPreference" array must be empty.
+
+IMPORTANT RULES:
+- Use ONLY the ingredients provided. No extra ingredients allowed.
+- The "ingredients" array in each recipe must contain only items from the provided list.
+- Quantities must include units (grams, cups, tsp, etc.).
+- Dietary preferences must be respected (e.g., if Vegan, don't include meat).
+- Return exactly 3 recipes in a valid JSON array.
+- No markdown, no code blocks, no extra text - JSON only.
 `;
+};
 
 export const getImageGenerationPrompt = (recipeName: string, ingredients: Recipe['ingredients']): string => {
     const allIngredients = ingredients.map(ingredient => `${ingredient.name} (${ingredient.quantity})`).join(', ');

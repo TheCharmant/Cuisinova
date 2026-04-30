@@ -52,11 +52,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
 
         // Normalize recipes to ensure all required fields are present and correctly typed
         const normalizedRecipes = recipes.map((r: any) => {
-            // Ensure ingredients have quantity as string
+            // Get list of valid ingredient names from original recipe (case-insensitive)
+            const validIngredientNames = new Set(
+                (r.ingredients || []).map((ing: any) => String(ing.name || '').trim().toLowerCase())
+            );
+
+            // Ensure ingredients have quantity as string and filter out any that aren't in the original list
             const ingredients = (r.ingredients || []).map((ing: any) => ({
                 name: String(ing.name || '').trim(),
                 quantity: typeof ing.quantity === 'string' ? ing.quantity.trim() : '',
-            })).filter((ing: any) => ing.name.length > 0);
+            })).filter((ing: any) => 
+                ing.name.length > 0 && 
+                validIngredientNames.has(ing.name.toLowerCase())
+            );
 
             // Ensure arrays exist
             const instructions = Array.isArray(r.instructions) ? r.instructions : [];
