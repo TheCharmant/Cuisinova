@@ -224,7 +224,7 @@ function Navigation({
 
   return (
     <div className="min-h-screen p-4 md:p-8 flex justify-center relative overflow-hidden">
-      <div className="w-full max-w-7xl mx-auto space-y-6 animate-fadeInUp">
+      <div className="w-full mx-auto space-y-6 animate-fadeInUp">
         {/* Header */}
         <div className="text-center mb-6 relative">
           <h1 className="text-3xl font-bold coquette-text text-center relative">
