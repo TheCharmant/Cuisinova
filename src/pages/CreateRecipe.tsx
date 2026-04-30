@@ -115,6 +115,7 @@ function Navigation({
 
       setGeneratedRecipes(parsedRecipes);
       setIsComplete(true);
+      console.log('Showing success toast for recipe generation');
       showToast('Recipes generated successfully!', 'success');
       setTimeout(() => {
         setIsLoading(false);
@@ -123,6 +124,7 @@ function Navigation({
     } catch (error) {
       console.log(error);
       setIsLoading(false);
+      console.log('Showing error toast for recipe generation failure');
       showToast('Failed to generate recipes. Please try again.', 'error');
     }
   };

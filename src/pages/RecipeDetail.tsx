@@ -102,6 +102,37 @@ export default function RecipeDetail() {
             >
                 <RecipeHeader recipeData={recipeData} /> {/* Recipe header with image and title */}
                 <div className="p-6">
+                    <div className="mb-4 flex justify-end print:hidden gap-2">
+                        <button
+                            type="button"
+                            className="flex items-center gap-1 px-3 py-1.5 text-sm text-minimalist-slate/80 hover:text-minimalist-slate border border-gray-200 rounded-full hover:bg-gray-50 transition-colors"
+                            onClick={() => {
+                                void downloadRecipeAsTXT(recipeData);
+                            }}
+                            title="Download as TXT"
+                        >
+                            <DocumentTextIcon className="w-4 h-4" />
+                            <span>TXT</span>
+                        </button>
+                        <button
+                            type="button"
+                            className="flex items-center gap-1 px-3 py-1.5 text-sm text-minimalist-slate/80 hover:text-minimalist-slate border border-gray-200 rounded-full hover:bg-gray-50 transition-colors"
+                            onClick={() => {
+                                void downloadRecipeAsPDF(recipeData);
+                            }}
+                            title="Download as PDF"
+                        >
+                            <ArrowDownTrayIcon className="w-4 h-4" />
+                            <span>PDF</span>
+                        </button>
+                        <button
+                            type="button"
+                            className="px-3 py-1.5 text-sm text-minimalist-slate/80 hover:text-minimalist-slate border border-gray-200 rounded-full hover:bg-gray-50 transition-colors"
+                            onClick={() => window.print()}
+                        >
+                            Print
+                        </button>
+                    </div>
                     <ActionPopover
                         handlers={{
                             handleClone,
@@ -175,32 +206,6 @@ export default function RecipeDetail() {
                                 <p className="text-brand-700">{recipeData.additionalInformation.nutritionalInformation}</p>
                             </div>
                         </div>
-                    </div>
-
-                    {/* Download Buttons */}
-                    <div className="mb-6 flex flex-wrap gap-2 justify-end print:hidden">
-                        <button
-                            type="button"
-                            className="flex items-center gap-1 px-3 py-1.5 text-sm text-minimalist-slate/80 hover:text-minimalist-slate border border-gray-200 rounded-full hover:bg-gray-50 transition-colors"
-                            onClick={() => {
-                                void downloadRecipeAsTXT(recipeData);
-                            }}
-                            title="Download as TXT"
-                        >
-                            <DocumentTextIcon className="w-4 h-4" />
-                            <span>TXT</span>
-                        </button>
-                        <button
-                            type="button"
-                            className="flex items-center gap-1 px-3 py-1.5 text-sm text-minimalist-slate/80 hover:text-minimalist-slate border border-gray-200 rounded-full hover:bg-gray-50 transition-colors"
-                            onClick={() => {
-                                void downloadRecipeAsPDF(recipeData);
-                            }}
-                            title="Download as PDF"
-                        >
-                            <ArrowDownTrayIcon className="w-4 h-4" />
-                            <span>PDF</span>
-                        </button>
                     </div>
 
                     {/* Liked By Section */}
