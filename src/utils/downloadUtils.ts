@@ -18,103 +18,176 @@ export const downloadRecipeAsTXT = (recipe: ExtendedRecipe) => {
 };
 
 /**
- * Download recipe as PDF file
+ * Helper to load image and return HTMLImageElement with natural dimensions
  */
-export const downloadRecipeAsPDF = (recipe: ExtendedRecipe) => {
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const margin = 20;
-    const maxWidth = pageWidth - margin * 2;
-    let y = margin;
-
-    // Title
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    const titleLines = doc.splitTextToSize(recipe.name, maxWidth);
-    doc.text(titleLines, pageWidth / 2, y, { align: 'center' });
-    y += titleLines.length * 10 + 10;
-
-    // Ingredients section
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Ingredients', margin, y);
-    y += 10;
-
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    recipe.ingredients.forEach((ing) => {
-        const line = `• ${ing.name}${ing.quantity ? ` (${ing.quantity})` : ''}`;
-        const lines = doc.splitTextToSize(line, maxWidth);
-        if (y > 280) {
-            doc.addPage();
-            y = margin;
-        }
-        doc.text(lines, margin, y);
-        y += lines.length * 7 + 3;
+const loadImage = (src: string): Promise<HTMLImageElement> => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
     });
+};
 
-    y += 5;
+/**
+ * Download recipe as PDF file (print-style layout)
+ */
+export const downloadRecipeAsPDF = async (recipe: ExtendedRecipe) => {
+    try {
+        const doc = new jsPDF();
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const margin = 20;
+        const maxWidth = pageWidth - margin * 2;
+        let y = margin;
 
-    // Instructions section
-    if (y > 250) {
-        doc.addPage();
-        y = margin;
-    }
+        // --- Recipe Image ---
+        if (recipe.imgLink) {
+            try {
+                const img = await loadImage(recipe.imgLink);
+                const naturalWidth = img.width;
+                const naturalHeight = img.height;
+                const imgWidth = maxWidth;
+                const imgHeight = (naturalHeight / naturalWidth) * imgWidth;
 
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Instructions', margin, y);
-    y += 10;
+                if (y + imgHeight > 280) {
+                    doc.addPage();
+                    y = margin;
+                }
+                doc.addImage(img, 'JPEG', margin, y, imgWidth, imgHeight);
+                y += imgHeight + 10;
+            } catch (err) {
+                console.warn('Failed to load image for PDF, skipping.', err);
+            }
+        }
 
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    recipe.instructions.forEach((instruction, idx) => {
-        const line = `${idx + 1}. ${instruction}`;
-        const lines = doc.splitTextToSize(line, maxWidth);
-        if (y > 250) {
+        // --- Title ---
+        doc.setFontSize(20);
+        doc.setFont('helvetica', 'bold');
+        const titleLines = doc.splitTextToSize(recipe.name, maxWidth);
+        doc.text(titleLines, pageWidth / 2, y, { align: 'center' });
+        y += titleLines.length * 10 + 5;
+
+        // --- Owner & Date ---
+        if (recipe.owner?.name) {
+            if (y > 270) {
+                doc.addPage();
+                y = margin;
+            }
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'italic');
+            const dateStr = recipe.createdAt ? new Date(recipe.createdAt).toLocaleDateString(undefined, {
+                year: 'numeric', month: 'long', day: 'numeric'
+            }) : '';
+            const ownerLine = `By ${recipe.owner.name}${dateStr ? ' on ' + dateStr : ''}`;
+            doc.text(ownerLine, margin, y);
+            y += 8;
+        }
+
+        // --- Dietary Preferences ---
+        if (recipe.dietaryPreference && recipe.dietaryPreference.length > 0) {
+            if (y > 260) {
+                doc.addPage();
+                y = margin;
+            }
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Dietary Preferences:', margin, y);
+            y += 6;
+            doc.setFont('helvetica', 'normal');
+            const dietLine = recipe.dietaryPreference.join(', ');
+            const dietLines = doc.splitTextToSize(dietLine, maxWidth);
+            doc.text(dietLines, margin, y);
+            y += dietLines.length * 7 + 8;
+        }
+
+        // --- Ingredients ---
+        if (y > 240) {
             doc.addPage();
             y = margin;
         }
-        doc.text(lines, margin, y);
-        y += lines.length * 7 + 3;
-    });
-
-    y += 5;
-
-    // Additional Information
-    const sections = [
-        { title: 'Tips', content: recipe.additionalInformation?.tips },
-        { title: 'Variations', content: recipe.additionalInformation?.variations },
-        { title: 'Serving Suggestions', content: recipe.additionalInformation?.servingSuggestions },
-        { title: 'Nutritional Information', content: recipe.additionalInformation?.nutritionalInformation },
-    ];
-
-    sections.forEach((section) => {
-        if (!section.content) return;
-
-        if (y > 220) {
-            doc.addPage();
-            y = margin;
-        }
-
         doc.setFontSize(16);
         doc.setFont('helvetica', 'bold');
-        doc.text(section.title, margin, y);
+        doc.text('Ingredients', margin, y);
         y += 10;
 
         doc.setFontSize(12);
         doc.setFont('helvetica', 'normal');
-        const lines = doc.splitTextToSize(section.content, maxWidth);
-        if (y + lines.length * 7 > 280) {
+        recipe.ingredients.forEach((ing) => {
+            const line = `• ${ing.name}${ing.quantity ? ` (${ing.quantity})` : ''}`;
+            const lines = doc.splitTextToSize(line, maxWidth);
+            if (y > 280) {
+                doc.addPage();
+                y = margin;
+            }
+            doc.text(lines, margin, y);
+            y += lines.length * 7 + 3;
+        });
+
+        y += 5;
+
+        // --- Instructions ---
+        if (y > 250) {
             doc.addPage();
             y = margin;
         }
-        doc.text(lines, margin, y);
-        y += lines.length * 7 + 10;
-    });
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Instructions', margin, y);
+        y += 10;
 
-    // Save the PDF
-    doc.save(`${sanitizeFilename(recipe.name)}.pdf`);
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'normal');
+        recipe.instructions.forEach((instruction, idx) => {
+            const line = `${idx + 1}. ${instruction}`;
+            const lines = doc.splitTextToSize(line, maxWidth);
+            if (y > 250) {
+                doc.addPage();
+                y = margin;
+            }
+            doc.text(lines, margin, y);
+            y += lines.length * 7 + 3;
+        });
+
+        y += 5;
+
+        // --- Additional Information ---
+        const sections = [
+            { title: 'Tips', content: recipe.additionalInformation?.tips },
+            { title: 'Variations', content: recipe.additionalInformation?.variations },
+            { title: 'Serving Suggestions', content: recipe.additionalInformation?.servingSuggestions },
+            { title: 'Nutritional Information', content: recipe.additionalInformation?.nutritionalInformation },
+        ];
+
+        sections.forEach((section) => {
+            if (!section.content) return;
+
+            if (y > 220) {
+                doc.addPage();
+                y = margin;
+            }
+
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text(section.title, margin, y);
+            y += 10;
+
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            const lines = doc.splitTextToSize(section.content, maxWidth);
+            if (y + lines.length * 7 > 280) {
+                doc.addPage();
+                y = margin;
+            }
+            doc.text(lines, margin, y);
+            y += lines.length * 7 + 10;
+        });
+
+        // Save the PDF
+        doc.save(`${sanitizeFilename(recipe.name)}.pdf`);
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+    }
 };
 
 /**

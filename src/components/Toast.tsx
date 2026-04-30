@@ -35,7 +35,7 @@ const Toast = ({ message, type = 'success' }: ToastProps) => {
 
     return (
         <div
-            className={`flex items-center gap-2 px-4 py-3 rounded-lg border shadow-lg pointer-events-auto min-w-[200px] max-w-sm sm:min-w-[300px] animate-fadeInUp`}
+            className={`flex items-center gap-2 px-4 py-3 rounded-lg border shadow-lg pointer-events-auto min-w-[200px] max-w-sm sm:min-w-[300px] animate-fadeInUp ${getStyles()}`}
             style={{
                 animationDuration: '0.2s',
                 animationFillMode: 'forwards'

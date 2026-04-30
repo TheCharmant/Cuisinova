@@ -102,15 +102,6 @@ export default function RecipeDetail() {
             >
                 <RecipeHeader recipeData={recipeData} /> {/* Recipe header with image and title */}
                 <div className="p-6">
-                    <div className="mb-4 flex justify-end print:hidden">
-                        <button
-                            type="button"
-                            className="px-2 py-1 text-sm text-minimalist-slate/80 hover:text-minimalist-slate transition-colors"
-                            onClick={() => window.print()}
-                        >
-                            Print recipe
-                        </button>
-                    </div>
                     <ActionPopover
                         handlers={{
                             handleClone,
@@ -191,7 +182,9 @@ export default function RecipeDetail() {
                         <button
                             type="button"
                             className="flex items-center gap-1 px-3 py-1.5 text-sm text-minimalist-slate/80 hover:text-minimalist-slate border border-gray-200 rounded-full hover:bg-gray-50 transition-colors"
-                            onClick={() => downloadRecipeAsTXT(recipeData)}
+                            onClick={() => {
+                                void downloadRecipeAsTXT(recipeData);
+                            }}
                             title="Download as TXT"
                         >
                             <DocumentTextIcon className="w-4 h-4" />
@@ -200,18 +193,13 @@ export default function RecipeDetail() {
                         <button
                             type="button"
                             className="flex items-center gap-1 px-3 py-1.5 text-sm text-minimalist-slate/80 hover:text-minimalist-slate border border-gray-200 rounded-full hover:bg-gray-50 transition-colors"
-                            onClick={() => downloadRecipeAsPDF(recipeData)}
+                            onClick={() => {
+                                void downloadRecipeAsPDF(recipeData);
+                            }}
                             title="Download as PDF"
                         >
                             <ArrowDownTrayIcon className="w-4 h-4" />
                             <span>PDF</span>
-                        </button>
-                        <button
-                            type="button"
-                            className="px-2 py-1.5 text-sm text-minimalist-slate/80 hover:text-minimalist-slate transition-colors"
-                            onClick={() => window.print()}
-                        >
-                            Print recipe
                         </button>
                     </div>
 
