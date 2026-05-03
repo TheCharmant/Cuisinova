@@ -1,11 +1,10 @@
-import { useSession, getSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { Dialog, DialogPanel } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Product from '../components/Hero_Sections/Product';
-import Features from '../components/Hero_Sections/Features';
 import Landing from '../components/Hero_Sections/Landing';
 import ErrorPage from './auth/error';
 import AnimatedBackground from '../components/AnimatedBackground';
@@ -13,74 +12,27 @@ import React from 'react';
 
 // Navigation links for the header
 const navigation = [
+    { name: 'Home', key: 'home' },
     { name: 'Product', key: 'product' },
-    { name: 'Features', key: 'features' },
-    { name: 'About', key: 'about' },
+    { name: 'About us', key: 'about' },
 ];
 
 export default function Hero() {
     // State to manage the mobile menu open/close state
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    // State to manage the currently selected page
-    const [selectedPage, setSelectedPage] = useState<string | null>(null);
 
     // Fetch the current session and status
-    const { data: session, update } = useSession();
+    const { data: session } = useSession();
 
-    // Function to render the content based on the selected page
-    const renderContent = () => {
-        switch (selectedPage) {
-            case 'product':
-                return (
-                    <Product resetPage={() => setSelectedPage(null)} />
-                );
-            case 'about':
-                return (
-                    <div className="flex flex-col items-center justify-center py-16">
-                        <h1 className="text-4xl font-extrabold bg-gradient-to-r from-brand-500 to-violet-500 bg-clip-text text-transparent font-display mb-2">Meet the Team</h1>
-                        <h2 className="text-2xl font-bold text-peach-400 mb-8">Mocha &amp; Vanilla</h2>
-                        <div className="flex flex-col md:flex-row gap-8 items-center">
-                            {/* CHARYLL */}
-                            <div className="flex flex-col items-center bg-white/80 rounded-2xl shadow-pastel p-8 border-2 border-peach-100 w-80 max-w-xs text-center">
-                                <Image src="/mocha.png" alt="CHARYLL" width={96} height={96} className="w-24 h-24 rounded-full border-4 border-peach-200 shadow-lg mb-3 object-cover" />
-                                <h2 className="text-2xl font-extrabold text-peach-500 mb-1 tracking-wide">CHARYLL</h2>
-                                <div className="text-brand-600 font-semibold mb-2">Full Stack Developer</div>
-                                <ul className="text-xs text-gray-400 text-center space-y-1 px-2 list-disc list-inside font-normal">
-                                    <li>Computer Science student with a passion for AI, cloud systems, and full-stack development.</li>
-                                    <li>Driven to turn ideas into real applications that are both functional and intelligently designed.</li>
-                                    <li>Believes technology should not just work — it should also feel engaging, friendly, and inspiring.</li>
-                                </ul>
-                            </div>
-                            {/* GUI ANN */}
-                            <div className="flex flex-col items-center bg-white/80 rounded-2xl shadow-pastel p-8 border-2 border-peach-100 w-80 max-w-xs text-center">
-                                <Image src="/vanilla.png" alt="GUI ANN" width={96} height={96} className="w-24 h-24 rounded-full border-4 border-violet-200 shadow-lg mb-3 object-cover" />
-                                <h2 className="text-2xl font-extrabold text-violet-500 mb-1 tracking-wide">GUI ANN</h2>
-                                <div className="text-brand-600 font-semibold mb-2">Concept &amp; Design Lead</div>
-                                <ul className="text-xs text-gray-400 text-center space-y-1 px-2 list-disc list-inside font-normal">
-                                    <li>Concept and design enthusiast with a talent for turning ideas into engaging user experiences.</li>
-                                    <li>Dedicated to crafting interfaces that blend creativity, playfulness, and everyday usability.</li>
-                                    <li>Believes design should not only look beautiful but also feel warm, intuitive, and inspiring.</li>
-
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                );
-            default:
-                return (
-                    <Landing />
-                );
-        }
+    const scrollToSection = (sectionId: string) => {
+        const element = document.getElementById(sectionId);
+        if (!element) return;
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
-    // Async sign-in handler (must be top-level, not inside renderContent)
-    const onAuthenticate = async () => {
-        const sessionIsValid = await getSession();
-        if (!sessionIsValid) {
-            signIn('google');
-            return;
-        }
-        update();
+    // Async sign-in handler with callback to the main app
+    const onAuthenticate = () => {
+        signIn('google', { callbackUrl: '/Home' });
     };
     // If the user is logged in, show the error page
     if (session) return <ErrorPage message='Inaccessible Page' />;
@@ -114,11 +66,11 @@ export default function Hero() {
                         </button>
                     </div>
                     <div className="hidden lg:flex lg:gap-x-12">
-                        {navigation.map((item, index) => (
+                        {navigation.map((item) => (
                             <button
                                 key={item.key}
-                                onClick={() => setSelectedPage(item.key)}
-                                className={`text-lg font-bold leading-6 px-6 py-2 rounded-full transition-all duration-300 kawaii-nav hover:scale-110 active:scale-95 ${selectedPage === item.key ? 'text-violet-700 bg-gradient-to-r from-peach-300 via-brand-300 to-violet-300 shadow-pastel ring-2 ring-peach-200' : 'text-brand-600 bg-white/80 border-2 border-peach-100 hover:bg-peach-100 hover:text-violet-600 hover:shadow-lg'}`}
+                                onClick={() => scrollToSection(item.key)}
+                                className="text-lg font-bold leading-6 px-6 py-2 rounded-full transition-all duration-300 kawaii-nav text-brand-600 bg-white/80 border-2 border-peach-100 hover:bg-peach-100 hover:text-violet-600 hover:shadow-lg"
                                 style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}
                             >
                                 {item.name}
@@ -168,10 +120,10 @@ export default function Hero() {
                                     <button
                                         key={item.key}
                                         onClick={() => {
-                                            setSelectedPage(item.key);
+                                            scrollToSection(item.key);
                                             setMobileMenuOpen(false);
                                         }}
-                                        className={`-mx-3 block w-full rounded-lg px-3 py-2 text-lg font-bold leading-7 hover:scale-110 active:scale-95 transition-all kawaii-nav ${selectedPage === item.key ? 'text-violet-700 bg-gradient-to-r from-peach-300 via-brand-300 to-violet-300 ring-2 ring-peach-200 shadow-pastel' : 'text-brand-600 bg-white/80 border-2 border-peach-100 hover:bg-peach-100 hover:text-violet-600 hover:shadow-lg'}`}
+                                        className="-mx-3 block w-full rounded-lg px-3 py-2 text-lg font-bold leading-7 hover:scale-110 active:scale-95 transition-all kawaii-nav text-brand-600 bg-white/80 border-2 border-peach-100 hover:bg-peach-100 hover:text-violet-600 hover:shadow-lg"
                                         style={{ fontFamily: 'Baloo 2, Fredoka One, Montserrat, cursive, sans-serif' }}
                                     >
                                         {item.name}
@@ -197,9 +149,47 @@ export default function Hero() {
 
             {/* Main content */}
             <div className="relative isolate px-4 pt-6 lg:px-6">
-                <div className="mx-auto max-w-7xl py-10 sm:py-16 lg:py-20 flex flex-col items-center justify-center">
-                    {/* No hero illustration, just content below */}
-                    {renderContent()}
+                <div className="mx-auto max-w-7xl py-10 sm:py-16 lg:py-20">
+                    <section id="home" className="scroll-mt-28 px-4 py-10 md:px-0">
+                        <Landing onGetStarted={onAuthenticate} />
+                    </section>
+                    <section id="product" className="scroll-mt-28 px-4 py-16 md:px-0">
+                        <div className="text-center mb-10">
+                            <p className="text-sm uppercase tracking-[0.4em] text-violet-500 font-semibold">Product</p>
+                            <h2 className="mt-4 text-4xl font-extrabold text-coquette-text">What Cuisinova Can Do</h2>
+                            <p className="mt-4 text-lg text-coquette-lavender max-w-2xl mx-auto">Smart recipe creation, personalized dietary guidance, and a delightful AI-first experience for busy cooks.</p>
+                        </div>
+                        <Product onGetStarted={onAuthenticate} />
+                    </section>
+                    <section id="about" className="scroll-mt-28 px-4 py-16 md:px-0">
+                        <div className="text-center mb-10">
+                            <p className="text-sm uppercase tracking-[0.4em] text-violet-500 font-semibold">About us</p>
+                            <h2 className="mt-4 text-4xl font-extrabold text-coquette-text">Meet the team behind Cuisinova</h2>
+                            <p className="mt-4 text-lg text-coquette-lavender max-w-2xl mx-auto">A small, passionate team building thoughtful AI-powered cooking tools with a cozy, intuitive experience.</p>
+                        </div>
+                        <div className="flex flex-col gap-8 md:flex-row md:justify-center">
+                            <div className="flex flex-col items-center bg-white/90 rounded-3xl border border-coquette-blush/20 shadow-delicate p-8 max-w-sm mx-auto">
+                                <Image src="/mocha.png" alt="CHARYLL" width={96} height={96} className="rounded-full mb-5 object-cover" />
+                                <h3 className="text-2xl font-bold text-coquette-text mb-1">CHARYLL</h3>
+                                <p className="text-sm text-coquette-lavender mb-4">Full Stack Developer</p>
+                                <ul className="space-y-2 text-left text-coquette-lavender text-sm">
+                                    <li>AI, cloud systems, and full-stack expertise.</li>
+                                    <li>Builds apps that are functional, delightful, and reliable.</li>
+                                    <li>Focuses on clean UX and stable engineering.</li>
+                                </ul>
+                            </div>
+                            <div className="flex flex-col items-center bg-white/90 rounded-3xl border border-coquette-blush/20 shadow-delicate p-8 max-w-sm mx-auto">
+                                <Image src="/vanilla.png" alt="GUI ANN" width={96} height={96} className="rounded-full mb-5 object-cover" />
+                                <h3 className="text-2xl font-bold text-coquette-text mb-1">GUI ANN</h3>
+                                <p className="text-sm text-coquette-lavender mb-4">Concept & Design Lead</p>
+                                <ul className="space-y-2 text-left text-coquette-lavender text-sm">
+                                    <li>Designs thoughtful, playful user experiences.</li>
+                                    <li>Turns ideas into warm, engaging interfaces.</li>
+                                    <li>Believes great design should feel friendly and easy.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
                 </div>
             </div>
         </div>

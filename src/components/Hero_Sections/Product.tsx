@@ -1,10 +1,9 @@
 
-import { signIn } from 'next-auth/react';
 import Image from 'next/image';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { motion } from 'framer-motion';
 
-export default function Product({ resetPage }: { resetPage: () => void }) {
+export default function Product({ onGetStarted }: { onGetStarted: () => void }) {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -89,7 +88,7 @@ export default function Product({ resetPage }: { resetPage: () => void }) {
         >
           <motion.button
             className="w-fit rounded-full bg-gradient-to-r from-brand-500 to-violet-500 px-6 py-3 text-base font-semibold text-white shadow-lg border border-white/20 backdrop-blur-sm font-display"
-            onClick={() => signIn('google')}
+            onClick={onGetStarted}
             whileHover={{ 
               scale: 1.05, 
               boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" 
@@ -97,18 +96,6 @@ export default function Product({ resetPage }: { resetPage: () => void }) {
             whileTap={{ scale: 0.95 }}
           >
             Get started
-          </motion.button>
-          <motion.button
-            className="w-fit rounded-full bg-white/90 backdrop-blur-sm px-6 py-3 text-base font-semibold text-violet-600 border border-violet-200 shadow-md font-display"
-            onClick={resetPage}
-            whileHover={{ 
-              scale: 1.05, 
-              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-              borderColor: "rgba(139, 92, 246, 0.5)" 
-            }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Back to Home
           </motion.button>
         </motion.div>
       </motion.div>

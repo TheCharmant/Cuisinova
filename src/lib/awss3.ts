@@ -11,9 +11,25 @@ interface UploadToS3Type {
     location: string;
 }
 
-// Process an image from URL and return as a Buffer
+// Process an image from a URL or data URL and return it as a Buffer
 export const processImage = (url: string): Promise<Buffer> =>
     new Promise((resolve, reject) => {
+        if (url.startsWith('data:image/')) {
+            const commaIndex = url.indexOf(',');
+            if (commaIndex === -1) {
+                reject(new Error('Invalid data URL')); 
+                return;
+            }
+            const base64Data = url.slice(commaIndex + 1);
+            resolve(Buffer.from(base64Data, 'base64'));
+            return;
+        }
+
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            reject(new Error(`Unsupported image URL format: ${url}`));
+            return;
+        }
+
         https.get(url, (response) => {
             const data: Uint8Array[] = [];
             response.on('data', (chunk) => data.push(chunk));

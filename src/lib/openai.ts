@@ -34,7 +34,7 @@ const saveOpenaiResponses = async ({ userId, prompt, response, model }: SaveOpen
             prompt,
             response,
             model,
-        });
+        } as any);
         return _id;
     } catch (error) {
         console.error('Failed to save response to db:', error);
@@ -147,18 +147,20 @@ export const generateRecipe = async (ingredients: Ingredient[], categories: Reci
     }
 };
 
-// Generate an image using DALL-E by sending an image generation prompt to OpenAI
-const generateImage = (prompt: string, model: string): Promise<ImagesResponse> => {
+// Generate an image using OpenAI by sending an image generation prompt to OpenAI
+const generateImage = async (prompt: string, model: string): Promise<ImagesResponse> => {
     try {
-        const response = openai.images.generate({
+        const response = await openai.images.generate({
             model,
             prompt,
             n: 1,
             size: '1024x1024',
+            response_format: 'url',
         });
         return response;
     } catch (error) {
-        throw new Error('Failed to generate image');
+        console.error('OpenAI image generation error:', error);
+        throw new Error(error instanceof Error ? error.message : 'Failed to generate image');
     }
 };
 
@@ -174,26 +176,32 @@ export const generateImages = async (recipes: Recipe[], userId: string) => {
         //     throw new Error(`You have reached your limit of ${apiRequestLimit} AI-generated recipes.`);
         // }
         
-        const model = 'dall-e-2';
-        const imagePromises: Promise<ImagesResponse>[] = recipes.map(recipe =>
-            generateImage(getImageGenerationPrompt(recipe.name, recipe.ingredients), model)
+        const model = 'gpt-image-1';
+        const imageResults = await Promise.allSettled(
+            recipes.map((recipe) =>
+                generateImage(getImageGenerationPrompt(recipe.name, recipe.ingredients), model)
+            )
         );
-        const images = await Promise.all(imagePromises);
-        await saveOpenaiResponses({
-            userId,
-            prompt: `Image generation for recipe names ${recipes.map(r => r.name).join(' ,')} (note: not exact prompt)`,
-            response: images,
-            model
-        });
-        // Validate and map images safely
-        const imagesWithNames = images.map((imageResponse, idx) => {
+
+        const settledResponses = imageResults.map((result, idx) => {
             const recipeName = recipes[idx].name;
-            const url = imageResponse?.data?.[0]?.url;
+
+            if (result.status !== 'fulfilled') {
+                console.error(`Image generation failed for recipe: ${recipeName}`, result.reason);
+                return {
+                    imgLink: '/logo.svg',
+                    name: recipeName,
+                };
+            }
+
+            const imageResponse = result.value;
+            const imageData = imageResponse?.data?.[0];
+            const url = imageData?.url ?? (imageData?.b64_json ? `data:image/png;base64,${imageData.b64_json}` : undefined);
 
             if (!url) {
-                console.error(`Image generation failed for recipe: ${recipeName}, using fallback image`);
+                console.error(`Image generation returned no image URL for recipe: ${recipeName}`, imageResponse);
                 return {
-                    imgLink: '/logo.svg', // Fallback image if generation fails
+                    imgLink: '/logo.svg',
                     name: recipeName,
                 };
             }
@@ -203,11 +211,19 @@ export const generateImages = async (recipes: Recipe[], userId: string) => {
                 name: recipeName,
             };
         });
-        return imagesWithNames;
+
+        await saveOpenaiResponses({
+            userId,
+            prompt: `Image generation for recipe names ${recipes.map(r => r.name).join(' ,')} (note: not exact prompt)`,
+            response: settledResponses,
+            model
+        });
+
+        return settledResponses;
     } catch (error) {
         console.error('Error generating image:', error);
         // Return fallback images instead of throwing an error
-        return recipes.map(recipe => ({
+        return recipes.map((recipe) => ({
             imgLink: '/logo.svg',
             name: recipe.name,
         }));

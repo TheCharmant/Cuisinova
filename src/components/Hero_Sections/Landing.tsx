@@ -1,8 +1,7 @@
-import { signIn } from 'next-auth/react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 
-export default function Landing() {
+export default function Landing({ onGetStarted }: { onGetStarted: () => void }) {
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -48,7 +47,7 @@ export default function Landing() {
                 </motion.p>
                 <motion.button
                     className="w-fit rounded-full bg-gradient-to-r from-brand-500 to-violet-500 px-6 py-3 text-base font-semibold text-white shadow-lg border border-white/20 backdrop-blur-sm font-display"
-                    onClick={() => signIn('google')}
+                    onClick={onGetStarted}
                     variants={itemVariants}
                     whileHover={{ 
                         scale: 1.05, 
