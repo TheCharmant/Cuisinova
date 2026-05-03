@@ -147,6 +147,7 @@ body {
 */
 html {
   scrollbar-gutter: stable; /* Prevents layout shift by reserving space for the scrollbar */
+  scroll-behavior: smooth;
 }
 
 @layer base {

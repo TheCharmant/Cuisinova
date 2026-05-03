@@ -2,6 +2,25 @@
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { motion } from 'framer-motion';
 
+const features = [
+  {
+    title: 'AI Recipe Generation',
+    description: 'Transform ingredients into complete recipes with reliable steps, clear instructions, and practical serving guidance.',
+  },
+  {
+    title: 'Dietary Awareness',
+    description: 'Adapt recipes to preferences such as vegan, gluten-free, low-carb, or balanced nutrition without sacrificing flavor.',
+  },
+  {
+    title: 'Smart Substitutions',
+    description: 'Swap ingredients confidently based on pantry availability and dietary needs, keeping flavors consistent.',
+  },
+  {
+    title: 'Streamlined Workflow',
+    description: 'From ingredient list to recipe card, the interface is built for fast, professional meal planning.',
+  },
+];
+
 export default function Product({ onGetStarted }: { onGetStarted: () => void }) {
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -9,100 +28,52 @@ export default function Product({ onGetStarted }: { onGetStarted: () => void }) 
       opacity: 1,
       transition: {
         staggerChildren: 0.15,
-        delayChildren: 0.2
-      }
-    }
+        delayChildren: 0.2,
+      },
+    },
   };
-  
+
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 24 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { type: 'spring' as const, stiffness: 100 }
-    }
-  };
-
-  const listItemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { type: 'spring' as const, stiffness: 100 }
-    }
+      transition: { type: 'spring' as const, stiffness: 110, damping: 18 },
+    },
   };
 
   return (
-    <motion.div 
-      className="mx-auto flex max-w-4xl flex-col items-center gap-10 py-10 md:flex-row md:py-20"
+    <motion.div
+      className="relative mx-auto flex max-w-7xl flex-col gap-10 py-8"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
-      <motion.div 
-        className="flex flex-col items-center text-center md:items-start md:w-1/2 md:text-left space-y-6"
-        variants={containerVariants}
-      >
-        <motion.h1 
-          className="text-4xl font-semibold bg-gradient-to-r from-brand-500 to-violet-600 bg-clip-text text-transparent font-display"
-          variants={itemVariants}
-        >
-          Our Product
-        </motion.h1>
-        <motion.p 
-          className="text-lg leading-8 text-gray-600"
-          variants={itemVariants}
-        >
-          Find out how Cuisinova makes planning meals feel simple and cozy.
-        </motion.p>
-        <motion.div 
-          className="grid gap-6 md:grid-cols-2"
-          variants={containerVariants}
-        >
-          {[
-            {
-              title: 'AI Recipe Generation',
-              description: 'Transform ingredients into complete recipes with reliable steps, clear instructions, and practical serving guidance.'
-            },
-            {
-              title: 'Dietary Awareness',
-              description: 'Adapt recipes to preferences such as vegan, gluten-free, low-carb, or balanced nutrition without sacrificing flavor.'
-            },
-            {
-              title: 'Smart Substitutions',
-              description: 'Swap ingredients confidently based on pantry availability and dietary needs, keeping flavors consistent.'
-            },
-            {
-              title: 'Streamlined Workflow',
-              description: 'From ingredient list to recipe card, the interface is built for fast, professional meal planning.'
-            }
-          ].map((feature) => (
+      <div className="absolute inset-x-0 -top-16 h-56 bg-gradient-to-r from-brand-100/60 via-white/80 to-peach-100/60 blur-3xl" />
+      <div className="relative flex w-full flex-col gap-6 overflow-x-auto pb-6 lg:overflow-visible lg:pb-0">
+        <div className="flex min-w-full gap-6 lg:grid lg:min-w-0 lg:grid-cols-4">
+          {features.map((feature) => (
             <motion.div
               key={feature.title}
-              className="border border-slate-200 bg-slate-50 p-6 rounded-sm shadow-sm"
+              className="min-w-[20rem] rounded-[30px] border border-white/60 bg-white/90 p-7 shadow-glow transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl lg:min-w-0"
               variants={itemVariants}
             >
-              <h3 className="text-lg font-semibold text-slate-900 mb-3">{feature.title}</h3>
-              <p className="text-sm leading-6 text-slate-700">{feature.description}</p>
+              <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-3xl bg-brand-100/80 text-brand-700 shadow-sm">
+                <CheckCircleIcon className="h-6 w-6" />
+              </div>
+              <h3 className="text-xl font-semibold text-slate-950 mb-3">{feature.title}</h3>
+              <p className="text-sm leading-7 text-slate-700">{feature.description}</p>
             </motion.div>
           ))}
-        </motion.div>
-        <motion.div 
-          className="mt-10 flex justify-center"
-          variants={itemVariants}
+        </div>
+      </div>
+      <motion.div className="mt-6 flex justify-center" variants={itemVariants}>
+        <button
+          className="rounded-full bg-slate-950 px-8 py-3 text-base font-semibold text-white shadow-xl transition hover:-translate-y-0.5 hover:shadow-2xl"
+          onClick={onGetStarted}
         >
-          <motion.button
-            className="w-fit rounded-sm bg-gradient-to-r from-brand-500 to-violet-600 px-6 py-3 text-base font-semibold text-white shadow-sm border border-slate-300 font-display"
-            onClick={onGetStarted}
-            whileHover={{ 
-              scale: 1.03, 
-              boxShadow: "0 10px 15px -5px rgba(15, 23, 42, 0.18)" 
-            }}
-            whileTap={{ scale: 0.97 }}
-          >
-            Get started
-          </motion.button>
-        </motion.div>
+          Get started
+        </button>
       </motion.div>
     </motion.div>
   );
