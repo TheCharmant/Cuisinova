@@ -153,39 +153,39 @@ export default function Hero() {
                     <section id="home" className="scroll-mt-28 px-4 py-10 md:px-0">
                         <Landing onGetStarted={onAuthenticate} />
                     </section>
-                    <section id="product" className="scroll-mt-28 px-4 py-16 md:px-0">
+                    <section id="product" className="scroll-mt-28 px-4 py-16 md:px-0 bg-slate-50">
                         <div className="text-center mb-10">
-                            <p className="text-sm uppercase tracking-[0.4em] text-violet-500 font-semibold">Product</p>
-                            <h2 className="mt-4 text-4xl font-extrabold text-coquette-text">What Cuisinova Can Do</h2>
-                            <p className="mt-4 text-lg text-coquette-lavender max-w-2xl mx-auto">Smart recipe creation, personalized dietary guidance, and a delightful AI-first experience for busy cooks.</p>
+                            <p className="text-sm uppercase tracking-[0.4em] text-violet-700 font-semibold">Product</p>
+                            <h2 className="mt-4 text-4xl font-extrabold text-slate-900">What Cuisinova Can Do</h2>
+                            <p className="mt-4 text-lg text-slate-700 max-w-2xl mx-auto">Smart recipe creation, personalized dietary guidance, and a polished workflow designed for cooks who value time, precision, and professional results.</p>
                         </div>
                         <Product onGetStarted={onAuthenticate} />
                     </section>
                     <section id="about" className="scroll-mt-28 px-4 py-16 md:px-0">
                         <div className="text-center mb-10">
-                            <p className="text-sm uppercase tracking-[0.4em] text-violet-500 font-semibold">About us</p>
-                            <h2 className="mt-4 text-4xl font-extrabold text-coquette-text">Meet the team behind Cuisinova</h2>
-                            <p className="mt-4 text-lg text-coquette-lavender max-w-2xl mx-auto">A small, passionate team building thoughtful AI-powered cooking tools with a cozy, intuitive experience.</p>
+                            <p className="text-sm uppercase tracking-[0.4em] text-violet-700 font-semibold">About us</p>
+                            <h2 className="mt-4 text-4xl font-extrabold text-slate-900">Meet the team behind Cuisinova</h2>
+                            <p className="mt-4 text-lg text-slate-700 max-w-2xl mx-auto">A focused team delivering AI-assisted recipe planning with the clarity and efficiency expected from a modern kitchen tool.</p>
                         </div>
-                        <div className="flex flex-col gap-8 md:flex-row md:justify-center">
-                            <div className="flex flex-col items-center bg-white/90 rounded-3xl border border-coquette-blush/20 shadow-delicate p-8 max-w-sm mx-auto">
+                        <div className="grid gap-4 md:grid-cols-2 md:gap-6">
+                            <div className="flex flex-col items-center bg-white border border-slate-200 shadow-sm p-8 max-w-sm mx-auto rounded-sm">
                                 <Image src="/mocha.png" alt="CHARYLL" width={96} height={96} className="rounded-full mb-5 object-cover" />
-                                <h3 className="text-2xl font-bold text-coquette-text mb-1">CHARYLL</h3>
-                                <p className="text-sm text-coquette-lavender mb-4">Full Stack Developer</p>
-                                <ul className="space-y-2 text-left text-coquette-lavender text-sm">
-                                    <li>AI, cloud systems, and full-stack expertise.</li>
-                                    <li>Builds apps that are functional, delightful, and reliable.</li>
-                                    <li>Focuses on clean UX and stable engineering.</li>
+                                <h3 className="text-2xl font-semibold text-slate-900 mb-1">CHARYLL</h3>
+                                <p className="text-sm text-slate-600 mb-4">Full Stack Developer</p>
+                                <ul className="space-y-3 text-left text-slate-700 text-sm">
+                                    <li>Experienced in AI, cloud systems, and full-stack architecture.</li>
+                                    <li>Builds dependable solutions with a strong focus on usability.</li>
+                                    <li>Prizes clean engineering and polished product execution.</li>
                                 </ul>
                             </div>
-                            <div className="flex flex-col items-center bg-white/90 rounded-3xl border border-coquette-blush/20 shadow-delicate p-8 max-w-sm mx-auto">
+                            <div className="flex flex-col items-center bg-white border border-slate-200 shadow-sm p-8 max-w-sm mx-auto rounded-sm">
                                 <Image src="/vanilla.png" alt="GUI ANN" width={96} height={96} className="rounded-full mb-5 object-cover" />
-                                <h3 className="text-2xl font-bold text-coquette-text mb-1">GUI ANN</h3>
-                                <p className="text-sm text-coquette-lavender mb-4">Concept & Design Lead</p>
-                                <ul className="space-y-2 text-left text-coquette-lavender text-sm">
-                                    <li>Designs thoughtful, playful user experiences.</li>
-                                    <li>Turns ideas into warm, engaging interfaces.</li>
-                                    <li>Believes great design should feel friendly and easy.</li>
+                                <h3 className="text-2xl font-semibold text-slate-900 mb-1">GUI ANN</h3>
+                                <p className="text-sm text-slate-600 mb-4">Concept & Design Lead</p>
+                                <ul className="space-y-3 text-left text-slate-700 text-sm">
+                                    <li>Designs interfaces that are expressive yet restrained and easy to navigate.</li>
+                                    <li>Focuses on modern usability with a professional presentation.</li>
+                                    <li>Creates polished experiences that make cooking feel well organized.</li>
                                 </ul>
                             </div>
                         </div>

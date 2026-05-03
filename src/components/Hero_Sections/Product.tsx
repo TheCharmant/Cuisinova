@@ -1,5 +1,4 @@
 
-import Image from 'next/image';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { motion } from 'framer-motion';
 
@@ -56,73 +55,53 @@ export default function Product({ onGetStarted }: { onGetStarted: () => void }) 
         >
           Find out how Cuisinova makes planning meals feel simple and cozy.
         </motion.p>
-        <motion.ul 
-          className="space-y-4 text-gray-500 list-inside dark:text-gray-400 text-left"
+        <motion.div 
+          className="grid gap-6 md:grid-cols-2"
           variants={containerVariants}
         >
           {[
-            "AI-powered recipe generation using your available ingredients.",
-            "Customized recipes based on dietary preferences and restrictions.",
-            "User-friendly interface to easily add ingredients and generate recipes.",
-            "Option to save, rate, and share your favorite recipes."
-          ].map((feature, index) => (
-            <motion.li 
-              key={index} 
-              className="flex items-start text-lg"
-              variants={listItemVariants}
-              whileHover={{ x: 5 }}
+            {
+              title: 'AI Recipe Generation',
+              description: 'Transform ingredients into complete recipes with reliable steps, clear instructions, and practical serving guidance.'
+            },
+            {
+              title: 'Dietary Awareness',
+              description: 'Adapt recipes to preferences such as vegan, gluten-free, low-carb, or balanced nutrition without sacrificing flavor.'
+            },
+            {
+              title: 'Smart Substitutions',
+              description: 'Swap ingredients confidently based on pantry availability and dietary needs, keeping flavors consistent.'
+            },
+            {
+              title: 'Streamlined Workflow',
+              description: 'From ingredient list to recipe card, the interface is built for fast, professional meal planning.'
+            }
+          ].map((feature) => (
+            <motion.div
+              key={feature.title}
+              className="border border-slate-200 bg-slate-50 p-6 rounded-sm shadow-sm"
+              variants={itemVariants}
             >
-              <motion.div
-                whileHover={{ scale: 1.2, rotate: 5 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <CheckCircleIcon className="mr-2 h-6 w-6 text-violet-500" />
-              </motion.div>
-              {feature}
-            </motion.li>
+              <h3 className="text-lg font-semibold text-slate-900 mb-3">{feature.title}</h3>
+              <p className="text-sm leading-6 text-slate-700">{feature.description}</p>
+            </motion.div>
           ))}
-        </motion.ul>
+        </motion.div>
         <motion.div 
-          className="flex gap-4"
+          className="mt-10 flex justify-center"
           variants={itemVariants}
         >
           <motion.button
-            className="w-fit rounded-full bg-gradient-to-r from-brand-500 to-violet-500 px-6 py-3 text-base font-semibold text-white shadow-lg border border-white/20 backdrop-blur-sm font-display"
+            className="w-fit rounded-sm bg-gradient-to-r from-brand-500 to-violet-600 px-6 py-3 text-base font-semibold text-white shadow-sm border border-slate-300 font-display"
             onClick={onGetStarted}
             whileHover={{ 
-              scale: 1.05, 
-              boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" 
+              scale: 1.03, 
+              boxShadow: "0 10px 15px -5px rgba(15, 23, 42, 0.18)" 
             }}
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: 0.97 }}
           >
             Get started
           </motion.button>
-        </motion.div>
-      </motion.div>
-      <motion.div 
-        className="md:w-1/2"
-        variants={containerVariants}
-      >
-        <motion.div
-          className="relative overflow-hidden rounded-3xl shadow-2xl border-4 border-white/80"
-          variants={itemVariants}
-          whileHover={{ scale: 1.02 }}
-        >
-          <Image
-            src="/demo.gif"
-            alt="Smart Recipe Generator demo"
-            width={600}
-            height={400}
-            className="w-full h-auto"
-            style={{ display: 'block', background: '#fff', borderRadius: '1.5rem' }}
-            priority
-          />
-          <motion.div 
-            className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
-          />
         </motion.div>
       </motion.div>
     </motion.div>
