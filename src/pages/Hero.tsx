@@ -6,6 +6,7 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Product from '../components/Hero_Sections/Product';
 import Landing from '../components/Hero_Sections/Landing';
+import Footer from '../components/Footer';
 import ErrorPage from './auth/error';
 import AnimatedBackground from '../components/AnimatedBackground';
 
@@ -200,6 +201,8 @@ export default function Hero() {
           </section>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }
