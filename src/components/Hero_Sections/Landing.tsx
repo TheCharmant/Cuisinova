@@ -69,32 +69,6 @@ export default function Landing({ onGetStarted }: { onGetStarted: () => void }) 
           </div>
         </motion.div>
       </div>
-
-      <motion.div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" variants={containerVariants}>
-        {[
-          {
-            title: 'AI-driven Recipes',
-            detail: 'Generate complete recipes from your pantry with reliable step-by-step instructions for every meal.',
-          },
-          {
-            title: 'Dietary Precision',
-            detail: 'Adapt recipes to vegan, gluten-free, low-carb, or balanced nutrition without sacrificing flavor.',
-          },
-          {
-            title: 'Professional Workflow',
-            detail: 'Move from ingredients to finished recipe cards with clarity and fast decision-making.',
-          },
-        ].map((card) => (
-          <motion.div
-            key={card.title}
-            className="rounded-[28px] border border-slate-200 bg-white/90 p-6 shadow-soft transition-transform duration-300 hover:-translate-y-1"
-            variants={itemVariants}
-          >
-            <h3 className="text-xl font-semibold text-slate-950 mb-3">{card.title}</h3>
-            <p className="text-sm leading-6 text-slate-700">{card.detail}</p>
-          </motion.div>
-        ))}
-      </motion.div>
     </motion.section>
   );
 }
