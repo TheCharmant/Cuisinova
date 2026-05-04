@@ -245,6 +245,7 @@ describe('generating images of recipes from open ai', () => {
             n: 1,
             prompt: expectedPrompt,
             size: "1024x1024",
+            response_format: "url",
         });
     })
 
