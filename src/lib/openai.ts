@@ -155,6 +155,7 @@ const generateImage = async (prompt: string, model: string): Promise<ImagesRespo
             prompt,
             n: 1,
             size: '1024x1024',
+            response_format: 'url',
         });
         return response;
     } catch (error) {
@@ -175,7 +176,7 @@ export const generateImages = async (recipes: Recipe[], userId: string) => {
         //     throw new Error(`You have reached your limit of ${apiRequestLimit} AI-generated recipes.`);
         // }
         
-        const model = 'dall-e-3';
+        const model = 'dall-e-2';
         const imageResults = await Promise.allSettled(
             recipes.map((recipe) =>
                 generateImage(getImageGenerationPrompt(recipe.name, recipe.ingredients), model)
