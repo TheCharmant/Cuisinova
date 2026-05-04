@@ -241,7 +241,7 @@ describe('generating images of recipes from open ai', () => {
         call.prompt = normalizeWhitespace(call.prompt); // Normalize the received prompt
 
         expect(call).toEqual({
-            model: "dall-e-2",
+            model: "gpt-image",
             n: 1,
             prompt: expectedPrompt,
             size: "1024x1024",
