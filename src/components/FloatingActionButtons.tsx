@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { ArrowUpIcon } from '@heroicons/react/24/solid';
+import { ChatBubbleOvalLeftEllipsisIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useChat } from '../contexts/ChatContext';
 
 /**
  * FloatingActionButtons Component
@@ -10,6 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
  */
 const FloatingActionButtons = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const { openChat } = useChat();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,6 +29,17 @@ const FloatingActionButtons = () => {
 
   return (
     <div className="fixed bottom-8 right-8 flex flex-col items-end space-y-4 z-50">
+      {/* Chat Button - Always Visible */}
+      <motion.button
+        onClick={() => openChat()}
+        className="bg-minimalist-sky/70 text-minimalist-slate w-11 h-11 rounded-full shadow-delicate flex items-center justify-center border border-minimalist-blue/60 backdrop-blur-md transition-colors duration-200"
+        aria-label="Open AI Chat Assistant"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.97 }}
+      >
+        <ChatBubbleOvalLeftEllipsisIcon className="h-6 w-6 opacity-80" />
+      </motion.button>
+      
       {/* Scroll to Top Button (Appears on Scroll) */}
       <AnimatePresence>
         {isVisible && (

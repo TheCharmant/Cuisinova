@@ -3,7 +3,7 @@ import React, { createContext, useContext, useMemo, useState, ReactNode } from '
 type ChatContextType = {
   isOpen: boolean;
   recipeId: string | null;
-  openChat: (recipeId: string) => void;
+  openChat: (recipeId?: string) => void;
   closeChat: () => void;
 };
 
@@ -23,8 +23,8 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     () => ({
       isOpen,
       recipeId,
-      openChat: (id: string) => {
-        setRecipeId(id);
+      openChat: (id?: string) => {
+        setRecipeId(id || null);
         setIsOpen(true);
       },
       closeChat: () => {
