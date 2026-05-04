@@ -150,6 +150,7 @@ export const generateRecipe = async (ingredients: Ingredient[], categories: Reci
 // Generate an image using OpenAI by sending an image generation prompt to OpenAI
 const generateImage = async (prompt: string, model: string): Promise<ImagesResponse> => {
     try {
+        console.log('Generating image with model:', model, 'prompt length:', prompt.length);
         const response = await openai.images.generate({
             model,
             prompt,
@@ -157,9 +158,11 @@ const generateImage = async (prompt: string, model: string): Promise<ImagesRespo
             size: '1024x1024',
             response_format: 'url',
         });
+        console.log('Image generation successful, response data:', response.data?.[0]?.url ? 'URL present' : 'No URL');
         return response;
     } catch (error) {
         console.error('OpenAI image generation error:', error);
+        console.error('Error details:', JSON.stringify(error, null, 2));
         throw new Error(error instanceof Error ? error.message : 'Failed to generate image');
     }
 };
