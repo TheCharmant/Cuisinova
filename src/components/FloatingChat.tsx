@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChatBubbleOvalLeftEllipsisIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/solid';
 import { useChat } from '../contexts/ChatContext';
@@ -8,15 +8,37 @@ import FloatingWidget from './FloatingWidget';
 const FloatingChat = () => {
   const { isOpen, recipeId, closeChat } = useChat();
   const [isExpanded, setIsExpanded] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
-  if (!recipeId) return null;
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(typeof window !== 'undefined' && window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  if (!isOpen) return null;
+
+  const windowWidth = typeof window !== 'undefined' ? window.innerWidth : 375;
+  const windowHeight = typeof window !== 'undefined' ? window.innerHeight : 667;
+
+  const defaultPos = isMobile
+    ? { x: 16, y: Math.max(16, windowHeight - 420) }
+    : { x: 16, y: 120 };
+  const defaultSize = isMobile
+    ? { width: Math.max(300, windowWidth - 32), height: Math.min(420, windowHeight - 120) }
+    : { width: 360, height: 380 };
+  const minWidth = isMobile ? Math.max(300, windowWidth - 32) : 300;
 
   return (
     <FloatingWidget
       storageKey="floating-chat"
-      defaultPos={{ x: 16, y: 120 }}
-      defaultSize={{ width: 360, height: 280 }}
-      minWidth={300}
+      defaultPos={defaultPos}
+      defaultSize={defaultSize}
+      minWidth={minWidth}
       minHeight={220}
       className="bg-minimalist-sky/70 backdrop-blur-md rounded-2xl shadow-soft border border-minimalist-blue/60"
       bodyOverflow="hidden"
@@ -48,10 +70,16 @@ const FloatingChat = () => {
       }
     >
       <div className="h-full px-3 pb-1">
-        {isOpen && isExpanded ? (
-          <ChatBox recipeId={recipeId} compact />
+        {recipeId ? (
+          isOpen && isExpanded ? (
+            <ChatBox recipeId={recipeId} compact />
+          ) : (
+            <div className="text-sm text-minimalist-slate/70">Chat is closed.</div>
+          )
         ) : (
-          <div className="text-sm text-minimalist-slate/70">Chat is closed.</div>
+          <div className="flex items-center justify-center h-full text-sm text-minimalist-slate/70">
+            Select a recipe to start chatting with the AI assistant.
+          </div>
         )}
       </div>
     </FloatingWidget>

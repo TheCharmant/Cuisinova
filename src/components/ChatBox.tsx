@@ -82,9 +82,9 @@ export default function ChatBox({ recipeId, compact = false }: Props) {
     );
 
     return (
-        <div className={`${compact ? '' : 'mt-6'} flex flex-col h-[500px] sm:h-[550px]`}>
+        <div className={`${compact ? 'flex flex-col h-full min-h-0' : 'mt-6 flex flex-col h-[500px] sm:h-[550px]'}`}>
             {/* Messages area - scrollable */}
-            <div className={`flex-1 overflow-y-auto border border-minimalist-blue/60 rounded-xl p-4 bg-minimalist-sky/40 space-y-4 shadow-inner ${compact ? '' : ''}`}>
+            <div className="flex-1 min-h-0 overflow-y-auto border border-minimalist-blue/60 rounded-xl p-4 bg-minimalist-sky/40 space-y-4 shadow-inner">
                 {messages.map((msg, idx) => (
                     <div
                         key={idx}
@@ -113,9 +113,9 @@ export default function ChatBox({ recipeId, compact = false }: Props) {
             </div>
 
             {/* Input area - fixed at bottom */}
-            <div className="flex items-center gap-2 pt-3 mt-3 border-t border-minimalist-blue/20">
+            <div className="flex flex-col sm:flex-row items-end gap-2 pt-3 mt-3 border-t border-minimalist-blue/20">
                 <textarea
-                    className="flex-grow border border-minimalist-blue/60 rounded-xl px-4 py-3 text-sm h-[80px] resize-none overflow-y-auto focus:ring-2 focus:ring-minimalist-blue/40 focus:border-minimalist-slate focus:outline-none transition-all duration-200 bg-minimalist-sky/40 text-minimalist-slate"
+                    className="flex-grow min-h-[72px] max-h-[140px] w-full border border-minimalist-blue/60 rounded-xl px-4 py-3 text-sm resize-none overflow-y-auto focus:ring-2 focus:ring-minimalist-blue/40 focus:border-minimalist-slate focus:outline-none transition-all duration-200 bg-minimalist-sky/40 text-minimalist-slate"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Ask a question about this recipe..."
@@ -130,7 +130,7 @@ export default function ChatBox({ recipeId, compact = false }: Props) {
                 <button
                     onClick={handleSend}
                     disabled={isLoading || !input.trim() || tokenTotal >= MAX_TOKENS}
-                    className="bg-minimalist-slate text-minimalist-sand px-4 py-3 rounded-xl text-sm hover:bg-minimalist-slate/90 transition-colors disabled:opacity-50 h-[80px] flex items-center justify-center"
+                    className="min-h-[44px] w-full sm:w-auto bg-minimalist-slate text-minimalist-sand px-4 py-3 rounded-xl text-sm hover:bg-minimalist-slate/90 transition-colors disabled:opacity-50 flex items-center justify-center"
                     aria-label="Send"
                 >
                     <PaperAirplaneIcon className="h-5 w-5" />

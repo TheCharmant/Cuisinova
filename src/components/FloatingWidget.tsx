@@ -112,7 +112,7 @@ const FloatingWidget = ({
   return (
     <div
       ref={ref}
-      className={`fixed z-floating flex flex-col ${className}`}
+      className={`fixed z-50 flex flex-col ${className}`}
       style={{
         left: pos.x,
         top: pos.y,
@@ -120,6 +120,8 @@ const FloatingWidget = ({
         height: size?.height,
         minWidth,
         minHeight,
+        maxWidth: 'calc(100vw - 16px)',
+        maxHeight: 'calc(100vh - 16px)',
         resize: 'both',
         overflow: 'hidden',
       }}
