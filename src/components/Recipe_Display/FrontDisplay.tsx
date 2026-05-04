@@ -43,7 +43,7 @@ const FrontDisplay = React.forwardRef<HTMLDivElement, FrontDisplayProps>(
         <div ref={ref} className="recipe-card max-w-sm bg-white rounded-2xl shadow-sm mt-2 mb-1 flex flex-col h-full overflow-hidden border border-gray-100">
             <div className="relative w-full h-48 overflow-hidden">
                 <Image
-                    src={recipe.imgLink}
+                    src={recipe.imgLink || '/logo.svg'}
                     fill
                     alt={recipe.name}
                     style={{ objectFit: 'cover' }}

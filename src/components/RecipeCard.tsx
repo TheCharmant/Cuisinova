@@ -30,25 +30,23 @@ const RecipeCard = ({ recipe, handleRecipeSelection, selectedRecipes, showSwitch
         >
             <div className="px-6 py-5 relative flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-coquette-blush scrollbar-track-coquette-cream">
                 {/* Recipe Image Preview */}
-                {recipe.imgLink && (
-                    <motion.div
-                        className="relative w-full h-48 mb-4 overflow-hidden rounded-2xl"
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.05 }}
-                        style={{ boxShadow: '0 8px 24px rgba(247, 200, 208, 0.12)' }}
-                    >
-                        <Image
-                            src={recipe.imgLink}
-                            fill
-                            alt={recipe.name}
-                            style={{ objectFit: 'cover' }}
-                            className="rounded-2xl"
-                            priority
-                            sizes="auto"
-                        />
-                    </motion.div>
-                )}
+                <motion.div
+                    className="relative w-full h-48 mb-4 overflow-hidden rounded-2xl"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.05 }}
+                    style={{ boxShadow: '0 8px 24px rgba(247, 200, 208, 0.12)' }}
+                >
+                    <Image
+                        src={recipe.imgLink || '/logo.svg'}
+                        fill
+                        alt={recipe.name}
+                        style={{ objectFit: 'cover' }}
+                        className="rounded-2xl"
+                        priority
+                        sizes="auto"
+                    />
+                </motion.div>
 
                 {/* === Recipe Title and Optional Switch === */}
                 <div className="flex justify-between items-center w-full mb-5">
