@@ -223,15 +223,15 @@ describe('generating images of recipes from open ai', () => {
     });
     it('shall generate images given ingredients', async () => {
         // mock opena ai chat completion
-        openai.images.generate = jest.fn().mockImplementation(() => Promise.resolve({ data: [{ url: 'http:/stub-ai-image-url' }] }))
+        openai.images.generate = jest.fn().mockImplementation(() => Promise.resolve({ data: [{ b64_json: 'stub-base64-image' }] }))
         // mock db create query
         aigenerated.create = jest.fn().mockImplementation(
             () => Promise.resolve({ _id: 1234 }),
         );
         const result = await generateImages(stubRecipeBatch, 'mockUserId')
         expect(result).toEqual([
-            { imgLink: 'http:/stub-ai-image-url', name: 'Recipe_1_name' },
-            { imgLink: 'http:/stub-ai-image-url', name: 'Recipe_2_name' }
+            { imgLink: 'data:image/png;base64,stub-base64-image', name: 'Recipe_1_name' },
+            { imgLink: 'data:image/png;base64,stub-base64-image', name: 'Recipe_2_name' }
         ])
         const normalizeWhitespace = (str: string) => str.replace(/\s+/g, ' ').trim();
 
@@ -241,10 +241,11 @@ describe('generating images of recipes from open ai', () => {
         call.prompt = normalizeWhitespace(call.prompt); // Normalize the received prompt
 
         expect(call).toEqual({
-            model: "dall-e-3",
+            model: "gpt-image-1",
             n: 1,
             prompt: expectedPrompt,
             size: "1024x1024",
+            user: "mockUserId",
         });
     })
 

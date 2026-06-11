@@ -2,7 +2,6 @@ import OpenAI from 'openai';
 import { Ingredient, DietaryPreference, RecipeCategory, Recipe, ExtendedRecipe } from '../types/index';
 import aiGenerated from '../models/aigenerated';
 import { connectDB } from '../lib/mongodb';
-import { ImagesResponse } from 'openai/resources';
 import recipeModel from '../models/recipe';
 import {
     getRecipeGenerationPrompt,
@@ -91,18 +90,26 @@ export const generateRecipe = async (ingredients: Ingredient[], categories: Reci
     }
 };
 
-// Generate an image using DALL-E by sending an image generation prompt to OpenAI
-const generateImage = async (prompt: string, model: string, userId: string): Promise<ImagesResponse> => {
+// Generate an image by sending an image generation prompt to OpenAI.
+const generateImage = async (prompt: string, model: string, userId: string): Promise<string> => {
     try {
         const response = await openai.images.generate({
             model,
             prompt,
             n: 1,
             size: '1024x1024',
-            response_format: 'url',
             user: userId,
         });
-        return response;
+
+        const image = response.data?.[0];
+        if (image?.b64_json) {
+            return `data:image/png;base64,${image.b64_json}`;
+        }
+        if (image?.url) {
+            return image.url;
+        }
+
+        throw new Error('OpenAI image response did not include image data');
     } catch (error) {
         console.error('OpenAI image generation error:', error);
         throw new Error(error instanceof Error ? error.message : 'Failed to generate image');
@@ -121,7 +128,7 @@ export const generateImages = async (recipes: Recipe[], userId: string) => {
         //     throw new Error(`You have reached your limit of ${apiRequestLimit} AI-generated recipes.`);
         // }
         
-        const model = 'dall-e-2';
+        const model = 'gpt-image-1';
         const imagePromises = recipes.map(recipe =>
             generateImage(getImageGenerationPrompt(recipe.name, recipe.ingredients), model, userId)
         );
@@ -136,14 +143,13 @@ export const generateImages = async (recipes: Recipe[], userId: string) => {
         const imagesWithNames = results.map((result, idx) => {
             const recipeName = recipes[idx].name;
             if (result.status === 'fulfilled') {
-                const url = result.value?.data?.[0]?.url;
-                if (url) {
+                if (result.value) {
                     return {
-                        imgLink: url,
+                        imgLink: result.value,
                         name: recipeName,
                     };
                 }
-                console.error(`Image generation returned no URL for recipe: ${recipeName}`);
+                console.error(`Image generation returned no image data for recipe: ${recipeName}`);
             } else {
                 console.error(`Image generation failed for recipe: ${recipeName}`, result.reason);
             }
