@@ -14,7 +14,7 @@ import { Recipe, UploadReturnType, ExtendedRecipe } from '../../types';
  * @returns The URL of the image in S3 or a fallback image URL.
  */
 const getS3Link = (uploadResults: UploadReturnType[] | null, location: string) => {
-    const fallbackImg = '/logo.svg';
+    const fallbackImg = '/loading.gif';
     if (!uploadResults) return fallbackImg;
     const filteredResult = uploadResults.filter(result => result.location && result.location.endsWith(`/${location}`));
     if (filteredResult[0]?.uploaded) {
@@ -65,7 +65,7 @@ const generateImagesAfterResponse = async (
 
         await Promise.all(savedRecipes.map((savedRecipe, idx) => {
             const sourceRecipe = sourceRecipes[idx];
-            const openAiImg = imageResults[idx]?.imgLink || '/logo.svg';
+            const openAiImg = imageResults[idx]?.imgLink || '/loading.gif';
             const s3Img = uploadResults?.[idx]?.uploaded ? getS3Link(uploadResults, sourceRecipe.openaiPromptId) : undefined;
             const displayUrl = s3Img || openAiImg;
 
@@ -172,8 +172,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
         const updatedRecipes = recipesToSave.map((r: Recipe) => ({
             ...r,
             owner: ownerId,
-            imgLink: '/logo.svg',
-            imgDisplayUrl: '/logo.svg',
+            imgLink: '/loading.gif',
+            imgDisplayUrl: '/loading.gif',
             openaiPromptId: getRecipeSaveKey(r),
         }));
         console.info('Prepared recipes for database insert:', updatedRecipes.map((r) => ({

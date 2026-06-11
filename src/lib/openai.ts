@@ -155,7 +155,7 @@ export const generateImages = async (recipes: Recipe[], userId: string) => {
             }
 
             return {
-                imgLink: '/logo.svg',
+                imgLink: '/loading.gif',
                 name: recipeName,
             };
         });
@@ -164,7 +164,7 @@ export const generateImages = async (recipes: Recipe[], userId: string) => {
         console.error('Error generating image:', error);
         // Return fallback images instead of throwing an error
         return recipes.map(recipe => ({
-            imgLink: '/logo.svg',
+            imgLink: '/loading.gif',
             name: recipe.name,
         }));
     }
