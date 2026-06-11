@@ -43,6 +43,44 @@ const generateTagsAfterResponse = (savedRecipes: ExtendedRecipe[], userId: strin
     }, 0);
 };
 
+const generateImagesAfterResponse = async (
+    savedRecipes: ExtendedRecipe[],
+    sourceRecipes: Recipe[],
+    userId: string
+) => {
+    try {
+        console.info('Generating images for saved recipes...');
+        const imageResults = await generateImages(sourceRecipes, userId);
+        console.info('OpenAI imageResults summary:', summarizeImageResults(imageResults));
+
+        const openaiImagesArray = imageResults.map((result, idx) => ({
+            originalImgLink: result.imgLink,
+            userId,
+            location: sourceRecipes[idx].openaiPromptId
+        }));
+        console.info('Prepared image upload count:', openaiImagesArray.length);
+
+        const uploadResults = await uploadImagesToS3(openaiImagesArray);
+        console.info('S3 uploadResults:', JSON.stringify(uploadResults, null, 2));
+
+        await Promise.all(savedRecipes.map((savedRecipe, idx) => {
+            const sourceRecipe = sourceRecipes[idx];
+            const openAiImg = imageResults[idx]?.imgLink || '/logo.svg';
+            const s3Img = uploadResults?.[idx]?.uploaded ? getS3Link(uploadResults, sourceRecipe.openaiPromptId) : undefined;
+            const displayUrl = s3Img || openAiImg;
+
+            return recipe.findByIdAndUpdate(savedRecipe._id, {
+                $set: {
+                    imgLink: openAiImg,
+                    imgDisplayUrl: displayUrl,
+                },
+            });
+        }));
+    } catch (error) {
+        console.error('Failed to generate images after recipe save:', error);
+    }
+};
+
 /**
  * Validates a recipe object to ensure it has all required fields.
  * @param recipe - The recipe object to validate.
@@ -130,38 +168,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
             });
         }
 
-        // Generate images using OpenAI
-        console.info('Getting images from OpenAI...');
-        const imageResults = await generateImages(recipesToSave, session.user.id);
-        console.info('OpenAI imageResults summary:', summarizeImageResults(imageResults));
-
-        // Prepare images for uploading to S3
-        const openaiImagesArray = imageResults.map((result, idx) => ({
-            originalImgLink: result.imgLink,
-            userId: session.user.id,
-            location: recipesToSave[idx].openaiPromptId
+        // Save recipes first so image generation does not block the client at 90%.
+        const updatedRecipes = recipesToSave.map((r: Recipe) => ({
+            ...r,
+            owner: ownerId,
+            imgLink: '/logo.svg',
+            imgDisplayUrl: '/logo.svg',
+            openaiPromptId: getRecipeSaveKey(r),
         }));
-        console.info('Prepared image upload count:', openaiImagesArray.length);
-
-        // Upload images to S3
-        console.info('Uploading OpenAI images to S3...');
-        const uploadResults = await uploadImagesToS3(openaiImagesArray);
-        console.info('S3 uploadResults:', JSON.stringify(uploadResults, null, 2));
-
-        // Update recipe data with image links and owner information
-        const updatedRecipes = recipesToSave.map((r: Recipe, idx: number) => {
-            const openAiImg = imageResults[idx]?.imgLink || '/logo.svg';
-            const s3Img = uploadResults?.[idx]?.uploaded ? getS3Link(uploadResults, r.openaiPromptId) : undefined;
-            const displayUrl = s3Img || openAiImg;
-
-            return {
-                ...r,
-                owner: ownerId,
-                imgLink: openAiImg,
-                imgDisplayUrl: displayUrl,
-                openaiPromptId: getRecipeSaveKey(r),
-            };
-        });
         console.info('Prepared recipes for database insert:', updatedRecipes.map((r) => ({
             name: r.name,
             openaiPromptId: r.openaiPromptId,
@@ -193,8 +207,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
             skippedCount: recipes.length - savedRecipes.length,
         });
 
-        // Run tag generation after the client has received the save response.
-        generateTagsAfterResponse(savedRecipes as unknown as ExtendedRecipe[], session.user.id);
+        const savedExtendedRecipes = savedRecipes as unknown as ExtendedRecipe[];
+        // Run image and tag generation after the client has received the save response.
+        void generateImagesAfterResponse(savedExtendedRecipes, recipesToSave, session.user.id);
+        generateTagsAfterResponse(savedExtendedRecipes, session.user.id);
     } catch (error) {
         // Handle any errors that occur during the process
         console.error('Failed to send response:', error);

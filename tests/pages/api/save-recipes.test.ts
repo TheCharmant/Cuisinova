@@ -61,6 +61,7 @@ describe('Saving recipes', () => {
                 lean: jest.fn().mockResolvedValue([])
             })
         });
+        Recipe.findByIdAndUpdate = jest.fn().mockResolvedValue(undefined);
     })
 
     afterEach(() => {
@@ -117,9 +118,13 @@ describe('Saving recipes', () => {
         })
         expect(Recipe.insertMany).toHaveBeenCalledWith([
             expect.objectContaining({
+                imgDisplayUrl: '/logo.svg',
+                imgLink: '/logo.svg',
                 openaiPromptId: stubRecipeBatch[0].openaiPromptId,
             }),
             expect.objectContaining({
+                imgDisplayUrl: '/logo.svg',
+                imgLink: '/logo.svg',
                 openaiPromptId: stubRecipeBatch[1].openaiPromptId,
             }),
         ])
@@ -189,11 +194,11 @@ describe('Saving recipes', () => {
             imageBackup: [
                 {
                     name: stubRecipeBatch[0].name,
-                    imgDisplayUrl: 'https://mock-openai-imglink-1',
+                    imgDisplayUrl: '/logo.svg',
                 },
                 {
                     name: stubRecipeBatch[1].name,
-                    imgDisplayUrl: 'https://mock-openai-imglink-2',
+                    imgDisplayUrl: '/logo.svg',
                 },
             ],
         })
