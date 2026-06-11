@@ -25,6 +25,24 @@ const getS3Link = (uploadResults: UploadReturnType[] | null, location: string) =
 
 const getRecipeSaveKey = (recipe: Recipe) => recipe.openaiPromptId;
 
+const summarizeImageResults = (imageResults: { imgLink?: string; name: string }[]) => (
+    imageResults.map((result) => ({
+        name: result.name,
+        hasImage: Boolean(result.imgLink),
+        imageSource: result.imgLink?.startsWith('data:image/') ? 'base64' : 'url',
+        imageLength: result.imgLink?.length ?? 0,
+    }))
+);
+
+const generateTagsAfterResponse = (savedRecipes: ExtendedRecipe[], userId: string) => {
+    setTimeout(() => {
+        savedRecipes.forEach((r) => {
+            generateRecipeTags(r, userId)
+                .catch((error) => console.error(`Failed to generate tags for recipe ${r.name}:`, error));
+        });
+    }, 0);
+};
+
 /**
  * Validates a recipe object to ensure it has all required fields.
  * @param recipe - The recipe object to validate.
@@ -115,7 +133,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
         // Generate images using OpenAI
         console.info('Getting images from OpenAI...');
         const imageResults = await generateImages(recipesToSave, session.user.id);
-        console.info('OpenAI imageResults:', JSON.stringify(imageResults, null, 2));
+        console.info('OpenAI imageResults summary:', summarizeImageResults(imageResults));
 
         // Prepare images for uploading to S3
         const openaiImagesArray = imageResults.map((result, idx) => ({
@@ -123,7 +141,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
             userId: session.user.id,
             location: recipesToSave[idx].openaiPromptId
         }));
-        console.info('openaiImagesArray:', JSON.stringify(openaiImagesArray, null, 2));
+        console.info('Prepared image upload count:', openaiImagesArray.length);
 
         // Upload images to S3
         console.info('Uploading OpenAI images to S3...');
@@ -144,7 +162,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
                 openaiPromptId: getRecipeSaveKey(r),
             };
         });
-        console.info('updatedRecipes:', JSON.stringify(updatedRecipes, null, 2));
+        console.info('Prepared recipes for database insert:', updatedRecipes.map((r) => ({
+            name: r.name,
+            openaiPromptId: r.openaiPromptId,
+            hasDisplayImage: Boolean(r.imgDisplayUrl),
+        })));
 
         // Connect to MongoDB and save recipes
         console.log('Saving recipes...');
@@ -164,18 +186,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
             });
         }
 
-        // Run `generateRecipeTags` asynchronously in the background
-        savedRecipes.forEach((r) => {
-            generateRecipeTags(r as unknown as ExtendedRecipe, session.user.id)
-                .catch((error) => console.error(`Failed to generate tags for recipe ${r.name}:`, error));
-        });
-
         // Respond with success message
         res.status(200).json({
             status: 'Saved Recipes and generated the Images!',
             savedCount: savedRecipes.length,
             skippedCount: recipes.length - savedRecipes.length,
         });
+
+        // Run tag generation after the client has received the save response.
+        generateTagsAfterResponse(savedRecipes as unknown as ExtendedRecipe[], session.user.id);
     } catch (error) {
         // Handle any errors that occur during the process
         console.error('Failed to send response:', error);
