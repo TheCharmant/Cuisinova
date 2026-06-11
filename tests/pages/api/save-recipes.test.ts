@@ -16,6 +16,13 @@ jest.mock("../../../src/pages/api/auth/[...nextauth]", () => ({
         callbacks: {},
     },
 }));
+jest.mock("../../../src/lib/auth", () => ({
+    authOptions: {
+        adapter: {},
+        providers: [],
+        callbacks: {},
+    },
+}));
 //use to mock gets session
 jest.mock("next-auth/next");
 
@@ -49,6 +56,11 @@ describe('Saving recipes', () => {
     let getServerSessionSpy: any
     beforeEach(() => {
         getServerSessionSpy = jest.spyOn(nextAuth, 'getServerSession')
+        Recipe.find = jest.fn().mockReturnValue({
+            select: jest.fn().mockReturnValue({
+                lean: jest.fn().mockResolvedValue([])
+            })
+        });
     })
 
     afterEach(() => {
@@ -98,11 +110,66 @@ describe('Saving recipes', () => {
         }
         await saveRecipes(updatedreq, res)
         expect(res.statusCode).toBe(200)
-        expect(res._getJSONData()).toEqual({ status: 'Saved Recipes and generated the Images!' })
+        expect(res._getJSONData()).toEqual({
+            status: 'Saved Recipes and generated the Images!',
+            savedCount: 2,
+            skippedCount: 0,
+        })
+        expect(Recipe.insertMany).toHaveBeenCalledWith([
+            expect.objectContaining({
+                openaiPromptId: stubRecipeBatch[0].openaiPromptId,
+            }),
+            expect.objectContaining({
+                openaiPromptId: stubRecipeBatch[1].openaiPromptId,
+            }),
+        ])
+    })
+
+    it('shall skip recipes that were already saved for the same prompt keys', async () => {
+        getServerSessionSpy.mockImplementationOnce(() => Promise.resolve(getServerSessionStub))
+        Recipe.find = jest.fn().mockReturnValue({
+            select: jest.fn().mockReturnValue({
+                lean: jest.fn().mockResolvedValue([
+                    { openaiPromptId: stubRecipeBatch[0].openaiPromptId },
+                    { openaiPromptId: stubRecipeBatch[1].openaiPromptId },
+                ])
+            })
+        });
+        Recipe.insertMany = jest.fn();
+
+        const { req, res } = mockRequestResponse('POST')
+        const updatedreq: any = {
+            ...req,
+            body: {
+                recipes: stubRecipeBatch
+            }
+        }
+
+        await saveRecipes(updatedreq, res)
+
+        expect(res.statusCode).toBe(200)
+        expect(res._getJSONData()).toEqual({
+            status: 'Recipes already saved.',
+            savedCount: 0,
+            skippedCount: stubRecipeBatch.length,
+        })
+        expect(openai.generateImages).not.toHaveBeenCalled()
+        expect(Recipe.insertMany).not.toHaveBeenCalled()
     })
 
     it('will respond with error if POST call is rejected', async () => {
         getServerSessionSpy.mockImplementationOnce(() => Promise.resolve(getServerSessionStub))
+        const generateImagesSpy = jest.spyOn(openai, 'generateImages')
+        generateImagesSpy.mockImplementationOnce(() => Promise.resolve([
+            {
+                imgLink: 'https://mock-openai-imglink-1',
+                name: 'recipe-1'
+            },
+            {
+                imgLink: 'https://mock-openai-imglink-2',
+                name: 'recipe-2'
+            }
+        ]))
 
         Recipe.insertMany = jest.fn().mockImplementation(
             () => Promise.reject(),
@@ -117,6 +184,18 @@ describe('Saving recipes', () => {
         }
         await saveRecipes(updatedreq, res)
         expect(res.statusCode).toBe(500)
-        expect(res._getJSONData()).toEqual({ error: 'Failed to save recipes' })
+        expect(res._getJSONData()).toEqual({
+            error: 'Failed to save recipes to database',
+            imageBackup: [
+                {
+                    name: stubRecipeBatch[0].name,
+                    imgDisplayUrl: 'https://mock-openai-imglink-1',
+                },
+                {
+                    name: stubRecipeBatch[1].name,
+                    imgDisplayUrl: 'https://mock-openai-imglink-2',
+                },
+            ],
+        })
     })
 });

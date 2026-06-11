@@ -23,6 +23,8 @@ const getS3Link = (uploadResults: UploadReturnType[] | null, location: string) =
     return fallbackImg;
 };
 
+const getRecipeSaveKey = (recipe: Recipe) => recipe.openaiPromptId;
+
 /**
  * Validates a recipe object to ensure it has all required fields.
  * @param recipe - The recipe object to validate.
@@ -88,16 +90,38 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
             }
         }
 
+        const ownerId = new mongoose.Types.ObjectId(session.user.id);
+        const recipeSaveKeys = recipes.map(getRecipeSaveKey);
+
+        await connectDB();
+        const existingRecipes = await recipe.find({
+            owner: ownerId,
+            openaiPromptId: { $in: recipeSaveKeys },
+        }).select('openaiPromptId').lean();
+        const existingRecipeKeys = new Set(
+            existingRecipes.map((existingRecipe) => String(existingRecipe.openaiPromptId))
+        );
+        const recipesToSave = recipes.filter((r: Recipe) => !existingRecipeKeys.has(getRecipeSaveKey(r)));
+
+        if (!recipesToSave.length) {
+            console.info('Save recipes request already processed; skipping duplicate insert.');
+            return res.status(200).json({
+                status: 'Recipes already saved.',
+                savedCount: 0,
+                skippedCount: recipes.length,
+            });
+        }
+
         // Generate images using OpenAI
         console.info('Getting images from OpenAI...');
-        const imageResults = await generateImages(recipes, session.user.id);
+        const imageResults = await generateImages(recipesToSave, session.user.id);
         console.info('OpenAI imageResults:', JSON.stringify(imageResults, null, 2));
 
         // Prepare images for uploading to S3
         const openaiImagesArray = imageResults.map((result, idx) => ({
             originalImgLink: result.imgLink,
             userId: session.user.id,
-            location: recipes[idx].openaiPromptId
+            location: recipesToSave[idx].openaiPromptId
         }));
         console.info('openaiImagesArray:', JSON.stringify(openaiImagesArray, null, 2));
 
@@ -107,29 +131,27 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
         console.info('S3 uploadResults:', JSON.stringify(uploadResults, null, 2));
 
         // Update recipe data with image links and owner information
-        const updatedRecipes = recipes.map((r: Recipe, idx: number) => {
+        const updatedRecipes = recipesToSave.map((r: Recipe, idx: number) => {
             const openAiImg = imageResults[idx]?.imgLink || '/logo.svg';
             const s3Img = uploadResults?.[idx]?.uploaded ? getS3Link(uploadResults, r.openaiPromptId) : undefined;
             const displayUrl = s3Img || openAiImg;
 
             return {
                 ...r,
-                owner: new mongoose.Types.ObjectId(session.user.id),
+                owner: ownerId,
                 imgLink: openAiImg,
                 imgDisplayUrl: displayUrl,
-                openaiPromptId: r.openaiPromptId.split('-')[0] // Remove client key iteration
+                openaiPromptId: getRecipeSaveKey(r),
             };
         });
         console.info('updatedRecipes:', JSON.stringify(updatedRecipes, null, 2));
 
         // Connect to MongoDB and save recipes
-        console.log('Connecting to database...');
-        await connectDB();
-        console.log('Database connected, saving recipes...');
+        console.log('Saving recipes...');
         let savedRecipes;
         try {
             savedRecipes = await recipe.insertMany(updatedRecipes);
-            console.info(`Successfully saved ${recipes.length} recipes to MongoDB`);
+            console.info(`Successfully saved ${savedRecipes.length} recipes to MongoDB`);
             console.log('Saved recipes IDs:', savedRecipes.map(r => r._id));
         } catch (dbError) {
             console.error('Failed to save recipes to MongoDB:', dbError);
@@ -149,7 +171,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
         });
 
         // Respond with success message
-        res.status(200).json({ status: 'Saved Recipes and generated the Images!' });
+        res.status(200).json({
+            status: 'Saved Recipes and generated the Images!',
+            savedCount: savedRecipes.length,
+            skippedCount: recipes.length - savedRecipes.length,
+        });
     } catch (error) {
         // Handle any errors that occur during the process
         console.error('Failed to send response:', error);

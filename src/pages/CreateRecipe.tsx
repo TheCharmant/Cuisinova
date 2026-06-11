@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import { getSession } from 'next-auth/react';
@@ -50,6 +50,8 @@ function Navigation({
   const [isComplete, setIsComplete] = useState(false);
   const [loadingType, setLoadingType] = useState<'generation' | 'saving'>('generation')
   const [userLimitReached, setUserLimitReached] = useState(false);
+  const saveInFlightRef = useRef(false);
+  const saveCompletedRef = useRef(false);
 
   const router = useRouter();
   const { oldIngredients } = router.query;
@@ -130,7 +132,12 @@ function Navigation({
   };
 
   const handleSave = async (recipes: Recipe[]) => {
+    if (saveInFlightRef.current || saveCompletedRef.current) {
+      return;
+    }
+
     try {
+      saveInFlightRef.current = true;
       setIsLoading(true);
       setIsComplete(false);
       setLoadingType('saving');
@@ -139,6 +146,7 @@ function Navigation({
         method: 'post',
         payload: { recipes, categories }, // Pass selected categories
       });
+      saveCompletedRef.current = true;
       setIsComplete(true);
       showToast('Recipes saved successfully!', 'success');
 
@@ -156,6 +164,8 @@ function Navigation({
       console.log(error);
       setIsLoading(false);
       showToast('Failed to save recipes. Please try again.', 'error');
+    } finally {
+      saveInFlightRef.current = false;
     }
   };
 
