@@ -176,7 +176,7 @@ export const generateImages = async (recipes: Recipe[], userId: string) => {
         //     throw new Error(`You have reached your limit of ${apiRequestLimit} AI-generated recipes.`);
         // }
         
-        const model = 'gpt-image-1';
+        const model = 'dall-e-2';
         const imageResults = await Promise.allSettled(
             recipes.map((recipe) =>
                 generateImage(getImageGenerationPrompt(recipe.name, recipe.ingredients), model)
