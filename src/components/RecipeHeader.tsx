@@ -12,7 +12,7 @@ const RecipeHeader = ({ recipeData }: RecipeHeaderProps) => (
         {/* Recipe Image using Next.js Image component */}
         <div className="relative w-full h-80 rounded-xl overflow-hidden shadow-lg mb-4">
             <Image
-                src={recipeData.imgLink || '/logo.svg'} // Image source from recipe data with fallback
+                src={recipeData.imgDisplayUrl || recipeData.imgLink || '/logo.svg'} // Image source from recipe data with fallback
                 alt={recipeData.name} // Alt text for accessibility
                 fill // Fill the parent container
                 style={{ objectFit: 'cover' }} // Ensure the image covers the container without distortion

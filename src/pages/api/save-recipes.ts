@@ -107,21 +107,40 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
         console.info('S3 uploadResults:', JSON.stringify(uploadResults, null, 2));
 
         // Update recipe data with image links and owner information
-        const updatedRecipes = recipes.map((r: Recipe) => ({
-            ...r,
-            owner: new mongoose.Types.ObjectId(session.user.id),
-            imgLink: getS3Link(uploadResults, r.openaiPromptId),
-            openaiPromptId: r.openaiPromptId.split('-')[0] // Remove client key iteration
-        }));
+        const updatedRecipes = recipes.map((r: Recipe, idx: number) => {
+            const openAiImg = imageResults[idx]?.imgLink || '/logo.svg';
+            const s3Img = uploadResults?.[idx]?.uploaded ? getS3Link(uploadResults, r.openaiPromptId) : undefined;
+            const displayUrl = s3Img || openAiImg;
+
+            return {
+                ...r,
+                owner: new mongoose.Types.ObjectId(session.user.id),
+                imgLink: openAiImg,
+                imgDisplayUrl: displayUrl,
+                openaiPromptId: r.openaiPromptId.split('-')[0] // Remove client key iteration
+            };
+        });
         console.info('updatedRecipes:', JSON.stringify(updatedRecipes, null, 2));
 
         // Connect to MongoDB and save recipes
         console.log('Connecting to database...');
         await connectDB();
         console.log('Database connected, saving recipes...');
-        const savedRecipes = await recipe.insertMany(updatedRecipes);
-        console.info(`Successfully saved ${recipes.length} recipes to MongoDB`);
-        console.log('Saved recipes IDs:', savedRecipes.map(r => r._id));
+        let savedRecipes;
+        try {
+            savedRecipes = await recipe.insertMany(updatedRecipes);
+            console.info(`Successfully saved ${recipes.length} recipes to MongoDB`);
+            console.log('Saved recipes IDs:', savedRecipes.map(r => r._id));
+        } catch (dbError) {
+            console.error('Failed to save recipes to MongoDB:', dbError);
+            return res.status(500).json({
+                error: 'Failed to save recipes to database',
+                imageBackup: updatedRecipes.map((recipe) => ({
+                    name: recipe.name,
+                    imgDisplayUrl: recipe.imgDisplayUrl,
+                })),
+            });
+        }
 
         // Run `generateRecipeTags` asynchronously in the background
         savedRecipes.forEach((r) => {

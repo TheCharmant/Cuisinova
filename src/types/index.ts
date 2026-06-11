@@ -31,7 +31,9 @@ export interface Recipe {
     dietaryPreference: string[];
     categories: string[];
     additionalInformation: AdditionalInformation;
-    openaiPromptId: string
+    openaiPromptId: string;
+    imgLink?: string;
+    imgDisplayUrl?: string;
 }
 
 // this is for raw recipe documents to be stored in the db
@@ -62,6 +64,7 @@ export interface RecipeDocument extends Recipe {
 export interface ExtendedRecipe extends Recipe {
     _id: string
     imgLink: string
+    imgDisplayUrl?: string
     owner: {
         _id: string
         name: string

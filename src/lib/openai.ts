@@ -92,17 +92,20 @@ export const generateRecipe = async (ingredients: Ingredient[], categories: Reci
 };
 
 // Generate an image using DALL-E by sending an image generation prompt to OpenAI
-const generateImage = (prompt: string, model: string): Promise<ImagesResponse> => {
+const generateImage = async (prompt: string, model: string, userId: string): Promise<ImagesResponse> => {
     try {
-        const response = openai.images.generate({
+        const response = await openai.images.generate({
             model,
             prompt,
             n: 1,
             size: '1024x1024',
+            response_format: 'url',
+            user: userId,
         });
         return response;
     } catch (error) {
-        throw new Error('Failed to generate image');
+        console.error('OpenAI image generation error:', error);
+        throw new Error(error instanceof Error ? error.message : 'Failed to generate image');
     }
 };
 
@@ -119,31 +122,34 @@ export const generateImages = async (recipes: Recipe[], userId: string) => {
         // }
         
         const model = 'dall-e-2';
-        const imagePromises: Promise<ImagesResponse>[] = recipes.map(recipe =>
-            generateImage(getImageGenerationPrompt(recipe.name, recipe.ingredients), model)
+        const imagePromises = recipes.map(recipe =>
+            generateImage(getImageGenerationPrompt(recipe.name, recipe.ingredients), model, userId)
         );
-        const images = await Promise.all(imagePromises);
+        const results = await Promise.allSettled(imagePromises);
         await saveOpenaiResponses({
             userId,
             prompt: `Image generation for recipe names ${recipes.map(r => r.name).join(' ,')} (note: not exact prompt)`,
-            response: images,
-            model
+            response: results,
+            model,
         });
-        // Validate and map images safely
-        const imagesWithNames = images.map((imageResponse, idx) => {
-            const recipeName = recipes[idx].name;
-            const url = imageResponse?.data?.[0]?.url;
 
-            if (!url) {
-                console.error(`Image generation failed for recipe: ${recipeName}, using fallback image`);
-                return {
-                    imgLink: '/logo.svg', // Fallback image if generation fails
-                    name: recipeName,
-                };
+        const imagesWithNames = results.map((result, idx) => {
+            const recipeName = recipes[idx].name;
+            if (result.status === 'fulfilled') {
+                const url = result.value?.data?.[0]?.url;
+                if (url) {
+                    return {
+                        imgLink: url,
+                        name: recipeName,
+                    };
+                }
+                console.error(`Image generation returned no URL for recipe: ${recipeName}`);
+            } else {
+                console.error(`Image generation failed for recipe: ${recipeName}`, result.reason);
             }
 
             return {
-                imgLink: url,
+                imgLink: '/logo.svg',
                 name: recipeName,
             };
         });
