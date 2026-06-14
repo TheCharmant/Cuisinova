@@ -29,6 +29,11 @@ const isLikelyValidPantryItem = (name: string) => {
   if (!/[a-zA-Z]/.test(normalized)) return false;
   if (/\d/.test(normalized)) return false;
   if (!/[aeiouy]/i.test(normalized)) return false;
+
+  // Reject obvious non-food items (utensils, packaging, household goods)
+  const nonFoodPattern = /\b(straw|straws|napkin|plate|cup|mug|bottle|utensil|fork|spoon|knife|pan|pot|towel|rag|cloth|container|box|bag|lid|packaging|sticker|label|paper|plate|charger)\b/i;
+  if (nonFoodPattern.test(normalized)) return false;
+
   if (/\b(breakfast|lunch|dinner|meal|food|ingredient|recipe|stuff|anything|nothing)\b/i.test(normalized)) return false;
   return true;
 };
