@@ -96,7 +96,26 @@ export const generateRecipe = async (ingredients: Ingredient[], categories: Reci
 // Generate an image by sending an image generation prompt to OpenAI.
 const generateImage = async (prompt: string, model: string, userId: string): Promise<string> => {
     try {
-        const size = process.env.OPENAI_IMAGE_SIZE || '512x512';
+        // Validate image size against OpenAI client's allowed sizes
+        const allowedSizes = [
+            'auto',
+            '512x512',
+            '1024x1024',
+            '1536x1024',
+            '1024x1536',
+            '256x256',
+            '1792x1024',
+            '1024x1792',
+        ] as const;
+        type OpenAIImageSize = typeof allowedSizes[number];
+        let size: OpenAIImageSize = '512x512';
+        const envSize = process.env.OPENAI_IMAGE_SIZE;
+        if (envSize && (allowedSizes as readonly string[]).includes(envSize)) {
+            size = envSize as OpenAIImageSize;
+        } else if (envSize) {
+            console.warn(`Invalid OPENAI_IMAGE_SIZE value '${envSize}'. Falling back to ${size}`);
+        }
+
         const start = Date.now();
         const response = await openai.images.generate({
             model,
