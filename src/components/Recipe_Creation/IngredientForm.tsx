@@ -305,7 +305,27 @@ export default function IngredientForm({
                 <h2 className="text-base font-semibold text-gray-800">Your Pantry</h2>
                 <p className="text-xs text-gray-500">Tap an item to add it to this recipe.</p>
               </div>
-              {isPantryLoading && <span className="text-xs text-gray-500">Loading…</span>}
+              <div className="flex items-center gap-3">
+                {isPantryLoading && <span className="text-xs text-gray-500">Loading…</span>}
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setIsPantryLoading(true);
+                    try {
+                      const res = await call_api({ address: '/api/pantry-migrate', method: 'post' });
+                      setPantryItems(Array.isArray(res?.items) ? res.items : []);
+                    } catch (e) {
+                      // ignore errors; non-blocking UX
+                    } finally {
+                      setIsPantryLoading(false);
+                    }
+                  }}
+                  className="text-sm font-medium text-brand-700 hover:text-brand-800"
+                  title="Normalize and remove duplicate pantry items"
+                >
+                  Clean pantry
+                </button>
+              </div>
             </div>
             {!pantryItems.length ? (
               <p className="text-sm text-gray-600">
