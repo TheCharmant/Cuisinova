@@ -34,8 +34,12 @@ export const getRecipeGenerationPrompt = (ingredients: Ingredient[], categories:
           }).filter(Boolean).join('\n')
         : '';
 
+      const includeAllInstruction = !dietaryPreferences.length
+        ? `\n\nNOTE: No dietary preferences were specified. In this case you MUST include all provided ingredients in each recipe and must NOT omit any of the listed ingredients. Use every ingredient where possible.`
+        : '';
+
     return `
-I have exactly these ingredients: ${ingredientList}.${categoryInstruction}${dietaryInstruction}
+I have exactly these ingredients: ${ingredientList}.${categoryInstruction}${dietaryInstruction}${includeAllInstruction}
 
 Create exactly 3 different recipes using ONLY the ingredients listed above and fitting ONLY the specified category/dietary requirements. The response must be valid JSON only:
 
