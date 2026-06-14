@@ -7,6 +7,7 @@ import { mockRequestResponse } from '../../apiMocks';
 import { stubRecipeBatch, getServerSessionStub } from '../../stub';
 import * as nextAuth from 'next-auth';
 import * as openai from '../../../src/lib/openai';
+import { uploadImagesToS3 } from '../../../src/lib/awss3';
 
 // mock authOptions 
 jest.mock("../../../src/pages/api/auth/[...nextauth]", () => ({
@@ -62,6 +63,16 @@ describe('Saving recipes', () => {
             })
         });
         Recipe.findByIdAndUpdate = jest.fn().mockResolvedValue(undefined);
+        (uploadImagesToS3 as jest.Mock).mockResolvedValue([
+            {
+                location: `https://stub-bucket.s3.amazonaws.com/${stubRecipeBatch[0].openaiPromptId}`,
+                uploaded: true
+            },
+            {
+                location: stubRecipeBatch[1].openaiPromptId,
+                uploaded: false
+            }
+        ]);
     })
 
     afterEach(() => {
@@ -118,16 +129,32 @@ describe('Saving recipes', () => {
         })
         expect(Recipe.insertMany).toHaveBeenCalledWith([
             expect.objectContaining({
-                imgDisplayUrl: '/logo.svg',
-                imgLink: '/logo.svg',
+                imgDisplayUrl: '/loading.gif',
+                imgLink: '/loading.gif',
+                published: false,
                 openaiPromptId: stubRecipeBatch[0].openaiPromptId,
             }),
             expect.objectContaining({
-                imgDisplayUrl: '/logo.svg',
-                imgLink: '/logo.svg',
+                imgDisplayUrl: '/loading.gif',
+                imgLink: '/loading.gif',
+                published: false,
                 openaiPromptId: stubRecipeBatch[1].openaiPromptId,
             }),
         ])
+        expect(Recipe.findByIdAndUpdate).toHaveBeenCalledWith(stubRecipeBatch[0]._id, {
+            $set: {
+                imgLink: 'https://mock-openai-imglink-1',
+                imgDisplayUrl: `https://stub-bucket.s3.amazonaws.com/${stubRecipeBatch[0].openaiPromptId}`,
+                published: true,
+            },
+        })
+        expect(Recipe.findByIdAndUpdate).toHaveBeenCalledWith(stubRecipeBatch[1]._id, {
+            $set: {
+                imgLink: 'https://mock-openai-imglink-2',
+                imgDisplayUrl: 'https://mock-openai-imglink-2',
+                published: true,
+            },
+        })
     })
 
     it('shall skip recipes that were already saved for the same prompt keys', async () => {
@@ -194,11 +221,11 @@ describe('Saving recipes', () => {
             imageBackup: [
                 {
                     name: stubRecipeBatch[0].name,
-                    imgDisplayUrl: '/logo.svg',
+                    imgDisplayUrl: '/loading.gif',
                 },
                 {
                     name: stubRecipeBatch[1].name,
-                    imgDisplayUrl: '/logo.svg',
+                    imgDisplayUrl: '/loading.gif',
                 },
             ],
         })

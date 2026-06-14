@@ -16,7 +16,9 @@ import { Recipe, UploadReturnType, ExtendedRecipe } from '../../types';
 const getS3Link = (uploadResults: UploadReturnType[] | null, location: string) => {
     const fallbackImg = '/loading.gif';
     if (!uploadResults) return fallbackImg;
-    const filteredResult = uploadResults.filter(result => result.location && result.location.endsWith(`/${location}`));
+    const filteredResult = uploadResults.filter(result => (
+        result.location === location || result.location.endsWith(`/${location}`)
+    ));
     if (filteredResult[0]?.uploaded) {
         return filteredResult[0].location;
     }
@@ -176,7 +178,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
             owner: ownerId,
             imgLink: '/loading.gif',
             imgDisplayUrl: '/loading.gif',
-            published: true,
+            published: false,
             openaiPromptId: getRecipeSaveKey(r),
         }));
         console.info('Prepared recipes for database insert:', updatedRecipes.map((r) => ({
@@ -204,13 +206,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
         }
 
         const savedExtendedRecipes = savedRecipes as unknown as ExtendedRecipe[];
-
-        // Generate and upload images before sending the response so the DB is updated
-        // with the real image data instead of the loading placeholder.
         await generateImagesAfterResponse(savedExtendedRecipes, recipesToSave, session.user.id);
         generateTagsAfterResponse(savedExtendedRecipes, session.user.id);
 
-        // Respond with success message after image updates are complete.
         res.status(200).json({
             status: 'Saved Recipes and generated the Images!',
             savedCount: savedRecipes.length,

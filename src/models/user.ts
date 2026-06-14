@@ -5,9 +5,9 @@ export interface UserType {
     name: string,
     email: string,
     image: string,
-  emailVerified: string | null,
+    emailVerified: string | null,
     createdAt: string,
-  pantryMigratedAt?: Date | null,
+    pantryMigratedAt?: Date | null,
     subscription?: {
         plan: 'basic' | 'premium' | 'pro',
         status: 'active' | 'inactive' | 'cancelled',
