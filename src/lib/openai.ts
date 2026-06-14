@@ -96,13 +96,17 @@ export const generateRecipe = async (ingredients: Ingredient[], categories: Reci
 // Generate an image by sending an image generation prompt to OpenAI.
 const generateImage = async (prompt: string, model: string, userId: string): Promise<string> => {
     try {
+        const size = process.env.OPENAI_IMAGE_SIZE || '512x512';
+        const start = Date.now();
         const response = await openai.images.generate({
             model,
             prompt,
             n: 1,
-            size: '1024x1024',
+            size,
             user: userId,
         });
+        const duration = Date.now() - start;
+        console.info(`OpenAI image generated in ${duration}ms for user ${userId}`);
 
         const image = response.data?.[0];
         if (image?.b64_json) {
@@ -132,10 +136,22 @@ export const generateImages = async (recipes: Recipe[], userId: string) => {
         // }
         
         const model = 'gpt-image-1';
-        const imagePromises = recipes.map(recipe =>
-            generateImage(getImageGenerationPrompt(recipe.name, recipe.ingredients), model, userId)
-        );
-        const results = await Promise.allSettled(imagePromises);
+        // Batch image generation to limit concurrency and avoid rate limits / long queueing.
+        const batchSize = Number(process.env.IMAGE_CONCURRENCY || 3);
+        const prompts = recipes.map(recipe => ({
+            recipe,
+            prompt: getImageGenerationPrompt(recipe.name, recipe.ingredients),
+        }));
+
+        const results: PromiseSettledResult<string>[] = [] as any;
+        for (let i = 0; i < prompts.length; i += batchSize) {
+            const chunk = prompts.slice(i, i + batchSize);
+            const promises = chunk.map(p => generateImage(p.prompt, model, userId));
+            // Run current batch in parallel
+            // eslint-disable-next-line no-await-in-loop
+            const settled = await Promise.allSettled(promises);
+            results.push(...settled);
+        }
         await saveOpenaiResponses({
             userId,
             prompt: `Image generation for recipe names ${recipes.map(r => r.name).join(' ,')} (note: not exact prompt)`,
