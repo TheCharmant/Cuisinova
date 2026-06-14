@@ -7,7 +7,7 @@ export interface UserType {
     image: string,
   emailVerified: string | null,
     createdAt: string,
-  pantryMigratedAt?: string | null,
+  pantryMigratedAt?: Date | null,
     subscription?: {
         plan: 'basic' | 'premium' | 'pro',
         status: 'active' | 'inactive' | 'cancelled',
