@@ -11,6 +11,7 @@ import {
     getRecipeTaggingPrompt,
     getChatAssistantSystemPrompt
 } from './prompts';
+import { filterCompliantRecipes } from './dietaryValidation';
 
 // Initialize OpenAI client with API key from environment
 const openai = new OpenAI({
@@ -72,8 +73,10 @@ export const generateRecipe = async (ingredients: Ingredient[], categories: Reci
         if (recipesContent) {
             try {
                 const parsedRecipes = JSON.parse(recipesContent);
+                // Filter recipes to ensure compliance with dietary preferences
+                const compliantRecipes = filterCompliantRecipes(parsedRecipes, dietaryPreferences);
                 // Ensure dietaryPreference and categories are set to the selected values
-                const updatedRecipes = parsedRecipes.map((recipe: any) => ({
+                const updatedRecipes = compliantRecipes.map((recipe: any) => ({
                     ...recipe,
                     dietaryPreference: dietaryPreferences.length > 0 ? dietaryPreferences : [],
                     categories: categories.length > 0 ? categories : []
