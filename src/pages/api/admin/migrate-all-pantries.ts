@@ -3,6 +3,7 @@ import { apiMiddleware } from '../../../lib/apiMiddleware';
 import { connectDB } from '../../../lib/mongodb';
 import User from '../../../models/user';
 import PantryItem from '../../../models/pantryItem';
+import { validateIngredient } from '../../../lib/openai';
 
 const normalizeName = (name: string) => name.trim().replace(/\s+/g, ' ');
 const singularizeWord = (word: string) => {
@@ -46,14 +47,47 @@ async function handler(req: NextApiRequest, res: NextApiResponse, session: any) 
       for (const it of rawItems) {
         const normalized = normalizeName(it.name);
         const key = getComparisonKey(normalized) || normalized.toLowerCase();
-        if (!keepByKey.has(key)) {
-          keepByKey.set(key, (it as any)._id.toString());
-          if (it.name !== normalized) {
-            await PantryItem.updateOne({ _id: (it as any)._id }, { name: normalized }).exec();
-          }
-        } else {
+
+        if (keepByKey.has(key)) {
           await PantryItem.deleteOne({ _id: (it as any)._id }).exec();
           duplicatesRemoved += 1;
+          continue;
+        }
+
+        // Heuristic for suspicious/truncated tokens
+        const looksSuspicious = normalized.length <= 6;
+        if (looksSuspicious) {
+          if (process.env.OPENAI_API_KEY) {
+            try {
+              const validation = await validateIngredient(normalized, userId);
+              if (validation) {
+                const parsed = JSON.parse(validation) as { isValid?: boolean };
+                if (parsed?.isValid === false) {
+                  await PantryItem.deleteOne({ _id: (it as any)._id }).exec();
+                  duplicatesRemoved += 1;
+                  continue;
+                }
+              }
+            } catch (e) {
+              if (normalized.length <= 3) {
+                await PantryItem.deleteOne({ _id: (it as any)._id }).exec();
+                duplicatesRemoved += 1;
+                continue;
+              }
+            }
+          } else {
+            if (normalized.length <= 3) {
+              await PantryItem.deleteOne({ _id: (it as any)._id }).exec();
+              duplicatesRemoved += 1;
+              continue;
+            }
+          }
+        }
+
+        // Keep and normalize
+        keepByKey.set(key, (it as any)._id.toString());
+        if (it.name !== normalized) {
+          await PantryItem.updateOne({ _id: (it as any)._id }, { name: normalized }).exec();
         }
       }
 

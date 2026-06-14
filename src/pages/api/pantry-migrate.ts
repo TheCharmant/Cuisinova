@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { apiMiddleware } from '../../lib/apiMiddleware';
 import { connectDB } from '../../lib/mongodb';
 import PantryItem from '../../models/pantryItem';
+import { validateIngredient } from '../../lib/openai';
 
 const normalizeName = (name: string) => name.trim().replace(/\s+/g, ' ');
 const singularizeWord = (word: string) => {
@@ -51,15 +52,45 @@ async function handler(req: NextApiRequest, res: NextApiResponse, session: any) 
       if (seenKeys.has(comparisonKey)) {
         // Duplicate found, mark for deletion
         toDelete.push(item._id.toString());
-      } else {
-        // First occurrence, update if needed
-        seenKeys.set(comparisonKey, normalizedName);
-        if (item.name !== normalizedName) {
-          // Update the name to normalized version
-          await PantryItem.updateOne({ _id: item._id }, { name: normalizedName });
-        }
-        toKeep.push({ _id: item._id.toString(), name: normalizedName });
+        continue;
       }
+
+      // Heuristic: short or ambiguous names may be truncated (eg: "chocol", "sal", "bu")
+      const looksSuspicious = normalizedName.length <= 6;
+
+      if (looksSuspicious) {
+        if (process.env.OPENAI_API_KEY) {
+          try {
+            const validation = await validateIngredient(normalizedName, userId);
+            if (validation) {
+              const parsed = JSON.parse(validation) as { isValid?: boolean };
+              if (parsed?.isValid === false) {
+                toDelete.push(item._id.toString());
+                continue;
+              }
+            }
+          } catch (e) {
+            // If OpenAI validation fails, fall back to conservative deletion for very short tokens
+            if (normalizedName.length <= 3) {
+              toDelete.push(item._id.toString());
+              continue;
+            }
+          }
+        } else {
+          // No OpenAI key — be conservative and remove very short tokens
+          if (normalizedName.length <= 3) {
+            toDelete.push(item._id.toString());
+            continue;
+          }
+        }
+      }
+
+      // First occurrence, update if needed
+      seenKeys.set(comparisonKey, normalizedName);
+      if (item.name !== normalizedName) {
+        await PantryItem.updateOne({ _id: item._id }, { name: normalizedName });
+      }
+      toKeep.push({ _id: item._id.toString(), name: normalizedName });
     }
 
     // Delete duplicates
