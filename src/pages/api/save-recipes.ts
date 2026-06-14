@@ -203,17 +203,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
             });
         }
 
-        // Respond with success message
+        const savedExtendedRecipes = savedRecipes as unknown as ExtendedRecipe[];
+
+        // Generate and upload images before sending the response so the DB is updated
+        // with the real image data instead of the loading placeholder.
+        await generateImagesAfterResponse(savedExtendedRecipes, recipesToSave, session.user.id);
+        generateTagsAfterResponse(savedExtendedRecipes, session.user.id);
+
+        // Respond with success message after image updates are complete.
         res.status(200).json({
             status: 'Saved Recipes and generated the Images!',
             savedCount: savedRecipes.length,
             skippedCount: recipes.length - savedRecipes.length,
         });
-
-        const savedExtendedRecipes = savedRecipes as unknown as ExtendedRecipe[];
-        // Run image and tag generation after the client has received the save response.
-        void generateImagesAfterResponse(savedExtendedRecipes, recipesToSave, session.user.id);
-        generateTagsAfterResponse(savedExtendedRecipes, session.user.id);
     } catch (error) {
         // Handle any errors that occur during the process
         console.error('Failed to send response:', error);
