@@ -13,6 +13,7 @@ import LimitReached from '../components/Recipe_Creation/LimitReached';
 import { call_api } from '../utils/utils';
 import { Ingredient, DietaryPreference, RecipeCategory, Recipe, IngredientDocumentType } from '../types/index';
 import { useToast } from '../contexts/ToastContext';
+import { areAllIngredientsRestrictedForPreferences } from '../lib/dietaryValidation';
 
 const steps = [
   'Choose Ingredients',
@@ -180,6 +181,8 @@ function Navigation({
 
   const safeIngredientList = Array.isArray(recipeCreationData.ingredientList) ? recipeCreationData.ingredientList : [];
   const progressPercentage = ((currentStep + 1) / steps.length) * 100;
+  const selectedIngredientsAreRestricted = generatedRecipes.length === 0
+    && areAllIngredientsRestrictedForPreferences(ingredients, preferences);
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -220,6 +223,9 @@ function Navigation({
             selectedRecipes={selectedRecipeIds}
             updateSelectedRecipes={setSelectedRecipeIds}
             handleRecipeSubmit={handleSave}
+            emptyRecipeMessage={selectedIngredientsAreRestricted
+              ? 'Selected ingredients are restricted for your preference. Please choose different ingredients or update your dietary preference.'
+              : undefined}
           />
         );
       default:

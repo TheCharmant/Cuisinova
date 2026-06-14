@@ -60,3 +60,19 @@ export const filterCompliantRecipes = (
     return compliant;
   });
 };
+
+export const areAllIngredientsRestrictedForPreferences = (
+  ingredients: { name: string }[],
+  dietaryPreferences: DietaryPreference[]
+): boolean => {
+  if (!ingredients.length || !dietaryPreferences.length) return false;
+
+  return ingredients.every((ingredient) => (
+    dietaryPreferences.some((preference) => (
+      (forbiddenIngredients[preference] || []).some((pattern) => {
+        pattern.lastIndex = 0;
+        return pattern.test(ingredient.name);
+      })
+    ))
+  ));
+};

@@ -17,7 +17,7 @@ describe('The recipe selection component', () => {
     it('shall handle a single recipe selection', () => {
         render(<SelectRecipesComponent {...props} />)
         // select first recipe in list
-        const firstRecipe = screen.getAllByRole('switch')[0]
+        const firstRecipe = screen.getAllByRole('button', { name: 'Select recipe' })[0]
         fireEvent.click(firstRecipe);
         expect(props.updateSelectedRecipes).toHaveBeenCalledWith(["6683b8908475eac9af5fe834"])
     })
@@ -29,8 +29,20 @@ describe('The recipe selection component', () => {
         }
         render(<SelectRecipesComponent {...updatedProps} />)
         // select first recipe in list
-        const firstRecipe = screen.getAllByRole('switch')[0]
+        const firstRecipe = screen.getByRole('button', { name: 'Unselect recipe' })
         fireEvent.click(firstRecipe);
         expect(props.updateSelectedRecipes).toHaveBeenCalledWith([])
+    })
+
+    it('shall show a custom empty recipe message', () => {
+        render(
+            <SelectRecipesComponent
+                {...props}
+                generatedRecipes={[]}
+                emptyRecipeMessage="Selected ingredients are restricted for your preference."
+            />
+        )
+
+        expect(screen.getByText('Selected ingredients are restricted for your preference.')).toBeInTheDocument()
     })
 })

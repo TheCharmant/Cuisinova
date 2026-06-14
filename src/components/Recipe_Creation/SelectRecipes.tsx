@@ -9,9 +9,10 @@ interface SelectRecipesComponentProps {
     updateSelectedRecipes: (ids: string[]) => void;
     selectedRecipes: string[];
     handleRecipeSubmit: (recipes: Recipe[]) => void;
+    emptyRecipeMessage?: string;
 }
 
-const SelectRecipesComponent = ({ generatedRecipes, selectedRecipes, updateSelectedRecipes, handleRecipeSubmit }: SelectRecipesComponentProps) => {
+const SelectRecipesComponent = ({ generatedRecipes, selectedRecipes, updateSelectedRecipes, handleRecipeSubmit, emptyRecipeMessage }: SelectRecipesComponentProps) => {
 
     const handleRecipeSelection = (recipeId: string) => {
         const updatedSelections = selectedRecipes.includes(recipeId)
@@ -55,7 +56,7 @@ const SelectRecipesComponent = ({ generatedRecipes, selectedRecipes, updateSelec
                     </Button>
                 ) : (
                     <div className="text-center text-red-500 font-medium px-4 py-3 rounded-lg bg-red-100">
-                        No recipes selected for submission. Please select at least one recipe. If you navigate away, all recipes will be discarded.
+                        {emptyRecipeMessage || 'No recipes selected for submission. Please select at least one recipe. If you navigate away, all recipes will be discarded.'}
                     </div>
                 )}
             </div>
