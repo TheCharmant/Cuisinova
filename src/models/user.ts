@@ -5,8 +5,9 @@ export interface UserType {
     name: string,
     email: string,
     image: string,
-    emailVerified: string | null,
+  emailVerified: string | null,
     createdAt: string,
+  pantryMigratedAt?: string | null,
     subscription?: {
         plan: 'basic' | 'premium' | 'pro',
         status: 'active' | 'inactive' | 'cancelled',
@@ -22,6 +23,7 @@ const userSchema = new mongoose.Schema({
   email: String,
   image: String,
   emailVerified: String || null,
+  pantryMigratedAt: { type: Date, default: null },
   subscription: {
     plan: { type: String, enum: ['basic', 'premium', 'pro'] },
     status: { type: String, enum: ['active', 'inactive', 'cancelled'], default: 'inactive' },

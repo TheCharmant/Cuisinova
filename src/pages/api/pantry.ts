@@ -3,6 +3,7 @@ import { apiMiddleware } from '../../lib/apiMiddleware';
 import { validateIngredient } from '../../lib/openai';
 import { connectDB } from '../../lib/mongodb';
 import PantryItem from '../../models/pantryItem';
+import User from '../../models/user';
 
 const normalizeName = (name: string) => name.trim().replace(/\s+/g, ' ');
 const singularizeWord = (word: string) => {
@@ -47,10 +48,81 @@ async function handler(req: NextApiRequest, res: NextApiResponse, session: any) 
   await connectDB();
 
   if (req.method === 'GET') {
-    const items = await PantryItem.find({ userId })
-      .select('name')
-      .sort({ name: 1 })
-      .lean();
+    // if user hasn't had pantry migration run, do it now (persistently)
+    try {
+      const user = await User.findById(userId).exec();
+      if (user && !user.pantryMigratedAt) {
+        // perform persistent migration same as migrate endpoint
+        const rawItems = await PantryItem.find({ userId }).select('name').lean();
+        const keepByKey = new Map<string, string>();
+        for (const it of rawItems) {
+          const normalized = normalizeName(it.name);
+          const key = getComparisonKey(normalized) || normalized.toLowerCase();
+          if (!keepByKey.has(key)) {
+            keepByKey.set(key, (it as any)._id.toString());
+            if (it.name !== normalized) {
+              // update stored name
+              // eslint-disable-next-line no-await-in-loop
+              await PantryItem.updateOne({ _id: (it as any)._id }, { name: normalized }).exec();
+            }
+          } else {
+            // delete duplicate
+            // eslint-disable-next-line no-await-in-loop
+            await PantryItem.deleteOne({ _id: (it as any)._id }).exec();
+          }
+        }
+        user.pantryMigratedAt = new Date();
+        await user.save();
+      }
+    } catch (e) {
+      console.warn('Pantry automatic migration failed:', e);
+    }
+
+    const rawItems = await PantryItem.find({ userId }).select('name').sort({ name: 1 }).lean();
+
+    // Normalize and deduplicate in-memory for display
+    const map = new Map<string, { _id?: string; name: string }>();
+    for (const it of rawItems) {
+      const normalized = normalizeName(it.name);
+      const key = getComparisonKey(normalized) || normalized.toLowerCase();
+      if (!map.has(key)) {
+        map.set(key, { _id: (it as any)._id?.toString?.() ?? undefined, name: normalized });
+      }
+    }
+
+    const items = Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+
+    // If caller requested migrate explicitly, ensure any remaining duplicates are removed
+    if (req.query?.migrate === 'true') {
+      try {
+        const keepByKey = new Map<string, string>();
+        for (const it of rawItems) {
+          const normalized = normalizeName(it.name);
+          const key = getComparisonKey(normalized) || normalized.toLowerCase();
+          if (!keepByKey.has(key)) {
+            keepByKey.set(key, (it as any)._id.toString());
+            if (it.name !== normalized) {
+              await PantryItem.updateOne({ _id: (it as any)._id }, { name: normalized }).exec();
+            }
+          } else {
+            await PantryItem.deleteOne({ _id: (it as any)._id }).exec();
+          }
+        }
+        // also mark user migrated if possible
+        try {
+          const user = await User.findById(userId).exec();
+          if (user && !user.pantryMigratedAt) {
+            user.pantryMigratedAt = new Date();
+            await user.save();
+          }
+        } catch (e) {
+          /* ignore */
+        }
+      } catch (e) {
+        console.warn('Pantry migrate operation failed during GET migrate=true:', e);
+      }
+    }
+
     return res.status(200).json({ items });
   }
 
