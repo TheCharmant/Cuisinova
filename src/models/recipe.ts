@@ -32,6 +32,7 @@ const recipeSchema = new mongoose.Schema({
     },
     imgLink: { type: String },
     imgDisplayUrl: { type: String },
+    published: { type: Boolean, default: false, index: true },
     openaiPromptId: {type: String, required: true, index: true},
     likedBy: {
         type: [{ type: mongoose.Schema.Types.ObjectId, ref: User }],

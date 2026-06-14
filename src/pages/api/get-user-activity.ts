@@ -31,12 +31,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
         // Extract joined date from ObjectId
         const joinedDate = new Date(new mongoose.Types.ObjectId(userId).getTimestamp());
 
-        const createdRecipes = await Recipe.find({ owner: userId })
+        // When another user views this profile, only show published recipes.
+        const createdFilter: any = { owner: userId };
+        if (session.user.id !== userId) createdFilter.published = true;
+
+        const createdRecipes = await Recipe.find(createdFilter)
             .populate(['owner', 'likedBy', 'comments.user'])
             .sort({ createdAt: -1 })
             .lean() as unknown as ExtendedRecipe[]
 
-        const likedRecipes = await Recipe.find({ likedBy: userId })
+        const likedFilter: any = { likedBy: userId };
+        if (session.user.id !== userId) likedFilter.published = true;
+
+        const likedRecipes = await Recipe.find(likedFilter)
             .populate(['owner', 'likedBy', 'comments.user'])
             .sort({ createdAt: -1 })
             .lean() as unknown as ExtendedRecipe[];

@@ -69,10 +69,12 @@ const generateImagesAfterResponse = async (
             const s3Img = uploadResults?.[idx]?.uploaded ? getS3Link(uploadResults, sourceRecipe.openaiPromptId) : undefined;
             const displayUrl = s3Img || openAiImg;
 
+            // Update image fields and mark published=true now that image is ready
             return recipe.findByIdAndUpdate(savedRecipe._id, {
                 $set: {
                     imgLink: openAiImg,
                     imgDisplayUrl: displayUrl,
+                    published: true,
                 },
             });
         }));
@@ -174,6 +176,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
             owner: ownerId,
             imgLink: '/loading.gif',
             imgDisplayUrl: '/loading.gif',
+            published: false,
             openaiPromptId: getRecipeSaveKey(r),
         }));
         console.info('Prepared recipes for database insert:', updatedRecipes.map((r) => ({

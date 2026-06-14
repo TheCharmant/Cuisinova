@@ -43,6 +43,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
         let sort: any = { createdAt: -1 };
         if (sortOption === 'popular') sort = { likedBy: -1 };
 
+        // Ensure only published recipes are shown in public search results
+        searchQuery.published = true;
+
         // Execute both queries in parallel for efficiency
         const [recipes, popularTags, totalRecipes] = await Promise.all([
             // Fetch paginated search results
