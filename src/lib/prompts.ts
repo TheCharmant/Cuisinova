@@ -11,7 +11,27 @@ export const getRecipeGenerationPrompt = (ingredients: Ingredient[], categories:
         : '';
 
     const dietaryInstruction = dietaryPreferences.length
-        ? `\n\nDietary Requirements: These recipes MUST adhere to ${dietaryPreferences.join(', ')}. Do not include ingredients that violate these restrictions.`
+        ? `\n\nDietary Requirements: These recipes MUST adhere to ${dietaryPreferences.join(', ')}. Do not include ingredients that violate these restrictions. Follow these rules strictly:\n` +
+          dietaryPreferences.map((preference) => {
+            switch (preference) {
+              case 'Vegetarian':
+                return '- Vegetarian: No meat, poultry, fish, or seafood.';
+              case 'Vegan':
+                return '- Vegan: No meat, poultry, fish, seafood, eggs, dairy, honey, gelatin, or any animal-derived products.';
+              case 'Dairy-Free':
+                return '- Dairy-Free: No milk, cheese, butter, cream, yogurt, ghee, paneer, whey, casein, lactose, or dairy-based sauces.';
+              case 'Halal':
+                return '- Halal: No pork, alcohol, lard, non-halal meat, gelatin from non-halal sources, or alcohol-based ingredients; all ingredients must be halal-friendly.';
+              case 'Kosher':
+                return '- Kosher: No non-kosher meat, shellfish, pork, or dairy-meat combinations; follow standard kosher restrictions.';
+              case 'Gluten-Free':
+                return '- Gluten-Free: No wheat, barley, rye, spelt, kamut, bulgur, semolina, malt, or any ingredients derived from these grains.';
+              case 'Keto':
+                return '- Keto: No high-carb ingredients such as sugar, bread, pasta, rice, potatoes, or high-carb sweeteners.';
+              default:
+                return '';
+            }
+          }).filter(Boolean).join('\n')
         : '';
 
     return `
