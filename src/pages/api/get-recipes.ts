@@ -28,8 +28,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
                 query.likedBy = { $in: [session.user.id] };
             }
             // For 'all', no additional query
-            // Only show published recipes in public feeds
-            query.published = true;
             const recipes = await recipeModel.find(query)
                 .sort(sort)
                 .skip((pageNum - 1) * limitNum)

@@ -176,7 +176,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse, session: any) 
             owner: ownerId,
             imgLink: '/loading.gif',
             imgDisplayUrl: '/loading.gif',
-            published: false,
+            published: true,
             openaiPromptId: getRecipeSaveKey(r),
         }));
         console.info('Prepared recipes for database insert:', updatedRecipes.map((r) => ({
