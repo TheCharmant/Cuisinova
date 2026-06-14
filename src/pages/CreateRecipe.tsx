@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 import { getSession } from 'next-auth/react';
 import { v4 as uuidv4 } from 'uuid';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
-import mongoose from 'mongoose';
 import Loading from '../components/Loading';
 import IngredientForm from '../components/Recipe_Creation/IngredientForm';
 import DietaryPreferences from '../components/Recipe_Creation/DietaryPreferences';
@@ -13,10 +12,6 @@ import SelectRecipes from '../components/Recipe_Creation/SelectRecipes';
 import LimitReached from '../components/Recipe_Creation/LimitReached';
 import { call_api } from '../utils/utils';
 import { Ingredient, DietaryPreference, RecipeCategory, Recipe, IngredientDocumentType } from '../types/index';
-import { connectDB } from '../lib/mongodb';
-import IngredientModel from '../models/ingredient';
-import RecipeModel from '../models/recipe';
-import User from '../models/user';
 import { useToast } from '../contexts/ToastContext';
 
 const steps = [
@@ -309,6 +304,11 @@ function Navigation({
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     try {
+        const [{ connectDB }, { default: IngredientModel }] = await Promise.all([
+            import('../lib/mongodb'),
+            import('../models/ingredient'),
+        ]);
+
         // Establish a connection to the MongoDB database
         await connectDB();
 
